@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "ivy-seed"
+version = "0.1.0"
+description = ""
+authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
