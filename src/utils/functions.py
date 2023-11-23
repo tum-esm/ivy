@@ -1,4 +1,5 @@
 import re
+import src
 
 
 def string_is_valid_version_name(version_name: str) -> bool:
@@ -11,5 +12,4 @@ def string_is_valid_version_name(version_name: str) -> bool:
     Returns:
         True if the version name is valid, False otherwise."""
 
-    return re.match(r"v\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)",
-                    version_name) is not None
+    return re.match(src.constants.VERSION_REGEX, version_name) is not None
