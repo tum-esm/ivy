@@ -18,6 +18,12 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
 
+[tool.mypy]
+strict = true
+implicit_reexport = true
+no_warn_unused_ignores = true
+plugins = ["pydantic.mypy"]
+
 [tool.yapf]
 based_on_style = "facebook"
 coalesce_brackets = true
