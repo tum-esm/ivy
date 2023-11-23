@@ -9,6 +9,13 @@ readme = "README.md"
 python = "^3.10"
 python-dotenv = "^1.0.0"
 filelock = "^3.13.1"
+pytest = "^7.4.3"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.7.0"
 
 [build-system]
 requires = ["poetry-core"]
