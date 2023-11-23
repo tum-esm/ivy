@@ -12,6 +12,12 @@ filelock = "^3.13.1"
 pytest = "^7.4.3"
 pydantic = "^2.5.2"
 
+[tool.pytest.ini_options]
+markers = [
+    "ci: can be run in any environment",
+    "integration: can only be run on a configured system",
+]
+
 [tool.poetry.group.dev]
 optional = true
 

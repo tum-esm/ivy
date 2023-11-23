@@ -1,10 +1,12 @@
 import os
 import tomllib
+import pytest
 import src
 
 path = os.path.join(src.constants.PROJECT_DIR, "pyproject.toml")
 
 
+@pytest.mark.ci
 def test_pyproject_toml() -> None:
     with open(path, "rb") as f:
         data = tomllib.load(f)
