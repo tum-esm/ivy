@@ -1,6 +1,5 @@
 import os
-
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+from src.constants import PROJECT_DIR
 
 
 def _rm(path: str) -> None:
@@ -14,4 +13,5 @@ def test_static_types() -> None:
 
     for path in ["src/", "tests/", "run.py"]:
         assert os.system(
-            f"cd {PROJECT_DIR} && .venv/bin/python -m mypy {path}") == 0
+            f"cd {PROJECT_DIR} && .venv/bin/python -m mypy {path}"
+        ) == 0

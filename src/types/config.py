@@ -9,9 +9,8 @@ class Config(pydantic.BaseModel):
 
     @staticmethod
     def load() -> Config:
-        with open(
-                os.path.join(src.constants.PROJECT_DIR, "config",
-                             "config.json"), "r") as f:
+        path = os.path.join(src.constants.PROJECT_DIR, "config", "config.json")
+        with open(path, "r") as f:
             return Config.model_validate_json(f.read())
 
     @staticmethod
