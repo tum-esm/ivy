@@ -1,4 +1,7 @@
+"""Main loop of the automation"""
+
+
 def run() -> None:
-    """Mainloop of the automation"""
+    """Run the automation"""
 
     pass

@@ -8,8 +8,8 @@ version_regex = re.compile(src.constants.VERSION_REGEX)
 
 
 def string_is_valid_version(version_string: str) -> bool:
-    """Check if the version string is valid. Valid version name examples `v1.2.3`,
-    `v4.5.6-alpha.78`, `v7.8.9-beta.10`, `v11.12.13-rc.14`.
+    """Check if the version string is valid = should match
+    `src.constants.VERSION_REGEX`
     
     Args:
         version_string: version string to check.
@@ -21,6 +21,7 @@ def string_is_valid_version(version_string: str) -> bool:
 
 
 class CommandLineException(Exception):
+    """Raised when a shell command fails."""
     def __init__(self, value: str, details: Optional[str] = None) -> None:
         self.value = value
         self.details = details

@@ -7,16 +7,21 @@ import src
 
 
 class Updater:
+    """TODO"""
     def __init__(
         self,
         config: src.types.Config,
         distribute_new_config: Callable[[src.types.Config], None],
     ) -> None:
+        """TODO"""
+
         self.config = config
         self.distribute_new_config = distribute_new_config
-        self.processed_config_file_contents: set[str] = {}
+        self.processed_config_file_contents: set[str] = set()
 
     def perform_update(self, config_file_content: str) -> None:
+        """TODO"""
+
         if config_file_content in self.processed_config_file_contents:
             print("Received config file has already been processed")
             return
@@ -85,7 +90,7 @@ class Updater:
             print("Successfully tested new config")
             print("Updating cli pointer")
             try:
-                self._update_cli_pointer(foreign_config.version)
+                self.update_cli_pointer(foreign_config.version)
             except Exception as e:
                 print(f"Could not update cli pointer: {e}")
                 return
@@ -96,6 +101,8 @@ class Updater:
             exit(0)
 
     def download_source_code(self, version: str) -> None:
+        """TODO"""
+
         assert self.config.updater is not None
 
         dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
@@ -106,7 +113,8 @@ class Updater:
                 shutil.rmtree(dst_dir)
 
         if not os.path.isdir(dst_dir):
-            tarball_name = f"{repository_name}-v{version}.tar.gz"
+            repository_name = self.config.updater.repository.split("/")[-1]
+            tarball_name = f"{self.config.updater.repository}-v{version}.tar.gz"
             dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
 
             if self.config.updater.provider == "github":
@@ -147,6 +155,8 @@ class Updater:
             )
 
     def install_dependencies(self, version: str) -> None:
+        """TODO"""
+
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
@@ -169,6 +179,8 @@ class Updater:
         )
 
     def dump_config_file(self, version: str, config_file_content: str) -> None:
+        """TODO"""
+
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
@@ -177,6 +189,8 @@ class Updater:
             f.write(config_file_content)
 
     def run_pytests(self, version: str) -> None:
+        """TODO"""
+
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
@@ -188,6 +202,8 @@ class Updater:
         )
 
     def remove_old_venvs(self) -> None:
+        """TODO"""
+
         venvs_to_be_removed: list[str] = []
         for version in os.listdir(src.constants.IVY_ROOT_DIR):
             venv_path = os.path.join(
@@ -208,8 +224,9 @@ class Updater:
 
         print(f"successfully removed all old .venvs")
 
-    def _update_cli_pointer(self, version: str) -> None:
+    def update_cli_pointer(self, version: str) -> None:
         """make the file pointing to the used cli to the new version's cli"""
+
         venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
         code_path = os.path.join(src.constants.IVY_ROOT_DIR, version, "src")
         with open(
