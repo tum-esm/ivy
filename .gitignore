@@ -1,6 +1,7 @@
 # custom ivy ignores
 config/config.json
 run.lock
+data/logs.lock
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,windows,node,nextjs
