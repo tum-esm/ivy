@@ -32,3 +32,12 @@ class Config(pydantic.BaseModel):
     @staticmethod
     def load_from_string(c: str) -> Config:
         return Config.model_validate_json(c)
+
+
+class ForeignConfig(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(extra="allow")
+    version: str = pydantic.Field(..., pattern=src.constants.VERSION_REGEX)
+
+    @staticmethod
+    def load_from_string(c: str) -> ForeignConfig:
+        return ForeignConfig.model_validate_json(c)
