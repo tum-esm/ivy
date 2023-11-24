@@ -85,3 +85,23 @@ class Updater:
             f"source .venv/bin/activate && poetry install --no-root",
             working_directory=version_dir,
         )
+
+    def dump_config_file(self, version: str, config_file_content: str) -> None:
+        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        if not os.path.isdir(version_dir):
+            raise RuntimeError(f"Directory {version_dir} does not exist")
+
+        with open(os.path.join(version_dir, "config", "config.json"), "w") as f:
+            f.write(config_file_content)
+
+    def run_pytests(self, version: str) -> None:
+        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        if not os.path.isdir(version_dir):
+            raise RuntimeError(f"Directory {version_dir} does not exist")
+
+        print(f"running all pytests")
+        src.utils.functions.run_shell_command(
+            f'.venv/bin/python -m pytest -m "version_change" tests/',
+            working_directory=version_dir,
+        )
+
