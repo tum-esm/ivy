@@ -40,6 +40,52 @@ class Updater:
                 )
                 self.config = local_config
                 self.distribute_new_config(local_config)
+        else:
+            print(
+                f"Switching to new version {foreign_config.version} as specified in config"
+            )
+            print(f"Downloading new source code")
+            try:
+                self.download_source_code(foreign_config.version)
+            except Exception as e:
+                print(f"Could not download source code: {e}")
+                return
+
+            print("Installing dependencies")
+            try:
+                self.install_dependencies(foreign_config.version)
+            except Exception as e:
+                print(f"Could not install dependencies: {e}")
+                return
+
+            print("Dumping config file")
+            try:
+                self.dump_config_file(
+                    foreign_config.version, config_file_content
+                )
+            except Exception as e:
+                print(f"Could not dump config file: {e}")
+                return
+
+            print("Running pytests")
+            try:
+                self.run_pytests(foreign_config.version)
+            except Exception as e:
+                print(f"Could not run pytests: {e}")
+                return
+
+            print("Successfully tested new config")
+            print("Updating cli pointer")
+            try:
+                self._update_cli_pointer(foreign_config.version)
+            except Exception as e:
+                print(f"Could not update cli pointer: {e}")
+                return
+
+            print(
+                f"Successfully updated to version {foreign_config.version}, shutting down"
+            )
+            exit(0)
 
     def download_source_code(self, version: str) -> None:
         assert self.config.updater is not None
