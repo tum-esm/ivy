@@ -10,7 +10,9 @@ PROJECT_DIR = os.path.dirname(
 CONFIG_JSON_TARGET = os.path.join(
     PROJECT_DIR, "docs", "components", "config-schema-object.ts"
 )
-MD_FILE_TARGET = os.path.join(PROJECT_DIR, "docs", "pages", "configuration.mdx")
+MD_FILE_TARGET = os.path.join(
+    PROJECT_DIR, "docs", "pages", "guides", "configuration.mdx"
+)
 sys.path.append(PROJECT_DIR)
 
 import src
@@ -19,12 +21,13 @@ import src
 # Update the config schema object in the documentation
 
 print(f"Exporting config schema object to {CONFIG_JSON_TARGET}")
-config_schema_str = json.dumps(src.types.Config.model_json_schema(), indent=4)
-dereferenced_config_schema = jsonref.loads(config_schema_str)
+dereferenced_config_schema = jsonref.loads(
+    json.dumps(src.types.Config.model_json_schema(by_alias=False))
+)
 with open(CONFIG_JSON_TARGET, "w") as f:
     f.write(
         "/* prettier-ignore */\n" + "const CONFIG_SCHEMA_OBJECT: any = " +
-        json.dumps(dereferenced_config_schema, indent=2) +
+        json.dumps(dereferenced_config_schema, indent=4) +
         ";\n\nexport default CONFIG_SCHEMA_OBJECT;"
     )
 
