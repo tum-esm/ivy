@@ -1,17 +1,14 @@
-import time
+from typing import Literal, Optional
+import os
 import traceback
 import filelock
-from datetime import datetime
-from os.path import dirname, abspath, join
-from typing import Literal, Optional
+import datetime
 
-from src import custom_types
-from .message_queue import MessageQueue
+import src
 from .functions import CommandLineException
 
-PROJECT_DIR = dirname(dirname(dirname(abspath(__file__))))
-LOGS_ARCHIVE_DIR = join(PROJECT_DIR, "logs", "archive")
-FILELOCK_PATH = join(PROJECT_DIR, "logs", "archive.lock")
+LOGS_ARCHIVE_DIR = os.path.join(src.constants.PROJECT_DIR, "data", "logs")
+FILELOCK_PATH = os.path.join(src.constants.PROJECT_DIR, "data", "logs.lock")
 
 # The logging module behaved very weird with the setup we have
 # therefore I am just formatting and appending the log lines
@@ -19,7 +16,7 @@ FILELOCK_PATH = join(PROJECT_DIR, "logs", "archive.lock")
 
 
 def _pad_str_right(
-    text: str, min_width: int, fill_char: Literal["0", " "] = " "
+    text: str, min_width: int, fill_char: Literal["0", " ", "-"] = " "
 ) -> str:
     if len(text) >= min_width:
         return text
@@ -28,113 +25,130 @@ def _pad_str_right(
 
 
 class Logger:
+    """A custom logger class that optionally sends out the logs via
+    MQTT and writes them to a file. One can add details to log messages
+    of all levels which will be logged on a separate line for better
+    readability.
+
+    You can give each instance a custom origin to distinguish between
+    the sources of the log messages.
+
+    A simple log message will look like this:
+
+    ```
+    2021-08-22 16:00:00.000 UTC+2 - origin - INFO - test message
+    ```
+
+    A log message with details will look like this:
+
+    ```
+    2021-08-22 16:00:00.000 UTC+2 - origin - INFO - test message
+    --- details ----------------------------
+    test details
+    ----------------------------------------
+    ```
+
+    An exception will be formatted like this:
+
+    ```
+    2021-08-22 16:00:00.000 UTC+2 - origin - EXCEPTION - ZeroDivisionError: division by zero
+    --- exception details ------------------
+    test details
+    --- traceback --------------------------
+    Traceback (most recent call last):
+        File "src/utils/logger.py", line 123, in _write_log_line
+            raise Exception("test exception")
+    Exception: test exception
+    ----------------------------------------
+    ```"""
     def __init__(
         self,
+        config: src.types.Config,
         origin: str = "insert-name-here",
-        print_to_console: bool = False,
-        write_to_file: bool = True,
     ) -> None:
+        """Initializes the logger.
+
+        Args:
+            config:  The config object
+            origin:  The origin of the log messages, will be displayed
+                     in the log lines."""
+
         self.origin: str = origin
-        self.print_to_console = print_to_console
-        self.write_to_file = write_to_file
-        self.message_queue = MessageQueue()
+        self.config = config
         self.filelock = filelock.FileLock(FILELOCK_PATH, timeout=3)
 
     def horizontal_line(
-        self, fill_char: Literal["-", "=", ".", "_"] = "="
+        self,
+        fill_char: Literal["-", "=", ".", "_"] = "=",
     ) -> None:
-        """writes a debug log line, used for verbose output"""
-        self._write_log_line("INFO", fill_char * 46)
+        """Writes a horizontal line."""
 
-    def debug(self, message: str) -> None:
-        """writes a debug log line, used for verbose output"""
-        self._write_log_line("DEBUG", message)
+        self._write_log_line("INFO", fill_char * 40)
+
+    def debug(
+        self,
+        message: str,
+        details: Optional[str] = None,
+    ) -> None:
+        """Writes a INFO log line.
+        
+        Args:
+            message:  The message to log
+            details:  Additional details to log, useful for verbose output."""
+
+        self._write_log_line("DEBUG", message, details=[("details", details)])
 
     def info(
         self,
         message: str,
-        config: Optional[custom_types.Config] = None,
-        details: str = "",
+        details: Optional[str] = None,
     ) -> None:
-        """writes an info log line"""
-        if len(details) == 0:
-            self._write_log_line("INFO", message)
-        else:
-            self._write_log_line("INFO", f"{message}, details: {details}")
-        if config is not None:
-            self._write_mqtt_message(
-                config,
-                level="info",
-                subject=message,
-                details=details,
-            )
+        """Writes a INFO log line.
+        
+        Args:
+            message:  The message to log
+            details:  Additional details to log, useful for verbose output."""
+
+        self._write_log_line("INFO", message, details=[("details", details)])
 
     def warning(
         self,
         message: str,
-        config: Optional[custom_types.Config] = None,
-        details: str = "",
+        details: Optional[str] = None,
     ) -> None:
-        """writes a warning log line, sends the message via
-        MQTT when config is passed (required for revision number)
-        """
-        if len(details) == 0:
-            self._write_log_line("WARNING", message)
-        else:
-            self._write_log_line("WARNING", f"{message}, details: {details}")
-        if config is not None:
-            self._write_mqtt_message(
-                config,
-                level="warning",
-                subject=message,
-            )
+        """Writes a WARNING log line.
+        
+        Args:
+            message:  The message to log
+            details:  Additional details to log, useful for verbose output."""
 
-    def error(
-        self,
-        message: str,
-        config: Optional[custom_types.Config] = None,
-        details: str = "",
-    ) -> None:
-        """writes an error log line, sends the message via
-        MQTT when config is passed (required for revision number)
-        """
-        if len(details) == 0:
-            self._write_log_line("ERROR", message)
-        else:
-            self._write_log_line(
-                "ERROR",
-                "\n".join([
-                    message,
-                    "--- details: -----------------",
-                    details,
-                    "------------------------------",
-                ]),
-            )
-        if config is not None:
-            self._write_mqtt_message(
-                config, level="error", subject=message, details=details
-            )
+        self._write_log_line("WARNING", message, details=[("details", details)])
 
-    def exception(
+    def error(self, message: str, details: Optional[str] = None) -> None:
+        """Writes an error log line.
+
+        Args:
+            message:  The message to log
+            details:  Additional details to log, useful for verbose output."""
+
+        self._write_log_line("ERROR", message, details=[("details", details)])
+
+    def log_exception(
         self,
         e: Exception,
         label: Optional[str] = None,
-        config: Optional[custom_types.Config] = None,
+        details: Optional[str] = None,
     ) -> None:
         """logs the traceback of an exception, sends the message via
         MQTT when config is passed (required for revision number).
 
-        exceptions will be formatted like this:
+        The subject will be formatted like this:
+        `(label, )ZeroDivisionError: division by zero`
+        
+        Args:
+            e:      The exception to log
+            label:  A label to prepend to the exception name."""
 
-        ```txt
-        (label, )ZeroDivisionError: division by zer
-        --- details: -----------------
-        ...
-        --- traceback: ---------------
-        ...
-        ------------------------------
-        ```
-        """
         exception_name = traceback.format_exception_only(type(e), e)[0].strip()
         exception_traceback = "\n".join(
             traceback.format_exception(type(e), e, e.__traceback__)
@@ -143,27 +157,29 @@ class Logger:
         if isinstance(e, CommandLineException) and (e.details is not None):
             exception_details = e.details.strip()
 
-        subject_string = (
-            exception_name if label is None else f"{label}, {exception_name}"
-        )
-        details_string = (
-            f"--- details: -----------------\n" + f"{exception_details}\n" +
-            f"--- traceback: ---------------\n" + f"{exception_traceback}\n" +
-            f"------------------------------"
+        if label is None:
+            subject = f"{exception_name}"
+        else:
+            subject = f"{label}, {exception_name}"
+        self._write_log_line(
+            "EXCEPTION",
+            subject,
+            details=[
+                ("exception details", exception_details),
+                ("traceback", exception_traceback),
+                ("details", details),
+            ]
         )
 
-        self._write_log_line("EXCEPTION", f"{subject_string}\n{details_string}")
-        if config is not None:
-            self._write_mqtt_message(
-                config,
-                level="error",
-                subject=subject_string,
-                details=details_string,
-            )
-
-    def _write_log_line(self, level: str, message: str) -> None:
+    def _write_log_line(
+        self,
+        level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
+        subject: str,
+        details: list[tuple[str, Optional[str]]] = [],
+    ) -> None:
         """formats the log line string and writes it to
         `logs/current-logs.log`"""
+
         now = datetime.now()
         utc_offset = round((datetime.now() - datetime.utcnow()).total_seconds()
                            / 3600, 1)
@@ -173,47 +189,18 @@ class Logger:
         log_string = (
             f"{str(now)[:-3]} UTC{'' if utc_offset < 0 else '+'}{utc_offset} " +
             f"- {_pad_str_right(self.origin, min_width=23)} " +
-            f"- {_pad_str_right(level, min_width=13)} " + f"- {message}\n"
+            f"- {_pad_str_right(level, min_width=13)} " + f"- {subject}\n"
         )
+        for key, value in details:
+            if value is not None:
+                log_string += (
+                    _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
+                    f"\n{value}\n" + "-" * 40 + "\n"
+                )
         if self.print_to_console:
             print(log_string, end="")
-        if self.write_to_file:
-            # YYYY-MM-DD.log
-            log_file_name = str(now)[: 10] + ".log"
+        if self.config.logg:
+            path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
-                with open(join(LOGS_ARCHIVE_DIR, log_file_name), "a") as f1:
+                with open(path, "a") as f1:
                     f1.write(log_string)
-
-    def _write_mqtt_message(
-        self,
-        config: custom_types.Config,
-        level: Literal["info", "warning", "error"],
-        subject: str,
-        details: str = "",
-    ) -> None:
-        subject = f"{self.origin} - {subject}"
-
-        if len(subject) > 256:
-            extension_message_subject = f" ... CUT ({len(subject)} -> 256)"
-            subject = (
-                subject[:(256 - len(extension_message_subject))] +
-                extension_message_subject
-            )
-
-        if len(details) > 16384:
-            extension_message_details = f" ... CUT ({len(details)} -> 16384)"
-            details = (
-                details[:(16384 - len(extension_message_details))] +
-                extension_message_details
-            )
-
-        self.message_queue.enqueue_message(
-            config,
-            message_body=custom_types.MQTTLogMessageBody(
-                severity=level,
-                subject=subject,
-                details=details,
-                timestamp=round(time.time(), 2),
-                revision=config.revision,
-            ),
-        )
