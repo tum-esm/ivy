@@ -105,3 +105,37 @@ class Updater:
             working_directory=version_dir,
         )
 
+    def remove_old_venvs(self) -> None:
+        venvs_to_be_removed: list[str] = []
+        for version in os.listdir(src.constants.IVY_ROOT_DIR):
+            venv_path = os.path.join(
+                src.constants.IVY_ROOT_DIR, version, ".venv"
+            )
+            if (
+                src.utils.functions.string_is_valid_version(version) and
+                os.path.isdir(venv_path) and
+                (not (venv_path in sys.executable))
+            ):
+                venvs_to_be_removed.append(venv_path)
+
+        print(f"found {len(venvs_to_be_removed)} old .venvs to be removed")
+
+        for p in venvs_to_be_removed:
+            print(f'removing old .venv at path "{p}"')
+            shutil.rmtree(p)
+
+        print(f"successfully removed all old .venvs")
+
+    def _update_cli_pointer(self, version: str) -> None:
+        """make the file pointing to the used cli to the new version's cli"""
+        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
+        code_path = os.path.join(src.constants.IVY_ROOT_DIR, version, "src")
+        with open(
+            f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w"
+        ) as f:
+            f.writelines([
+                "#!/bin/bash",
+                "set -o errexit",
+                "",
+                f"{venv_path}/bin/python {code_path}/cli/main.py $*",
+            ])
