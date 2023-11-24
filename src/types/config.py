@@ -7,15 +7,31 @@ import src
 
 class UpdaterConfig(pydantic.BaseModel):
     repository: str = pydantic.Field(
-        ..., pattern=r"[a-zA-Z0-9-]+/[a-zA-Z0-9-]+"
+        ...,
+        pattern=r"[a-zA-Z0-9-]+/[a-zA-Z0-9-]+",
+        description=
+        "The repository in which this source code is hosted, i.e. 'orgname/reponame'"
     )
-    provider: Literal["github", "gitlab"] = pydantic.Field(...)
-    provider_host: str = pydantic.Field(..., min_length=3)
+    provider: Literal["github", "gitlab"] = pydantic.Field(
+        ..., description="You can suggest more providers in the issue tracker"
+    )
+    provider_host: str = pydantic.Field(
+        ...,
+        min_length=3,
+        examples=["github.com", "gitlab.com", "gitlab.yourcompany.com"]
+    )
     access_token: Optional[str] = pydantic.Field(
-        None, min_length=3, max_length=256
+        None,
+        min_length=3,
+        max_length=256,
+        description=
+        "The access token to use for the provider. If the repository is public, this can be left empty.",
     )
-    source_conflict_strategy: Literal["overwrite",
-                                      "reuse"] = pydantic.Field("reuse")
+    source_conflict_strategy: Literal["overwrite", "reuse"] = pydantic.Field(
+        "reuse",
+        description=
+        "The strategy to follow, when upgrading to a new version and the source code already exists. 'reuse' will keep the existing source code but create a new venv. 'overwrite' will remove the existing code directory and create a new one. You can keep this at 'reuse' by default and if a version upgrade fails during the download phase, temporarily change this to 'overwrite' to force a redownload of the source code."
+    )
 
 
 class Config(pydantic.BaseModel):
@@ -24,8 +40,18 @@ class Config(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
-    version: str = pydantic.Field(..., pattern=src.constants.VERSION_REGEX)
-    updater: Optional[UpdaterConfig] = pydantic.Field(None)
+    version: str = pydantic.Field(
+        ...,
+        pattern=src.constants.VERSION_REGEX,
+        description="The version of the software this config file is for",
+        examples=[
+            "0.1.0", "1.2.3", "0.4.0-alpha.1", "0.5.0-beta.12", "0.6.0-rc.123"
+        ]
+    )
+    updater: Optional[UpdaterConfig] = pydantic.Field(
+        default=None,
+        description="If this is not set, the updater will not be used."
+    )
 
     @staticmethod
     def load() -> Config:
@@ -49,7 +75,12 @@ class ForeignConfig(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="allow")
-    version: str = pydantic.Field(..., pattern=src.constants.VERSION_REGEX)
+    version: str = pydantic.Field(
+        ...,
+        pattern=src.constants.VERSION_REGEX,
+        description="The version of the software this config file is for",
+        examples=["0.1.0", "0.2.0"]
+    )
 
     @staticmethod
     def load_from_string(c: str) -> ForeignConfig:
