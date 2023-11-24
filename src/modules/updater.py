@@ -14,8 +14,16 @@ class Updater:
     ) -> None:
         self.config = config
         self.distribute_new_config = distribute_new_config
+        self.processed_config_file_contents: set[str] = {}
 
     def perform_update(self, config_file_content: str) -> None:
+        if config_file_content in self.processed_config_file_contents:
+            print("Received config file has already been processed")
+            return
+        else:
+            self.processed_config_file_contents.add(config_file_content)
+            print(f"Processing new config: {config_file_content}")
+
         try:
             foreign_config = src.types.ForeignConfig.load_from_string(
                 config_file_content
