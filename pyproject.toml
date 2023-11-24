@@ -3,6 +3,7 @@ name = "ivy-seed"
 version = "0.1.0"
 description = ""
 authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
+repository = "https://github.com/tum-esm/ivy-seed"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -24,6 +25,8 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
+pydoc-markdown = "^4.8.2"
+jsonref = "^1.1.0"
 
 [tool.mypy]
 strict = true
@@ -37,6 +40,10 @@ coalesce_brackets = true
 split_before_dict_set_generator = true
 each_dict_entry_on_separate_line = false
 spaces_around_subscript_colon = true
+
+[[tool.mypy.overrides]]
+module = ["jsonref"]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]
