@@ -16,6 +16,7 @@ pydantic = "^2.5.2"
 markers = [
     "ci: can be run in any environment",
     "integration: can only be run on a configured system",
+    "version_change: will run before switching to a new version",
 ]
 
 [tool.poetry.group.dev]
