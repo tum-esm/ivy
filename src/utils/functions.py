@@ -20,17 +20,6 @@ def string_is_valid_version(version_string: str) -> bool:
     return version_regex.match(version_string) is not None
 
 
-class CommandLineException(Exception):
-    """Raised when a shell command fails."""
-    def __init__(self, value: str, details: Optional[str] = None) -> None:
-        self.value = value
-        self.details = details
-        Exception.__init__(self)
-
-    def __str__(self) -> str:
-        return repr(self.value)
-
-
 def run_shell_command(
     command: str,
     working_directory: Optional[str] = None,
@@ -59,3 +48,14 @@ def run_shell_command(
         )
 
     return stdout
+
+
+class CommandLineException(Exception):
+    """Raised when a shell command fails."""
+    def __init__(self, value: str, details: Optional[str] = None) -> None:
+        self.value = value
+        self.details = details
+        Exception.__init__(self)
+
+    def __str__(self) -> str:
+        return repr(self.value)

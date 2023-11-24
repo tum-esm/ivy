@@ -19,6 +19,13 @@ with open(INDEX_SRC, "r") as f:
     index_file_content = f.read()
 
 with open(INDEX_DST, "w") as f:
+    f.write("\n".join([
+        "---",
+        "title: Introduction",
+        "---",
+        "",
+        "",
+    ]))
     f.write(index_file_content)
 
 # generate automatic API reference and prettify output
@@ -48,12 +55,19 @@ def render_module(relative_path: str) -> None:
                 f"pydoc-markdown --package {relative_path[:-3]}"
             ).strip("\n\t ")
             target_file = f"{OUTPUT_DIR}/{relative_path[:-3]}.md"
-            file_content = "\n".join([
-                l for l in file_content.split("\n")
-                if not l.startswith(f'<a id="{relative_path[:-3]}')
-            ])
+            file_content_lines = [
+                l for l in file_content.split("\n") if
+                not l.startswith(f'<a id="{relative_path[:-3]}') and len(l) > 0
+            ]
+            file_content_lines = [
+                "---",
+                f"title: {basename}",
+                "---",
+                "",
+                f"# `{relative_path}`",
+            ] + file_content_lines[1 :]
             with open(target_file, "w") as f2:
-                f2.write(file_content)
+                f2.write("\n".join(file_content_lines))
 
 
 render_module("run.py")
