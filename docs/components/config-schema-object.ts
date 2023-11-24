@@ -1,6 +1,22 @@
 /* prettier-ignore */
 const CONFIG_SCHEMA_OBJECT: any = {
     "$defs": {
+        "LoggingConfig": {
+            "properties": {
+                "print_to_console": {
+                    "default": true,
+                    "title": "Print To Console",
+                    "type": "boolean"
+                },
+                "write_to_files": {
+                    "default": true,
+                    "title": "Write To Files",
+                    "type": "boolean"
+                }
+            },
+            "title": "LoggingConfig",
+            "type": "object"
+        },
         "UpdaterConfig": {
             "properties": {
                 "repository": {
@@ -79,6 +95,22 @@ const CONFIG_SCHEMA_OBJECT: any = {
             "title": "Version",
             "type": "string"
         },
+        "logging": {
+            "properties": {
+                "print_to_console": {
+                    "default": true,
+                    "title": "Print To Console",
+                    "type": "boolean"
+                },
+                "write_to_files": {
+                    "default": true,
+                    "title": "Write To Files",
+                    "type": "boolean"
+                }
+            },
+            "title": "LoggingConfig",
+            "type": "object"
+        },
         "updater": {
             "anyOf": [
                 {
@@ -151,7 +183,8 @@ const CONFIG_SCHEMA_OBJECT: any = {
         }
     },
     "required": [
-        "version"
+        "version",
+        "logging"
     ],
     "title": "Config",
     "type": "object"
