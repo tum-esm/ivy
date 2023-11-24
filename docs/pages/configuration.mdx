@@ -1,0 +1,38 @@
+import {
+    ConfigSchema,
+} from '../components/schema-renderers';
+
+# Configuration Files
+
+## How to configure the automation
+
+The file `config.json` is used to configure the whol automation. They are located inside the `config` directory, alonside with a template file that can be used to create a new configuration file.
+
+```
+📁 config
+├── 📄 config.json
+├── 📄 config.template.json
+```
+
+Below, you can find an example file and the schema definition of the config file. Whenever you try to start the automation with a config that does not comply with this schema, the automation will output a precise error message and shut down.
+
+{/* The following example is synced automatically with the file in `config/config.template.json` whenever running the config schema export. */}
+
+### Example File
+
+```json
+{
+  "version": "0.1.0",
+  "updater": {
+    "repository": "tum-esm/ivy-seed",
+    "repository_provider": "github",
+    "provider_host": "github.com",
+    "access_token": null,
+    "source_conflict_behaviour": "reuse"
+  }
+}
+```
+
+### Schema definition
+
+<ConfigSchema  />
