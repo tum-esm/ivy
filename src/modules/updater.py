@@ -63,3 +63,25 @@ class Updater:
                 f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version}",
                 working_directory=src.constants.IVY_ROOT_DIR,
             )
+
+    def install_dependencies(self, version: str) -> None:
+        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        if not os.path.isdir(version_dir):
+            raise RuntimeError(f"Directory {version_dir} does not exist")
+
+        venv_path = os.path.join(version_dir, ".venv")
+        if os.path.isdir(venv_path):
+            print(f"Removing existing virtual environment at {venv_path}")
+            shutil.rmtree(venv_path)
+
+        print(f"Creating virtual environment at {venv_path}")
+        src.utils.functions.run_shell_command(
+            f"python3.11 -m venv .venv",
+            working_directory=version_dir,
+        )
+
+        print(f"Installing dependencies using poetry")
+        src.utils.functions.run_shell_command(
+            f"source .venv/bin/activate && poetry install --no-root",
+            working_directory=version_dir,
+        )
