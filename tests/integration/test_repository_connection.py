@@ -8,6 +8,8 @@ def test_repository_connection() -> None:
     if config.updater is None:
         return
 
+    headers: str
+
     if config.updater.provider == 'github':
         headers = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28"'
         if config.updater.access_token is not None:
@@ -20,7 +22,7 @@ def test_repository_connection() -> None:
             raise Exception(f'Could not connect to repository: {e}')
 
     if config.updater.provider == 'gitlab':
-        headers: str = ""
+        headers = ""
         if config.updater.access_token is not None:
             headers += f'--header "PRIVATE-TOKEN: {config.updater.access_token}"'
         try:
@@ -29,4 +31,3 @@ def test_repository_connection() -> None:
             )
         except Exception as e:
             raise Exception(f'Could not connect to repository: {e}')
-

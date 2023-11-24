@@ -18,6 +18,7 @@ import src
 # ---------------------------------------------------------
 # Update the config schema object in the documentation
 
+print(f"Exporting config schema object to {CONFIG_JSON_TARGET}")
 config_schema_str = json.dumps(src.types.Config.model_json_schema(), indent=4)
 dereferenced_config_schema = jsonref.loads(config_schema_str)
 with open(CONFIG_JSON_TARGET, "w") as f:
@@ -29,6 +30,8 @@ with open(CONFIG_JSON_TARGET, "w") as f:
 
 # ---------------------------------------------------------
 # Update the example files in the documentation
+
+print(f"Updating example files in {MD_FILE_TARGET}")
 
 with open(MD_FILE_TARGET) as f:
     md_file_content = f.read()
