@@ -2,7 +2,7 @@
 title: updater.py
 ---
 
-# `src.modules.updater`
+# `src.utils.updater`
 
 ## Updater Objects
 

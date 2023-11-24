@@ -71,7 +71,7 @@ class Config(pydantic.BaseModel):
 
         path = os.path.join(src.constants.PROJECT_DIR, "config", "config.json")
         with open(path, "w") as f:
-            return f.write(self.model_dump_json(indent=4))
+            f.write(self.model_dump_json(indent=4))
 
     @staticmethod
     def load_from_string(c: str) -> Config:
@@ -107,4 +107,4 @@ class ForeignConfig(pydantic.BaseModel):
             src.constants.IVY_ROOT_DIR, self.version, "config", "config.json"
         )
         with open(path, "w") as f:
-            return f.write(self.model_dump_json(indent=4))
+            f.write(self.model_dump_json(indent=4))

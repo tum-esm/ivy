@@ -180,9 +180,9 @@ class Logger:
         """formats the log line string and writes it to
         `logs/current-logs.log`"""
 
-        now = datetime.now()
-        utc_offset = round((datetime.now() - datetime.utcnow()).total_seconds()
-                           / 3600, 1)
+        now = datetime.datetime.now()
+        utc_offset = round((now - datetime.datetime.utcnow()).total_seconds() /
+                           3600, 1)
         if round(utc_offset) == utc_offset:
             utc_offset = round(utc_offset)
 
@@ -197,9 +197,9 @@ class Logger:
                     _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
                     f"\n{value}\n" + "-" * 40 + "\n"
                 )
-        if self.print_to_console:
+        if self.config.logging.print_to_console:
             print(log_string, end="")
-        if self.config.logg:
+        if self.config.logging.write_to_files:
             path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
                 with open(path, "a") as f1:
