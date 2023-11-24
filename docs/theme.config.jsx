@@ -12,7 +12,7 @@ export default {
         />
       </svg>
       <div className="flex-shrink-0 text-xl whitespace-nowrap font-regular">
-        <span className="font-semibold">EM27 Retrieval Pipeline</span>
+        <span className="font-semibold">Ivy Seed</span>
         <span className="hidden lg:inline">
           {" "}
           | Professorship of Environmental Sensing and Modeling
@@ -21,7 +21,7 @@ export default {
     </div>
   ),
   project: {
-    link: "https://github.com/tum-esm/automated-retrieval-pipeline",
+    link: "https://github.com/tum-esm/ivy-seed",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -44,22 +44,20 @@ export default {
       </svg>
     ),
   },
-  docsRepositoryBase:
-    "https://github.com/tum-esm/automated-retrieval-pipeline/blob/main/docs",
-  //primaryHue: 43,
+  docsRepositoryBase: "https://github.com/tum-esm/ivy-seed/blob/main/docs",
   navigation: true,
   useNextSeoProps() {
     return {
-      titleTemplate: "%s – EM27 Retrieval Pipeline",
+      titleTemplate: "%s – Ivy Seed",
     };
   },
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta property="og:title" content="EM27 Retrieval Pipeline" />
+      <meta property="og:title" content="Ivy Seed" />
       <meta
         property="og:description"
-        content="Automated Data Pipeline for EM27/SUN measurement data"
+        content="A Python template for a sensor automation software that can be configured and updated via MQTT"
       />
     </>
   ),
@@ -71,24 +69,7 @@ export default {
       </span>
     ),
   },
-  faviconGlyph: "🌋",
-  sidebar: {
-    titleComponent({ title, type, route }) {
-      if (type === "doc") {
-        if (route.split("/").length === 3) {
-          return (
-            <strong className="text-slate-800 dark:text-slate-200">
-              {title}
-            </strong>
-          );
-        } else {
-          return (
-            <span className="text-slate-600 dark:text-slate-400">{title}</span>
-          );
-        }
-      }
-    },
-  },
+  faviconGlyph: "🌱",
   //banner: {
   //    key: 'v1.0.0-release',
   //    text: '🎉 The EM27 Retreival Pipeline 1.0.0 has been released',

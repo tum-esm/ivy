@@ -19,38 +19,38 @@ function renderConfigProperty(
   switch (depth) {
     case 0:
       fontSize = "text-[17px]";
-      bgColor = "bg-slate-100 dark:bg-slate-800";
-      dividerColor = "divide-slate-200 dark:divide-slate-700";
+      bgColor = "bg-slate-100 dark:bg-slate-900";
+      dividerColor = "divide-slate-200 dark:divide-slate-800";
       break;
     case 1:
       fontSize = "text-[16px]";
-      bgColor = "bg-slate-200 dark:bg-slate-700";
-      dividerColor = "divide-slate-300 dark:divide-slate-600";
+      bgColor = "bg-slate-200 dark:bg-slate-800";
+      dividerColor = "divide-slate-300 dark:divide-slate-700";
       break;
     case 2:
       fontSize = "text-[15px]";
-      bgColor = "bg-slate-300 dark:bg-slate-600";
-      dividerColor = "divide-slate-400 dark:divide-slate-500";
+      bgColor = "bg-slate-300 dark:bg-slate-700";
+      dividerColor = "divide-slate-400 dark:divide-slate-600";
       break;
     case 3:
       fontSize = "text-[14px]";
-      bgColor = "bg-slate-400 dark:bg-slate-500";
-      dividerColor = "divide-slate-500 dark:divide-slate-400";
+      bgColor = "bg-slate-400 dark:bg-slate-600";
+      dividerColor = "divide-slate-500 dark:divide-slate-500";
       break;
     case 4:
       fontSize = "text-[13px]";
-      bgColor = "bg-slate-500 dark:bg-slate-400";
-      dividerColor = "divide-slate-600 dark:divide-slate-300";
+      bgColor = "bg-slate-500 dark:bg-slate-500";
+      dividerColor = "divide-slate-600 dark:divide-slate-400";
       break;
     case 5:
       fontSize = "text-[12px]";
-      bgColor = "bg-slate-600 dark:bg-slate-300";
-      dividerColor = "divide-slate-700 dark:divide-slate-200";
+      bgColor = "bg-slate-600 dark:bg-slate-400";
+      dividerColor = "divide-slate-700 dark:divide-slate-300";
       break;
     case 6:
       fontSize = "text-[11px]";
-      bgColor = "bg-slate-700 dark:bg-slate-200";
-      dividerColor = "divide-slate-800 dark:divide-slate-100";
+      bgColor = "bg-slate-700 dark:bg-slate-300";
+      dividerColor = "divide-slate-800 dark:divide-slate-200";
       break;
   }
   return (
@@ -149,7 +149,7 @@ function renderConfigProperty(
 
 export function ConfigSchema() {
   return (
-    <div className="flex flex-col mt-4 gap-y-4 text-slate-950">
+    <div className="flex flex-col mt-4 gap-y-2 text-slate-950">
       {Object.keys(CONFIG_SCHEMA_OBJECT.properties).map((key) =>
         renderConfigProperty(
           0,
