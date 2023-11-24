@@ -10,8 +10,36 @@ class Updater:
     def __init__(
         self,
         config: src.types.Config,
+        distribute_new_config: Callable[[src.types.Config], None],
     ) -> None:
         self.config = config
+        self.distribute_new_config = distribute_new_config
+
+    def perform_update(self, config_file_content: str) -> None:
+        try:
+            foreign_config = src.types.ForeignConfig.load_from_string(
+                config_file_content
+            )
+        except pydantic.ValidationError as e:
+            print(f"Could not parse config: {e}")
+
+        if foreign_config.version == self.config.version:
+            try:
+                local_config = src.types.Config.load_from_string(
+                    config_file_content
+                )
+            except pydantic.ValidationError as e:
+                print(f"Could not parse config: {e}")
+
+            if local_config == self.config:
+                print("Received config is equal to the currently used config")
+                return
+            else:
+                print(
+                    "Received same config version number, only changing config"
+                )
+                self.config = local_config
+                self.distribute_new_config(local_config)
 
     def download_source_code(self, version: str) -> None:
         assert self.config.updater is not None
