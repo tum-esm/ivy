@@ -5,6 +5,11 @@ import pydantic
 import src
 
 
+class LoggingConfig(pydantic.BaseModel):
+    print_to_console: bool = pydantic.Field(True)
+    write_to_files: bool = pydantic.Field(True)
+
+
 class UpdaterConfig(pydantic.BaseModel):
     repository: str = pydantic.Field(
         ...,
@@ -48,6 +53,7 @@ class Config(pydantic.BaseModel):
             "0.1.0", "1.2.3", "0.4.0-alpha.1", "0.5.0-beta.12", "0.6.0-rc.123"
         ]
     )
+    logging: LoggingConfig = pydantic.Field(default=...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used."

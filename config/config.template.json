@@ -1,5 +1,9 @@
 {
   "version": "0.1.0",
+  "logging": {
+    "print_to_console": true,
+    "write_to_files": true
+  },
   "updater": {
     "repository": "tum-esm/ivy-seed",
     "repository_provider": "github",
