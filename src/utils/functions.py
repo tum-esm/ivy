@@ -84,7 +84,7 @@ def with_automation_lock() -> Generator[None, None, None]:
             os.path.basename(src.constants.PROJECT_DIR)
         ) else src.constants.PROJECT_DIR, "run.lock"
     )
-    automation_lock = filelock.FileLock(lock_path, timeout=2)
+    automation_lock = filelock.FileLock(lock_path, timeout=0)
 
     try:
         with automation_lock:
