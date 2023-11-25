@@ -7,25 +7,42 @@ from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
 
 @pytest.fixture(scope="function")
-def _remove_active_message_queue() -> Generator[None, None, None]:
-    if os.path.isfile(ACTIVE_QUEUE_FILE):
-        os.remove(ACTIVE_QUEUE_FILE)
+def _remove_active_messages() -> Generator[None, None, None]:
+    def clean() -> None:
+        archive_file = MessagingAgent.get_message_archive_file()
+        if os.path.isfile(archive_file):
+            os.remove(archive_file)
+        if os.path.isfile(ACTIVE_QUEUE_FILE):
+            os.remove(ACTIVE_QUEUE_FILE)
+
+    clean()
     yield
-    if os.path.isfile(ACTIVE_QUEUE_FILE):
-        os.remove(ACTIVE_QUEUE_FILE)
+    clean()
 
 
 @pytest.mark.ci
-def test_messaging_agent(_remove_active_message_queue: None) -> None:
+def test_messaging_agent(_remove_active_messages: None) -> None:
+    archive_file = MessagingAgent.get_message_archive_file()
+
     agent = MessagingAgent()
     assert os.path.isfile(ACTIVE_QUEUE_FILE)
-    assert len(agent.get_n_latest_messages(2)) == 0
+    assert not os.path.isfile(archive_file)
+    assert len(agent.get_n_latest_messages(1)) == 0
 
     agent.add_message(DataMessageBody(message_body={"test": "test"}))
+    assert os.path.isfile(archive_file)
+    with open(archive_file, "r") as f:
+        assert len(f.readlines()) == 2
+
     time.sleep(0.1)
     agent.add_message(DataMessageBody(message_body={"test": "test2"}))
+    with open(archive_file, "r") as f:
+        assert len(f.readlines()) == 3
+
     time.sleep(0.1)
     agent.add_message(DataMessageBody(message_body={"test": "test3"}))
+    with open(archive_file, "r") as f:
+        assert len(f.readlines()) == 4
 
     assert len(agent.get_n_latest_messages(1)) == 1
     assert len(agent.get_n_latest_messages(2)) == 2

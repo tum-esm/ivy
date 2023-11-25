@@ -51,16 +51,13 @@ class MessagingAgent():
             src.types.ConfigMessageBody,
         ],
     ) -> None:
-        now = datetime.datetime.utcnow()
-        timestamp = now.timestamp()
+        timestamp = datetime.datetime.utcnow().timestamp()
         message_body_string = message_body.model_dump_json()
 
         # write message to archive
-        archive_file = os.path.join(
-            MESSAGE_ARCHIVE_DIR, now.strftime("%Y-%m-%d.csv")
-        )
+        archive_file = MessagingAgent.get_message_archive_file()
         with self.message_archive_lock:
-            if not os.path.isfile(MESSAGE_ARCHIVE_DIR):
+            if not os.path.isfile(archive_file):
                 with open(archive_file, "w") as f:
                     f.write("timestamp,message_body\n")
             with open(archive_file, "a") as f:
@@ -113,3 +110,10 @@ class MessagingAgent():
                 """,
                 (*message_ids, ),
             )
+
+    @staticmethod
+    def get_message_archive_file() -> str:
+        return os.path.join(
+            MESSAGE_ARCHIVE_DIR,
+            datetime.datetime.utcnow().strftime("%Y-%m-%d.csv")
+        )
