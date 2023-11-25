@@ -204,8 +204,8 @@ class Logger:
         `logs/current-logs.log`"""
 
         now = datetime.datetime.now()
-        utc_offset = round((now - datetime.datetime.utcnow()).total_seconds() /
-                           3600, 1)
+        utcnow = datetime.datetime.utcnow()
+        utc_offset = round((now - utcnow).total_seconds() / 3600, 1)
         if round(utc_offset) == utc_offset:
             utc_offset = round(utc_offset)
 
@@ -234,7 +234,9 @@ class Logger:
         if log_level_should_be_forwarded(
             self.config.logging_verbosity.file_archive, level
         ):
-            path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
+            path = os.path.join(
+                LOGS_ARCHIVE_DIR, utcnow.strftime("%Y-%m-%d.log")
+            )
             with self.filelock:
                 with open(path, "a") as f1:
                     f1.write(log_string + body)
