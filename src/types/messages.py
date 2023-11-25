@@ -27,3 +27,8 @@ class MessageQueueItem(pydantic.BaseModel):
     )
     timestamp: float
     message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
+
+
+class MessageArchiveItem(pydantic.BaseModel):
+    timestamp: float
+    message_body: DataMessageBody | LogMessageBody | ConfigMessageBody

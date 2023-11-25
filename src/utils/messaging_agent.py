@@ -61,7 +61,8 @@ class MessagingAgent():
                 with open(archive_file, "w") as f:
                     f.write("timestamp,message_body\n")
             with open(archive_file, "a") as f:
-                f.write(f'{timestamp},"{message_body_string}"\n')
+                csv_message_body_string = message_body_string.replace('"', '""')
+                f.write(f'{timestamp},"{csv_message_body_string}"\n')
 
         # add message to active message queue
         with self.connection:
@@ -120,3 +121,28 @@ class MessagingAgent():
 
     def teardown(self) -> None:
         self.connection.close()
+
+    @staticmethod
+    def load_message_archive(
+        date: datetime.date
+    ) -> list[src.types.MessageArchiveItem]:
+        path = os.path.join(MESSAGE_ARCHIVE_DIR, date.strftime("%Y-%m-%d.csv"))
+        results: list[src.types.MessageArchiveItem] = []
+        if os.path.isfile(path):
+            with open(path, "r") as f:
+                lines = f.read().strip(" \n").split("\n")[1 :]
+
+            for line in lines:
+                line_parts = line.split(",")
+                assert len(line_parts) >= 2
+                timestamp = line_parts[0]
+                message_body = ",".join(line_parts[1 :]).replace('""',
+                                                                 '"')[1 :-1]
+                results.append(
+                    src.types.MessageArchiveItem(
+                        timestamp=float(timestamp),
+                        message_body=json.loads(message_body),
+                    )
+                )
+
+        return results
