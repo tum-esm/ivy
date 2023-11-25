@@ -1,3 +1,4 @@
+import datetime
 import os
 import time
 from typing import Generator
@@ -149,3 +150,46 @@ def test_different_message_types(
         assert isinstance(messages[i].message_body, LogMessageBody)
     for i in range(6, 10):
         assert isinstance(messages[i].message_body, ConfigMessageBody)
+
+
+@pytest.mark.ci
+def test_message_archive_integrity(
+    _remove_active_messages: None,
+    _provide_config_template: src.types.Config,
+) -> None:
+    assert_not_midnight()
+    agent = MessagingAgent()
+
+    config1 = _provide_config_template
+    config2 = config1.model_copy()
+    config2.version = "0.0.0"
+
+    message_bodies: list[
+        DataMessageBody | LogMessageBody | ConfigMessageBody] = [
+            DataMessageBody(message_body={"test": "test"}),
+            LogMessageBody(level="INFO", subject="test", body="test"),
+            ConfigMessageBody(status="received", config=config1),
+            DataMessageBody(message_body={"test2": "test2"}),
+            LogMessageBody(level="INFO", subject="test2", body="test2"),
+            ConfigMessageBody(status="rejected", config=config2),
+        ]
+
+    # add messages
+    for message_body in message_bodies:
+        agent.add_message(message_body)
+        time.sleep(0.01)
+    assert len(agent.get_n_latest_messages(20)) == 6, "message queue is wrong"
+
+    # check message archive
+    archive_messages = MessagingAgent.load_message_archive(
+        datetime.date.today()
+    )
+    assert len(archive_messages) == 6, "message archive is wrong"
+
+    # check message archive integrity
+    timestamps = [message.timestamp for message in archive_messages]
+    assert timestamps == list(
+        sorted(timestamps)
+    ), "messages are not sorted by timestamp"
+    for i in range(len(message_bodies)):
+        assert message_bodies[i] == archive_messages[i].message_body
