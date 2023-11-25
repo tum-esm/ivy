@@ -76,7 +76,7 @@ class MessagingAgent():
     def get_n_latest_messages(
         self,
         n: int,
-        excluded_message_ids: list[int] = []
+        excluded_message_ids: set[int] | list[int] = set(),
     ) -> list[src.types.MessageQueueItem]:
         with self.connection:
             mids_placeholder = ",".join(["?"] * len(excluded_message_ids))
@@ -100,7 +100,7 @@ class MessagingAgent():
             ) for result in results
         ]
 
-    def remove_messages(self, message_ids: list[int]) -> None:
+    def remove_messages(self, message_ids: set[int] | list[int]) -> None:
         with self.connection:
             mids_placeholder = ",".join(["?"] * len(message_ids))
             self.connection.execute(
@@ -117,3 +117,6 @@ class MessagingAgent():
             MESSAGE_ARCHIVE_DIR,
             datetime.datetime.utcnow().strftime("%Y-%m-%d.csv")
         )
+
+    def teardown(self) -> None:
+        self.connection.close()

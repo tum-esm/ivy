@@ -2,8 +2,21 @@ import os
 import time
 from typing import Generator
 import pytest
-from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE, MESSAGE_ARCHIVE_DIR
+import itertools
+import src
+from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
+
+
+@pytest.fixture(scope="function")
+def _provide_config_template() -> Generator[src.types.Config, None, None]:
+    path = os.path.join(
+        src.constants.PROJECT_DIR,
+        "config",
+        "config.template.json",
+    )
+    with open(path, "r") as f:
+        yield src.types.Config.load_from_string(f.read())
 
 
 @pytest.fixture(scope="function")
@@ -57,34 +70,73 @@ def test_messaging_agent(_remove_active_messages: None) -> None:
     timesamps = [message.timestamp for message in messages]
     assert timesamps[0] > timesamps[1] > timesamps[2]
 
-    # check whether filtering works
-    mids = [message.identifier for message in messages]
-    for excluded_mids in [
-        [mids[0]],
-        [mids[1]],
-        [mids[2]],
-        [mids[0], mids[1]],
-        [mids[0], mids[2]],
-        [mids[1], mids[2]],
-        [mids[0], mids[1], mids[2]],
-    ]:
-        filtered_messages = agent.get_n_latest_messages(3, excluded_mids)
-        # correct number of messages
-        assert len(filtered_messages) == 3 - len(excluded_mids)
-        # no excluded message ids
-        assert all(
-            message.identifier not in excluded_mids
-            for message in filtered_messages
-        )
-        # unique message ids
-        assert len(set(message.identifier for message in filtered_messages)
-                  ) == len(filtered_messages)
-
-    # check whether removing messages works
-    agent.remove_messages([mids[1]])
+    # remove one messages
+    mid1 = messages[1].identifier
+    agent.remove_messages([mid1])
     messages = agent.get_n_latest_messages(3)
     assert len(messages) == 2
-    assert mids[1] not in [message.identifier for message in messages]
+    assert mid1 not in [message.identifier for message in messages]
 
-    agent.remove_messages(mids)
+    # remove all messages
+    agent.remove_messages([message.identifier for message in messages])
     assert len(agent.get_n_latest_messages(3)) == 0
+
+    # close SQLite connection
+    agent.teardown()
+
+
+@pytest.mark.ci
+def test_different_message_types(
+    _remove_active_messages: None,
+    _provide_config_template: src.types.Config,
+) -> None:
+    agent = MessagingAgent()
+    assert len(
+        agent.get_n_latest_messages(20)
+    ) == 0, "message queue is not empty"
+
+    agent.add_message(DataMessageBody(message_body={"test": "test"}))
+    time.sleep(0.01)
+    assert len(agent.get_n_latest_messages(20)) == 1, "message was not added"
+
+    for i, level in enumerate([
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"
+    ]):
+        agent.add_message(
+            # type: ignore
+            LogMessageBody(level=level, subject="test", body="test")
+        )
+        time.sleep(0.01)
+        assert len(
+            agent.get_n_latest_messages(20)
+        ) == i + 2, "message was not added"
+
+    for i, status in enumerate(["received", "accepted", "rejected", "startup"]):
+        agent.add_message(
+            # type: ignore
+            ConfigMessageBody(status=status, config=_provide_config_template)
+        )
+        time.sleep(0.01)
+        assert len(
+            agent.get_n_latest_messages(20)
+        ) == i + 7, "message was not added"
+
+    mids = set([
+        message.identifier for message in agent.get_n_latest_messages(20)
+    ])
+    for i in range(len(mids) + 1):
+        for mids_subset in itertools.combinations(mids, i):
+            messages = agent.get_n_latest_messages(
+                20, excluded_message_ids=set(mids_subset)
+            )
+            filtered_mids = set([message.identifier for message in messages])
+            assert set(mids_subset).isdisjoint(
+                filtered_mids
+            ), "filtering by message id is not correct"
+            assert set(mids_subset).union(
+                filtered_mids
+            ) == mids, "filtering by message id is not correct"
+            timestamps = [message.timestamp for message in messages]
+            assert timestamps == list(
+                sorted(timestamps, reverse=True)
+            ), "messages are not sorted by timestamp"
