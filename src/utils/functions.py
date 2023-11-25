@@ -1,7 +1,9 @@
+from typing import Generator, Optional
+import contextlib
 import os
 import re
 import subprocess
-from typing import Optional
+import filelock
 import src
 
 version_regex = re.compile(src.constants.VERSION_REGEX)
@@ -59,3 +61,34 @@ class CommandLineException(Exception):
 
     def __str__(self) -> str:
         return repr(self.value)
+
+
+@contextlib.contextmanager
+def with_automation_lock() -> Generator[None, None, None]:
+    """This function will lock the automation with a file lock so that
+    only one instance can run at a time.
+    
+    Usage:
+    
+    ```python
+    with with_automation_lock():
+        run_automation()
+        # or
+        run_tests()
+    ```"""
+
+    parent_dir = os.path.dirname(src.constants.PROJECT_DIR)
+
+    lock_path = os.path.join(
+        parent_dir if src.utils.functions.string_is_valid_version(
+            os.path.basename(src.constants.PROJECT_DIR)
+        ) else src.constants.PROJECT_DIR, "run.lock"
+    )
+    automation_lock = filelock.FileLock(lock_path, timeout=2)
+
+    try:
+        with automation_lock:
+            yield
+    except filelock.Timeout:
+        print(f'locked by another process via file at path "{lock_path}"')
+        raise TimeoutError("automation is already running")
