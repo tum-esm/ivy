@@ -3,6 +3,11 @@ import src
 
 
 @pytest.mark.ci
+def test_logging() -> None:
+    config = src.types.Config.load_template()
+
+
+@pytest.mark.ci
 def test_log_level_order() -> None:
     # min_log_level=None
     # min_log_level="DEBUG"

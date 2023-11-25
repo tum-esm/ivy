@@ -94,6 +94,15 @@ class Config(pydantic.BaseModel):
         with open(path, "r") as f:
             return Config.model_validate_json(f.read())
 
+    @staticmethod
+    def load_template() -> Config:
+        """Load the config file from the path `project_dir/config/config.template.json`"""
+        path = os.path.join(
+            src.constants.PROJECT_DIR, "config", "config.template.json"
+        )
+        with open(path, "r") as f:
+            return Config.model_validate_json(f.read())
+
     def dump(self) -> None:
         """Dump the config file to the path `<ivy_root>/<version>/config/config.json`"""
 

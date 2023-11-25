@@ -1,7 +1,6 @@
 import datetime
 import os
 import time
-from typing import Generator
 import pytest
 import itertools
 import src
@@ -10,36 +9,8 @@ from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
 
-@pytest.fixture(scope="function")
-def _provide_config_template() -> Generator[src.types.Config, None, None]:
-    path = os.path.join(
-        src.constants.PROJECT_DIR,
-        "config",
-        "config.template.json",
-    )
-    with open(path, "r") as f:
-        yield src.types.Config.load_from_string(f.read())
-
-
-@pytest.fixture(scope="function")
-def _remove_active_messages(
-    restore_production_files: None
-) -> Generator[None, None, None]:
-    archive_file = MessagingAgent.get_message_archive_file()
-
-    def clean() -> None:
-        if os.path.isfile(archive_file):
-            os.remove(archive_file)
-        if os.path.isfile(ACTIVE_QUEUE_FILE):
-            os.remove(ACTIVE_QUEUE_FILE)
-
-    clean()
-    yield
-    clean()
-
-
 @pytest.mark.ci
-def test_simple_addition_and_deletion(_remove_active_messages: None) -> None:
+def test_simple_addition_and_deletion(restore_production_files: None) -> None:
     archive_file = MessagingAgent.get_message_archive_file()
 
     agent = MessagingAgent()
@@ -85,10 +56,8 @@ def test_simple_addition_and_deletion(_remove_active_messages: None) -> None:
 
 
 @pytest.mark.ci
-def test_all_message_types(
-    _remove_active_messages: None,
-    _provide_config_template: src.types.Config,
-) -> None:
+def test_all_message_types(restore_production_files: None, ) -> None:
+    config = src.types.Config.load_template()
     agent = MessagingAgent()
     assert len(
         agent.get_n_latest_messages(20)
@@ -116,7 +85,7 @@ def test_all_message_types(
     for i, status in enumerate(["received", "accepted", "rejected", "startup"]):
         agent.add_message(
             # type: ignore
-            ConfigMessageBody(status=status, config=_provide_config_template)
+            ConfigMessageBody(status=status, config=config)
         )
         time.sleep(0.01)
         assert len(
@@ -157,13 +126,10 @@ def test_all_message_types(
 
 
 @pytest.mark.ci
-def test_message_archive_integrity(
-    _remove_active_messages: None,
-    _provide_config_template: src.types.Config,
-) -> None:
+def test_message_archive_integrity(restore_production_files: None) -> None:
     agent = MessagingAgent()
 
-    config1 = _provide_config_template
+    config1 = src.types.Config.load_template()
     config2 = config1.model_copy()
     config2.version = "0.0.0"
 
@@ -185,7 +151,7 @@ def test_message_archive_integrity(
 
     # check message archive
     archive_messages = MessagingAgent.load_message_archive(
-        datetime.date.today()
+        datetime.datetime.utcnow().date()
     )
     assert len(archive_messages) == 6, "message archive is wrong"
 
