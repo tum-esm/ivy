@@ -10,16 +10,6 @@ from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
 
-def assert_not_midnight() -> None:
-    now = datetime.datetime.utcnow()
-    assert not (
-        now.hour == 23 and now.minute == 59
-    ), "this test can fail at midnight"
-    assert not (
-        now.hour == 0 and now.minute == 0
-    ), "this test can fail at midnight"
-
-
 @pytest.fixture(scope="function")
 def _provide_config_template() -> Generator[src.types.Config, None, None]:
     path = os.path.join(
@@ -50,7 +40,6 @@ def _remove_active_messages(
 
 @pytest.mark.ci
 def test_simple_addition_and_deletion(_remove_active_messages: None) -> None:
-    assert_not_midnight()
     archive_file = MessagingAgent.get_message_archive_file()
 
     agent = MessagingAgent()
@@ -100,7 +89,6 @@ def test_all_message_types(
     _remove_active_messages: None,
     _provide_config_template: src.types.Config,
 ) -> None:
-    assert_not_midnight()
     agent = MessagingAgent()
     assert len(
         agent.get_n_latest_messages(20)
@@ -173,7 +161,6 @@ def test_message_archive_integrity(
     _remove_active_messages: None,
     _provide_config_template: src.types.Config,
 ) -> None:
-    assert_not_midnight()
     agent = MessagingAgent()
 
     config1 = _provide_config_template
