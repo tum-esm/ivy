@@ -7,7 +7,7 @@ title: system_checks.py
 ## SystemCheckModule Objects
 
 ```python
-class SystemCheckModule(ModuleBaseClass)
+class SystemCheckModule(src.utils.ModuleBaseClass)
 ```
 
 

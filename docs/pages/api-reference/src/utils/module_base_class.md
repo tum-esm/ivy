@@ -2,4 +2,4 @@
 title: module_base_class.py
 ---
 
-# `src.modules.module_base_class`
+# `src.utils.module_base_class`

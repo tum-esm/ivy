@@ -6,27 +6,16 @@ import datetime
 
 import src
 from .functions import CommandLineException
+from .messaging_agent import MessagingAgent
 
 LOGS_ARCHIVE_DIR = os.path.join(src.constants.PROJECT_DIR, "data", "logs")
 FILELOCK_PATH = os.path.join(src.constants.PROJECT_DIR, "data", "logs.lock")
 
 
 def log_level_should_be_forwarded(
-    min_log_level: Literal[
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-        "EXCEPTION",
-        None,
-    ],
-    log_level: Literal[
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-        "EXCEPTION",
-    ],
+    min_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
+                           None],
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
 ) -> bool:
     """Checks if a log level is forwarded to the user.
 
@@ -109,6 +98,7 @@ class Logger:
         self.origin: str = origin
         self.config = config
         self.filelock = filelock.FileLock(FILELOCK_PATH, timeout=3)
+        self.messaging_agent = MessagingAgent()
 
     def horizontal_line(
         self,
@@ -224,18 +214,21 @@ class Logger:
             f"- {_pad_str_right(self.origin, min_width=23)} " +
             f"- {_pad_str_right(level, min_width=13)} " + f"- {subject}\n"
         )
-        for key, value in details:
-            if value is not None:
-                log_string += (
-                    _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
-                    f"\n{value}\n" + "-" * 40 + "\n"
-                )
+        filtered_detals = [(k, v) for k, v in details if v is not None]
+        body: str = ""
+        for key, value in filtered_detals:
+            body += (
+                _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
+                f"\n{value}\n"
+            )
+        if len(filtered_detals) > 0:
+            body += "-" * 40 + "\n"
 
         # optionally write logs to console
         if log_level_should_be_forwarded(
             self.config.logging_verbosity.console_prints, level
         ):
-            print(log_string, end="")
+            print(log_string + body, end="")
 
         # optionally write logs to archive
         if log_level_should_be_forwarded(
@@ -244,4 +237,16 @@ class Logger:
             path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
                 with open(path, "a") as f1:
-                    f1.write(log_string)
+                    f1.write(log_string + body)
+
+        # optionally send logs via MessagingAgent
+        if log_level_should_be_forwarded(
+            self.config.logging_verbosity.message_sending, level
+        ):
+            self.messaging_agent.add_message(
+                src.types.LogMessageBody(
+                    level=level,
+                    subject=f"{self.origin} - {level} - {subject}",
+                    body=body.strip("\n"),
+                )
+            )

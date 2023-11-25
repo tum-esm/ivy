@@ -7,7 +7,7 @@ title: dummy_procedure.py
 ## DummyProcedureModule Objects
 
 ```python
-class DummyProcedureModule(ModuleBaseClass)
+class DummyProcedureModule(src.utils.ModuleBaseClass)
 ```
 
 

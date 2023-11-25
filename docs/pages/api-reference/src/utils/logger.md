@@ -4,6 +4,26 @@ title: logger.py
 
 # `src.utils.logger`
 
+#### log\_level\_should\_be\_forwarded
+
+```python
+def log_level_should_be_forwarded(
+    min_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
+                           None], log_level: Literal["DEBUG", "INFO",
+                                                     "WARNING", "ERROR",
+                                                     "EXCEPTION"]) -> bool
+```
+
+Checks if a log level is forwarded to the user.
+
+**Arguments**:
+
+- `min_log_level` - The minimum log level to forward
+- `log_level` - The log level to check
+  
+- `Returns` - True if `log_level` is at least as important as `min_log_level`
+
+
 ## Logger Objects
 
 ```python

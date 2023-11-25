@@ -4,6 +4,25 @@ title: config.py
 
 # `src.types.config`
 
+## LoggingVerbosityConfig Objects
+
+```python
+class LoggingVerbosityConfig(pydantic.BaseModel)
+```
+
+How verbose to log to the different data streams.
+
+For example, If the level is set to "WARNING", only warnings, errors
+and exceptions will be written to the respective data stream. If the
+level is set to "DEBUG", all logs will be written to the respective
+data stream.
+
+Importance: DEBUG > INFO > WARNING > ERROR > EXCEPTION
+
+If the level is set to None, no logs will be written to the respective
+data stream.
+
+
 ## Config Objects
 
 ```python

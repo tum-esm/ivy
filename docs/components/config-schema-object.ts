@@ -1,20 +1,52 @@
 /* prettier-ignore */
 const CONFIG_SCHEMA_OBJECT: any = {
     "$defs": {
-        "LoggingConfig": {
+        "LoggingVerbosityConfig": {
+            "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",
             "properties": {
-                "print_to_console": {
-                    "default": true,
-                    "title": "Print To Console",
-                    "type": "boolean"
+                "file_archive": {
+                    "description": "The minimum log level for the file archive in `data/logs`",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "File Archive"
                 },
-                "write_to_files": {
-                    "default": true,
-                    "title": "Write To Files",
-                    "type": "boolean"
+                "console_prints": {
+                    "description": "The minimum log level for the console prints",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "Console Prints"
+                },
+                "message_sending": {
+                    "description": "The minimum log level for the message sending",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "Message Sending"
                 }
             },
-            "title": "LoggingConfig",
+            "required": [
+                "file_archive",
+                "console_prints",
+                "message_sending"
+            ],
+            "title": "LoggingVerbosityConfig",
             "type": "object"
         },
         "UpdaterConfig": {
@@ -95,20 +127,52 @@ const CONFIG_SCHEMA_OBJECT: any = {
             "title": "Version",
             "type": "string"
         },
-        "logging": {
+        "logging_verbosity": {
+            "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",
             "properties": {
-                "print_to_console": {
-                    "default": true,
-                    "title": "Print To Console",
-                    "type": "boolean"
+                "file_archive": {
+                    "description": "The minimum log level for the file archive in `data/logs`",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "File Archive"
                 },
-                "write_to_files": {
-                    "default": true,
-                    "title": "Write To Files",
-                    "type": "boolean"
+                "console_prints": {
+                    "description": "The minimum log level for the console prints",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "Console Prints"
+                },
+                "message_sending": {
+                    "description": "The minimum log level for the message sending",
+                    "enum": [
+                        "DEBUG",
+                        "INFO",
+                        "WARNING",
+                        "ERROR",
+                        "EXCEPTION",
+                        null
+                    ],
+                    "title": "Message Sending"
                 }
             },
-            "title": "LoggingConfig",
+            "required": [
+                "file_archive",
+                "console_prints",
+                "message_sending"
+            ],
+            "title": "LoggingVerbosityConfig",
             "type": "object"
         },
         "updater": {
@@ -184,7 +248,7 @@ const CONFIG_SCHEMA_OBJECT: any = {
     },
     "required": [
         "version",
-        "logging"
+        "logging_verbosity"
     ],
     "title": "Config",
     "type": "object"
