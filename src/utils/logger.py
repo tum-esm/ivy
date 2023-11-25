@@ -14,6 +14,35 @@ FILELOCK_PATH = os.path.join(src.constants.PROJECT_DIR, "data", "logs.lock")
 # therefore I am just formatting and appending the log lines
 # manually. Doesn't really make a performance difference
 
+LOG_LEVEL_ORDER: dict[Literal[
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "EXCEPTION",
+], int] = {
+    "DEBUG": 0,
+    "INFO": 1,
+    "WARNING": 2,
+    "ERROR": 3,
+    "EXCEPTION": 4,
+}
+
+
+def log_level_should_be_forwarded(
+    min_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
+) -> bool:
+    """Checks if a log level is forwarded to the user.
+
+    Args:
+        min_log_level:  The minimum log level to forward
+        log_level:      The log level to check
+    
+    Returns: True if `log_level` is at least as important as `min_log_level`"""
+
+    return LOG_LEVEL_ORDER[log_level] >= LOG_LEVEL_ORDER[min_log_level]
+
 
 def _pad_str_right(
     text: str, min_width: int, fill_char: Literal["0", " ", "-"] = " "
@@ -197,9 +226,17 @@ class Logger:
                     _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
                     f"\n{value}\n" + "-" * 40 + "\n"
                 )
-        if self.config.logging.print_to_console:
+
+        # optionally write logs to console
+        if log_level_should_be_forwarded(
+            self.config.logging_verbosity.console_prints, level
+        ):
             print(log_string, end="")
-        if self.config.logging.write_to_files:
+
+        # optionally write logs to archive
+        if log_level_should_be_forwarded(
+            self.config.logging_verbosity.file_archive, level
+        ):
             path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
                 with open(path, "a") as f1:
