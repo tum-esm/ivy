@@ -1,3 +1,4 @@
+import json
 from typing import Union
 import datetime
 import os
@@ -36,7 +37,7 @@ class MessagingAgent():
                 """
                     CREATE TABLE IF NOT EXISTS QUEUE (
                         internal_id INTEGER PRIMARY KEY,
-                        timestamp INTEGER NOT NULL,
+                        timestamp DOUBLE NOT NULL,
                         message_body TEXT NOT NULL
                     );
                 """
@@ -51,7 +52,7 @@ class MessagingAgent():
         ],
     ) -> None:
         now = datetime.datetime.utcnow()
-        timestamp = int(now.timestamp())
+        timestamp = now.timestamp()
         message_body_string = message_body.model_dump_json()
 
         # write message to archive
@@ -70,7 +71,7 @@ class MessagingAgent():
             self.connection.execute(
                 """
                     INSERT INTO QUEUE (timestamp, message_body)
-                    VALUES (?);
+                    VALUES (?, ?);
                 """,
                 (timestamp, message_body_string),
             )
@@ -81,38 +82,34 @@ class MessagingAgent():
         excluded_message_ids: list[int] = []
     ) -> list[src.types.MessageQueueItem]:
         with self.connection:
+            mids_placeholder = ",".join(["?"] * len(excluded_message_ids))
             results = list(
                 self.connection.execute(
-                    """
+                    f"""
                         SELECT internal_id, timestamp, message_body
                         FROM QUEUE
-                        WHERE internal_id NOT IN (?)
+                        WHERE internal_id NOT IN ({mids_placeholder})
                         ORDER BY timestamp DESC
                         LIMIT ?;
                     """,
-                    (excluded_message_ids, n),
+                    (*excluded_message_ids, n),
                 ).fetchall()
             )
-        assert len(results) <= n
-        for result in results:
-            assert len(result) == 3
-            assert isinstance(result[0], int)
-            assert isinstance(result[1], int)
-            assert isinstance(result[2], str)
         return [
             src.types.MessageQueueItem(
-                internal_id=result[0],
+                identifier=result[0],
                 timestamp=result[1],
-                message_body=result[2],
+                message_body=json.loads(result[2]),
             ) for result in results
         ]
 
     def remove_messages(self, message_ids: list[int]) -> None:
         with self.connection:
+            mids_placeholder = ",".join(["?"] * len(message_ids))
             self.connection.execute(
-                """
+                f"""
                     DELETE FROM QUEUE
-                    WHERE internal_id IN (?);
+                    WHERE internal_id IN ({mids_placeholder});
                 """,
-                (message_ids, ),
+                (*message_ids, ),
             )
