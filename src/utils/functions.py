@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Generator, Literal, Optional
 import contextlib
 import os
 import re
@@ -7,6 +7,29 @@ import filelock
 import src
 
 version_regex = re.compile(src.constants.VERSION_REGEX)
+
+
+def log_level_is_visible(
+    min_visible_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR",
+                                   "EXCEPTION", None],
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
+) -> bool:
+    """Checks if a log level is forwarded to the user.
+
+    Args:
+        min_log_level:  The minimum log level to forward, if None, no log
+                        levels are forwarded.
+        log_level:      The log level to check
+    
+    Returns: True if `log_level` is at least as important as `min_log_level`"""
+
+    if min_visible_log_level is None:
+        return False
+    else:
+        return (
+            src.constants.LOGGING_LEVEL_PRIORITIES[log_level]
+            >= src.constants.LOGGING_LEVEL_PRIORITIES[min_visible_log_level]
+        )
 
 
 def string_is_valid_version(version_string: str) -> bool:
