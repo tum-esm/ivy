@@ -1,10 +1,9 @@
 import datetime
 import psutil
-from .module_base_class import ModuleBaseClass
 import src
 
 
-class SystemCheckModule(ModuleBaseClass):
+class SystemCheckModule(src.utils.ModuleBaseClass):
     def __init__(self, config: src.types.Config) -> None:
         self.config = config
         self.logger = src.utils.Logger(

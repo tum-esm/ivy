@@ -9,7 +9,7 @@ def run() -> None:
 
     config = src.types.Config.load()
 
-    modules: list[src.modules.module_base_class.ModuleBaseClass] = [
+    modules: list[src.utils.ModuleBaseClass] = [
         src.modules.SystemCheckModule(config),
         src.modules.DummyProcedureModule(config)
     ]

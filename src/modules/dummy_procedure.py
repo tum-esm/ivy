@@ -1,8 +1,7 @@
 import src
-from .module_base_class import ModuleBaseClass
 
 
-class DummyProcedureModule(ModuleBaseClass):
+class DummyProcedureModule(src.utils.ModuleBaseClass):
     def __init__(self, config: src.types.Config) -> None:
         self.config = config
         self.logger = src.utils.Logger(
