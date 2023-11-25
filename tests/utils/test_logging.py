@@ -6,118 +6,108 @@ import src
 
 
 @pytest.mark.ci
-def test_logging(restore_production_files: None) -> None:
+def test_logging_to_files(restore_production_files: None) -> None:
     config = src.types.Config.load_template()
+
+    config.logging_verbosity.console_prints = None
+    config.logging_verbosity.file_archive = "DEBUG"
+    config.logging_verbosity.message_sending = None
     logger = src.utils.Logger(config=config, origin="some-origin")
+
     logging_file = os.path.join(
         src.utils.logger.LOGS_ARCHIVE_DIR,
         datetime.datetime.utcnow().strftime("%Y-%m-%d.log")
     )
     assert not os.path.isfile(logging_file)
 
-    def get_lines() -> list[str]:
+    def check_last_line(snippets: list[str]) -> None:
         with open(logging_file, "r") as f:
-            return f.readlines()
+            last_line = [l
+                         for l in f.readlines() if l[0] == "2"][-1].strip("\n")
+        for snippet in snippets:
+            assert snippet in last_line, f"last line should contain '{snippet}', but it is '{last_line}'"
 
     logger.debug("debug message")
-    lines = get_lines()
-    assert len(lines) == 1
-    assert "some-origin" in lines[0]
-    assert "DEBUG" in lines[0]
-    assert "debug message" in lines[0]
+    check_last_line(["some-origin", "DEBUG", "debug message"])
 
     logger.info("info message")
-    lines = get_lines()
-    assert len(lines) == 2
-    assert "some-origin" in lines[1]
-    assert "INFO" in lines[1]
-    assert "info message" in lines[1]
+    check_last_line(["some-origin", "INFO", "info message"])
 
     logger.warning("warning message")
-    lines = get_lines()
-    assert len(lines) == 3
-    assert "some-origin" in lines[2]
-    assert "WARNING" in lines[2]
-    assert "warning message" in lines[2]
+    check_last_line(["some-origin", "WARNING", "warning message"])
 
     logger.error("error message")
-    lines = get_lines()
-    assert len(lines) == 4
-    assert "some-origin" in lines[3]
-    assert "ERROR" in lines[3]
-    assert "error message" in lines[3]
+    check_last_line(["some-origin", "ERROR", "error message"])
 
     try:
         4 / 0
     except Exception as e:
         logger.exception(e)
-    lines = get_lines()
-    assert len(lines) > 5
-    assert "some-origin" in lines[4]
-    assert "EXCEPTION" in lines[4]
-    assert "ZeroDivisionError" in lines[4]
-    assert "division by zero" in lines[4]
-    assert "traceback" in lines[5]
+    check_last_line([
+        "some-origin", "EXCEPTION", "ZeroDivisionError: division by zero"
+    ])
 
 
 @pytest.mark.ci
-def test_log_level_order() -> None:
+def test_log_level_visibiliy() -> None:
     # min_log_level=None
-    # min_log_level="DEBUG"
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level=None,
+        assert not src.utils.functions.log_level_is_visible(
+            min_visible_log_level=None,
             log_level=level  # type: ignore
         )
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="DEBUG",
+
+    # min_log_level="DEBUG"
+    for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
+        assert src.utils.functions.log_level_is_visible(
+            min_visible_log_level="DEBUG",
             log_level=level  # type: ignore
         )
 
     # min_log_level="INFO"
     for level in ["DEBUG"]:
-        assert not src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="INFO",
+        assert not src.utils.functions.log_level_is_visible(
+            min_visible_log_level="INFO",
             log_level=level  # type: ignore
         )
     for level in ["INFO", "WARNING", "ERROR", "EXCEPTION"]:
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="INFO",
+        assert src.utils.functions.log_level_is_visible(
+            min_visible_log_level="INFO",
             log_level=level  # type: ignore
         )
 
     # min_log_level="WARNING"
     for level in ["DEBUG", "INFO"]:
-        assert not src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="WARNING",
+        assert not src.utils.functions.log_level_is_visible(
+            min_visible_log_level="WARNING",
             log_level=level  # type: ignore
         )
     for level in ["WARNING", "ERROR", "EXCEPTION"]:
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="WARNING",
+        assert src.utils.functions.log_level_is_visible(
+            min_visible_log_level="WARNING",
             log_level=level  # type: ignore
         )
 
     # min_log_level="ERROR"
     for level in ["DEBUG", "INFO", "WARNING"]:
-        assert not src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="ERROR",
+        assert not src.utils.functions.log_level_is_visible(
+            min_visible_log_level="ERROR",
             log_level=level  # type: ignore
         )
     for level in ["ERROR", "EXCEPTION"]:
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="ERROR",
+        assert src.utils.functions.log_level_is_visible(
+            min_visible_log_level="ERROR",
             log_level=level  # type: ignore
         )
 
     # min_log_level="EXCEPTION"
     for level in ["DEBUG", "INFO", "WARNING", "ERROR"]:
-        assert not src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="EXCEPTION",
+        assert not src.utils.functions.log_level_is_visible(
+            min_visible_log_level="EXCEPTION",
             log_level=level  # type: ignore
         )
     for level in ["EXCEPTION"]:
-        assert src.utils.logger.log_level_should_be_forwarded(
-            min_log_level="EXCEPTION",
+        assert src.utils.functions.log_level_is_visible(
+            min_visible_log_level="EXCEPTION",
             log_level=level  # type: ignore
         )
