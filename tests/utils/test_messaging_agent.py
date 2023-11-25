@@ -5,6 +5,7 @@ from typing import Generator
 import pytest
 import itertools
 import src
+from fixtures import restore_production_files
 from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
@@ -31,7 +32,9 @@ def _provide_config_template() -> Generator[src.types.Config, None, None]:
 
 
 @pytest.fixture(scope="function")
-def _remove_active_messages() -> Generator[None, None, None]:
+def _remove_active_messages(
+    restore_production_files: None
+) -> Generator[None, None, None]:
     archive_file = MessagingAgent.get_message_archive_file()
 
     def clean() -> None:
