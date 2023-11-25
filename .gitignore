@@ -2,6 +2,7 @@
 config/config.json
 run.lock
 data/logs.lock
+data/messages.lock
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,windows,node,nextjs
@@ -92,7 +93,7 @@ next-env.d.ts
 
 ### Node ###
 # Logs
-logs
+docs/**/logs
 *.log
 lerna-debug.log*
 
