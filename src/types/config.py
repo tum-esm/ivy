@@ -5,9 +5,37 @@ import pydantic
 import src
 
 
-class LoggingConfig(pydantic.BaseModel):
-    print_to_console: bool = pydantic.Field(True)
-    write_to_files: bool = pydantic.Field(True)
+class LoggingVerbosityConfig(pydantic.BaseModel):
+    """How verbose to log to the different data streams.
+    
+    For example, If the level is set to "WARNING", only warnings, errors
+    and exceptions will be written to the respective data stream. If the
+    level is set to "DEBUG", all logs will be written to the respective
+    data stream.
+    
+    Importance: DEBUG > INFO > WARNING > ERROR > EXCEPTION
+    
+    If the level is set to None, no logs will be written to the respective
+    data stream."""
+
+    file_archive: Literal[
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION", None
+    ] = pydantic.Field(
+        default=...,
+        description="The minimum log level for the file archive in `data/logs`"
+    )
+    console_prints: Literal[
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
+        None] = pydantic.Field(
+            default=...,
+            description="The minimum log level for the console prints"
+        )
+    message_sending: Literal[
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
+        None] = pydantic.Field(
+            default=...,
+            description="The minimum log level for the message sending"
+        )
 
 
 class UpdaterConfig(pydantic.BaseModel):
@@ -53,7 +81,7 @@ class Config(pydantic.BaseModel):
             "0.1.0", "1.2.3", "0.4.0-alpha.1", "0.5.0-beta.12", "0.6.0-rc.123"
         ]
     )
-    logging: LoggingConfig = pydantic.Field(default=...)
+    logging_verbosity: LoggingVerbosityConfig = pydantic.Field(default=...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used."
