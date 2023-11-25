@@ -4,26 +4,26 @@ from .config import Config, ForeignConfig
 
 
 class DataMessageBody(pydantic.BaseModel):
-    variant: Literal["data"]
+    variant: Literal["data"] = "data"
     message_body: dict[str, Any]
 
 
 class LogMessageBody(pydantic.BaseModel):
-    variant: Literal["log"]
+    variant: Literal["log"] = "log"
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]
     subject: str
     body: str
 
 
 class ConfigMessageBody(pydantic.BaseModel):
-    variant: Literal["config"]
+    variant: Literal["config"] = "config"
     status: Literal["received", "accepted", "rejected", "startup"]
     config: Config | ForeignConfig
 
 
 class MessageQueueItem(pydantic.BaseModel):
-    identifier: str = pydantic.Field(
+    identifier: int = pydantic.Field(
         ..., description="The identifier of the message"
     )
-    timestamp: int
+    timestamp: float
     message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
