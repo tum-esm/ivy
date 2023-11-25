@@ -156,7 +156,7 @@ class Logger:
 
         self._write_log_line("ERROR", message, details=[("details", details)])
 
-    def log_exception(
+    def exception(
         self,
         e: Exception,
         label: Optional[str] = None,
@@ -176,7 +176,7 @@ class Logger:
         exception_traceback = "\n".join(
             traceback.format_exception(type(e), e, e.__traceback__)
         ).strip()
-        exception_details = "None"
+        exception_details = None
         if isinstance(e, CommandLineException) and (e.details is not None):
             exception_details = e.details.strip()
 
@@ -211,8 +211,8 @@ class Logger:
 
         log_string = (
             f"{str(now)[:-3]} UTC{'' if utc_offset < 0 else '+'}{utc_offset} " +
-            f"- {_pad_str_right(self.origin, min_width=23)} " +
-            f"- {_pad_str_right(level, min_width=13)} " + f"- {subject}\n"
+            f"- {_pad_str_right(self.origin, min_width=16)} " +
+            f"- {_pad_str_right(level, min_width=9)} " + f"- {subject}\n"
         )
         filtered_detals = [(k, v) for k, v in details if v is not None]
         body: str = ""

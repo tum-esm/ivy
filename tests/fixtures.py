@@ -31,42 +31,36 @@ def restore_production_files() -> Generator[None, None, None]:
             utcnow.hour == 0 and utcnow.minute == 0
         ), "this test can fail at midnight"
 
-        config_file = os.path.join(
-            src.constants.PROJECT_DIR, "config", "config.json"
-        )
-        log_file = os.path.join(
-            src.utils.logger.LOGS_ARCHIVE_DIR, utcnow.strftime("%Y-%m-%d.log")
-        )
-        message_archive_file = src.utils.MessagingAgent.get_message_archive_file(
-        )
-        message_database_file = src.utils.messaging_agent.ACTIVE_QUEUE_FILE
+        paths = [
+            os.path.join(
+                src.constants.PROJECT_DIR,
+                "config",
+                "config.json",
+            ),
+            os.path.join(
+                src.utils.logger.LOGS_ARCHIVE_DIR,
+                utcnow.strftime("%Y-%m-%d.log")
+            ),
+            src.utils.MessagingAgent.get_message_archive_file(),
+            src.utils.messaging_agent.ACTIVE_QUEUE_FILE,
+        ]
 
-        tmp_config_file = config_file + ".tmp"
-        tmp_log_file = log_file + ".tmp"
-        tmp_message_archive_file = message_archive_file + ".tmp"
-        tmp_message_database_file = message_database_file + ".tmp"
-
-        assert not os.path.isfile(tmp_config_file)
-        assert not os.path.isfile(tmp_log_file)
-        assert not os.path.isfile(tmp_message_archive_file)
-        assert not os.path.isfile(tmp_message_database_file)
-
-        if os.path.isfile(config_file):
-            os.rename(config_file, tmp_config_file)
-        if os.path.isfile(log_file):
-            os.rename(log_file, tmp_log_file)
-        if os.path.isfile(message_archive_file):
-            os.rename(message_archive_file, tmp_message_archive_file)
-        if os.path.isfile(message_database_file):
-            os.rename(message_database_file, tmp_message_database_file)
+        # move production files to temporary files
+        for path in paths:
+            tmp_path = path + ".tmp"
+            assert not os.path.isfile(tmp_path), (
+                f"the temporary file {tmp_path} already exists, " +
+                "please delete it manually"
+            )
+            if os.path.isfile(path):
+                os.rename(path, tmp_path)
 
         yield
 
-        if os.path.isfile(tmp_config_file):
-            os.rename(tmp_config_file, config_file)
-        if os.path.isfile(tmp_log_file):
-            os.rename(tmp_log_file, log_file)
-        if os.path.isfile(tmp_message_archive_file):
-            os.rename(tmp_message_archive_file, message_archive_file)
-        if os.path.isfile(tmp_message_database_file):
-            os.rename(tmp_message_database_file, message_database_file)
+        # restore production files
+        for path in paths:
+            tmp_path = path + ".tmp"
+            if os.path.isfile(path):
+                os.remove(path)
+            if os.path.isfile(tmp_path):
+                os.rename(tmp_path, path)
