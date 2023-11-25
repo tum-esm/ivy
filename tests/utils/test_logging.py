@@ -49,6 +49,41 @@ def test_logging_to_files(restore_production_files: None) -> None:
 
 
 @pytest.mark.ci
+def test_logging_to_messages(restore_production_files: None) -> None:
+    config = src.types.Config.load_template()
+
+    config.logging_verbosity.console_prints = None
+    config.logging_verbosity.file_archive = None
+    config.logging_verbosity.message_sending = "DEBUG"
+    logger = src.utils.Logger(config=config, origin="some-origin")
+
+    messaging_agent = src.utils.MessagingAgent()
+    assert len(messaging_agent.get_n_latest_messages(10)) == 0
+
+    logger.debug("debug message")
+    assert len(messaging_agent.get_n_latest_messages(10)) == 1
+
+    logger.info("info message")
+    assert len(messaging_agent.get_n_latest_messages(10)) == 2
+
+    logger.warning("warning message")
+    assert len(messaging_agent.get_n_latest_messages(10)) == 3
+
+    logger.error("error message")
+    assert len(messaging_agent.get_n_latest_messages(10)) == 4
+
+    try:
+        4 / 0
+    except Exception as e:
+        logger.exception(e)
+    assert len(messaging_agent.get_n_latest_messages(10)) == 5
+
+    mids = [m.identifier for m in messaging_agent.get_n_latest_messages(10)]
+    messaging_agent.remove_messages(mids)
+    assert len(messaging_agent.get_n_latest_messages(10)) == 0
+
+
+@pytest.mark.ci
 def test_log_level_visibiliy() -> None:
     # min_log_level=None
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
