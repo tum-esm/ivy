@@ -1,6 +1,6 @@
 from typing import Any, Literal
 import pydantic
-import src
+from .config import Config, ForeignConfig
 
 
 class DataMessageBody(pydantic.BaseModel):
@@ -18,7 +18,7 @@ class LogMessageBody(pydantic.BaseModel):
 class ConfigMessageBody(pydantic.BaseModel):
     variant: Literal["config"]
     status: Literal["received", "accepted", "rejected", "startup"]
-    config: src.types.Config | src.types.ForeignConfig
+    config: Config | ForeignConfig
 
 
 class MessageQueueItem(pydantic.BaseModel):

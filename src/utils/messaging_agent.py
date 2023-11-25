@@ -37,7 +37,7 @@ class MessagingAgent():
                     CREATE TABLE IF NOT EXISTS QUEUE (
                         internal_id INTEGER PRIMARY KEY,
                         timestamp INTEGER NOT NULL,
-                        message_body INTEGER NOT NULL,
+                        message_body TEXT NOT NULL
                     );
                 """
             )
