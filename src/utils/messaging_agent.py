@@ -86,7 +86,7 @@ class MessagingAgent():
                         SELECT internal_id, timestamp, message_body
                         FROM QUEUE
                         WHERE internal_id NOT IN ({mids_placeholder})
-                        ORDER BY timestamp DESC
+                        ORDER BY timestamp ASC
                         LIMIT ?;
                     """,
                     (*excluded_message_ids, n),

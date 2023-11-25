@@ -59,26 +59,20 @@ def test_messaging_agent(_remove_active_messages: None) -> None:
 
     assert len(agent.get_n_latest_messages(1)) == 1
     assert len(agent.get_n_latest_messages(2)) == 2
+    assert len(agent.get_n_latest_messages(3)) == 3
     assert len(agent.get_n_latest_messages(5)) == 3
 
-    messages = agent.get_n_latest_messages(3)
-    assert all(
-        isinstance(message.message_body, DataMessageBody)
-        for message in messages
-    )
-    assert len(messages) == 3
-    timesamps = [message.timestamp for message in messages]
-    assert timesamps[0] > timesamps[1] > timesamps[2]
-
     # remove one messages
-    mid1 = messages[1].identifier
-    agent.remove_messages([mid1])
-    messages = agent.get_n_latest_messages(3)
-    assert len(messages) == 2
-    assert mid1 not in [message.identifier for message in messages]
+    mids = [message.identifier for message in agent.get_n_latest_messages(3)]
+    agent.remove_messages([mids[1]])
+    new_mids = [
+        message.identifier for message in agent.get_n_latest_messages(3)
+    ]
+    assert len(new_mids) == 2
+    assert mids[1] not in new_mids
 
     # remove all messages
-    agent.remove_messages([message.identifier for message in messages])
+    agent.remove_messages(mids)
     assert len(agent.get_n_latest_messages(3)) == 0
 
     # close SQLite connection
@@ -95,10 +89,12 @@ def test_different_message_types(
         agent.get_n_latest_messages(20)
     ) == 0, "message queue is not empty"
 
+    # add data message
     agent.add_message(DataMessageBody(message_body={"test": "test"}))
     time.sleep(0.01)
     assert len(agent.get_n_latest_messages(20)) == 1, "message was not added"
 
+    # add log messages
     for i, level in enumerate([
         "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"
     ]):
@@ -111,6 +107,7 @@ def test_different_message_types(
             agent.get_n_latest_messages(20)
         ) == i + 2, "message was not added"
 
+    # add config messages
     for i, status in enumerate(["received", "accepted", "rejected", "startup"]):
         agent.add_message(
             # type: ignore
@@ -121,9 +118,13 @@ def test_different_message_types(
             agent.get_n_latest_messages(20)
         ) == i + 7, "message was not added"
 
+    # check message queue
     mids = set([
         message.identifier for message in agent.get_n_latest_messages(20)
     ])
+    assert len(mids) == 10, "message queue is not correct"
+
+    # check filtering by message id
     for i in range(len(mids) + 1):
         for mids_subset in itertools.combinations(mids, i):
             messages = agent.get_n_latest_messages(
@@ -138,5 +139,13 @@ def test_different_message_types(
             ) == mids, "filtering by message id is not correct"
             timestamps = [message.timestamp for message in messages]
             assert timestamps == list(
-                sorted(timestamps, reverse=True)
+                sorted(timestamps)
             ), "messages are not sorted by timestamp"
+
+    # check correctness of message types
+    messages = agent.get_n_latest_messages(20)
+    assert isinstance(messages[0].message_body, DataMessageBody)
+    for i in range(1, 6):
+        assert isinstance(messages[i].message_body, LogMessageBody)
+    for i in range(6, 10):
+        assert isinstance(messages[i].message_body, ConfigMessageBody)

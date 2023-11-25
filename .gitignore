@@ -3,6 +3,8 @@ config/config.json
 run.lock
 data/logs.lock
 data/messages.lock
+data/**/*.csv
+data/**/*.sqlite3
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,windows,node,nextjs
