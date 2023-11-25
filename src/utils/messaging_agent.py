@@ -1,7 +1,8 @@
+from typing import Union
+import datetime
 import os
 import sqlite3
-import time
-from typing import Union
+import filelock
 import src
 
 ACTIVE_QUEUE_FILE = os.path.join(
@@ -9,12 +10,26 @@ ACTIVE_QUEUE_FILE = os.path.join(
     "data",
     "active-message-queue.sqlite3",
 )
+MESSAGE_ARCHIVE_DIR = os.path.join(
+    src.constants.PROJECT_DIR,
+    "data",
+    "messages",
+)
+MESSAGE_ARCHIVE_DIR_LOCK = os.path.join(
+    src.constants.PROJECT_DIR,
+    "data",
+    "messages.lock",
+)
 
 
 class MessagingAgent():
     def __init__(self) -> None:
         self.connection = sqlite3.connect(
             ACTIVE_QUEUE_FILE, check_same_thread=True
+        )
+        self.message_archive_lock = filelock.FileLock(
+            MESSAGE_ARCHIVE_DIR_LOCK,
+            timeout=5,
         )
         with self.connection:
             self.connection.execute(
@@ -35,13 +50,29 @@ class MessagingAgent():
             src.types.ConfigMessageBody,
         ],
     ) -> None:
+        now = datetime.datetime.utcnow()
+        timestamp = int(now.timestamp())
+        message_body_string = message_body.model_dump_json()
+
+        # write message to archive
+        archive_file = os.path.join(
+            MESSAGE_ARCHIVE_DIR, now.strftime("%Y-%m-%d.csv")
+        )
+        with self.message_archive_lock:
+            if not os.path.isfile(MESSAGE_ARCHIVE_DIR):
+                with open(archive_file, "w") as f:
+                    f.write("timestamp,message_body\n")
+            with open(archive_file, "a") as f:
+                f.write(f'{timestamp},"{message_body_string}"\n')
+
+        # add message to active message queue
         with self.connection:
             self.connection.execute(
                 """
                     INSERT INTO QUEUE (timestamp, message_body)
                     VALUES (?);
                 """,
-                (int(time.time()), message_body.model_dump_json()),
+                (timestamp, message_body_string),
             )
 
     def get_n_latest_messages(
