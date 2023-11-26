@@ -25,11 +25,9 @@ def restore_production_files() -> Generator[None, None, None]:
     with src.utils.functions.with_automation_lock():
         utcnow = datetime.datetime.utcnow()
         assert not (
-            utcnow.hour == 23 and utcnow.minute == 59
-        ), "this test can fail at midnight"
-        assert not (
-            utcnow.hour == 0 and utcnow.minute == 0
-        ), "this test can fail at midnight"
+            (utcnow.hour == 23 and utcnow.minute == 59) or
+            (utcnow.hour == 0 and utcnow.minute == 0)
+        ), "this test is blocked at midnight (UTC) because it is writing to dated files, wait until 00:01"
 
         paths = [
             os.path.join(
