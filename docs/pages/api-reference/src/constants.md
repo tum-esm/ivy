@@ -27,3 +27,9 @@ The name of the project
 #### IVY\_ROOT\_DIR
 
 The root directory of the project on a production system = `~/Documents/{NAME}`
+
+
+#### LOGGING\_LEVEL\_PRIORITIES
+
+Order of the logging levels from the lowest to the
+highest, high number means high priority

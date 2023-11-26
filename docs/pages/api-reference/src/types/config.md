@@ -44,6 +44,16 @@ def load() -> Config
 Load the config file from the path `project_dir/config/config.json`
 
 
+#### load\_template
+
+```python
+@staticmethod
+def load_template() -> Config
+```
+
+Load the config file from the path `project_dir/config/config.template.json`
+
+
 #### dump
 
 ```python

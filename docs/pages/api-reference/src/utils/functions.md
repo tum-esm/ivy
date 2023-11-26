@@ -4,6 +4,27 @@ title: functions.py
 
 # `src.utils.functions`
 
+#### log\_level\_is\_visible
+
+```python
+def log_level_is_visible(
+    min_visible_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR",
+                                   "EXCEPTION", None],
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR",
+                       "EXCEPTION"]) -> bool
+```
+
+Checks if a log level is forwarded to the user.
+
+**Arguments**:
+
+- `min_log_level` - The minimum log level to forward, if None, no log
+  levels are forwarded.
+- `log_level` - The log level to check
+  
+- `Returns` - True if `log_level` is at least as important as `min_log_level`
+
+
 #### string\_is\_valid\_version
 
 ```python
@@ -43,3 +64,23 @@ class CommandLineException(Exception)
 ```
 
 Raised when a shell command fails.
+
+
+#### with\_automation\_lock
+
+```python
+@contextlib.contextmanager
+def with_automation_lock() -> Generator[None, None, None]
+```
+
+This function will lock the automation with a file lock so that
+only one instance can run at a time.
+
+Usage:
+
+```python
+with with_automation_lock():
+    run_automation()
+    # or
+    run_tests()
+```
