@@ -1,6 +1,7 @@
 import datetime
 import signal
 import time
+from typing import Any
 import psutil
 import src
 
@@ -12,7 +13,10 @@ def run(config: src.types.Config) -> None:
 
     # register a teardown procedure
 
-    signal.signal(signal.SIGTERM, lambda: logger.debug("nothing to tear down"))
+    def teardown_handler(*args: Any) -> None:
+        logger.debug("nothing to tear down")
+
+    signal.signal(signal.SIGTERM, teardown_handler)
 
     # start procedure loop
 

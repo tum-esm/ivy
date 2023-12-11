@@ -68,7 +68,7 @@ class UpdaterConfig(pydantic.BaseModel):
 
 
 class DummyProcedureConfig(pydantic.BaseModel):
-    seconds_between_datapoints: float = pydantic.Field(
+    seconds_between_datapoints: int = pydantic.Field(
         ...,
         ge=1,
         le=7200,
@@ -78,7 +78,7 @@ class DummyProcedureConfig(pydantic.BaseModel):
 
 
 class SystemChecksConfig(pydantic.BaseModel):
-    seconds_between_checks: float = pydantic.Field(
+    seconds_between_checks: int = pydantic.Field(
         ...,
         ge=1,
         le=7200,

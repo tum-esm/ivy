@@ -7,7 +7,7 @@ repository = "https://github.com/tum-esm/ivy-seed"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11,<=3.12"
+python = ">=3.11,<=3.12"
 python-dotenv = "^1.0.0"
 filelock = "^3.13.1"
 pytest = "^7.4.3"

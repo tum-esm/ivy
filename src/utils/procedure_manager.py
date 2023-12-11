@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 import signal
 import multiprocessing
 import src
@@ -17,13 +17,13 @@ class ProcedureManager():
         self.procedure_entrypoint = procedure_entrypoint
         self.procedure_name = procedure_name
         self.logger = src.utils.Logger(
-            f"{self.procedure_name}-procedure-manager"
+            config=config, origin=f"{self.procedure_name}-procedure-manager"
         )
 
     def start_process_if_not_running(self) -> bool:
         if self.process is None:
             self.process = multiprocessing.Process(
-                target=self.run_procedure,
+                target=self.procedure_entrypoint,
                 args=(self.config, ),
                 name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
                 daemon=True,
@@ -35,30 +35,32 @@ class ProcedureManager():
             )
             return True
         else:
-            self.logger("process is already running")
+            self.logger.debug("process is already running")
             return False
 
     def check_process_status(self) -> None:
         if self.process is not None:
             if self.process.is_alive():
-                self.logger("process is alive")
+                self.logger.debug("process is alive")
             else:
-                self.logger("process died unexpectedly")
+                self.logger.error("process died unexpectedly")
                 self.process = None
         else:
-            self.logger("process has not been started yet")
+            self.logger.debug("process has not been started yet")
 
     def teardown(self) -> None:
+        self.logger.info("starting teardown")
         if self.process is not None:
             # what to do if process does not tear down gracefully
-            def kill_process() -> None:
-                self.logger(
+            def kill_process(*args: Any) -> None:
+                self.logger.error(
                     "process did not gracefully tear down in {} seconds, killing it forcefully"
                     .format(
                         src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN
                     )
                 )
-                self.process.kill()
+                if self.process is not None:
+                    self.process.kill()
 
             # give process some time to tear down gracefully
             # if it does not stop, kill it forcefully
@@ -69,6 +71,6 @@ class ProcedureManager():
             signal.alarm(0)
 
             self.process = None
-            self.logger("teardown complete")
+            self.logger.info("teardown complete")
         else:
-            self.logger("no process to tear down")
+            self.logger.info("no process to tear down")
