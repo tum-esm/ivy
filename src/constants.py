@@ -20,5 +20,9 @@ LOGGING_LEVEL_PRIORITIES: dict[
     Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
     int,
 ] = {"DEBUG": 0, "INFO": 1, "WARNING": 2, "ERROR": 3, "EXCEPTION": 4}
-"""Order of the logging levels from the lowest to the
-highest, high number means high priority"""
+"""Order of the logging levels from the lowest to
+the highest, high number means high priority"""
+
+SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: int = 10
+"""Number of seconds to wait for a procedure process
+to tear down gracefully before killing it"""

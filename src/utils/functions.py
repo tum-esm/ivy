@@ -1,3 +1,4 @@
+import datetime
 from typing import Generator, Literal, Optional
 import contextlib
 import os
@@ -115,3 +116,23 @@ def with_automation_lock() -> Generator[None, None, None]:
     except filelock.Timeout:
         print(f'locked by another process via file at path "{lock_path}"')
         raise TimeoutError("automation is already running")
+
+
+def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float:
+    """Calculates the time until the next measurement should be taken. If the seconds
+    between datapoints is 10 and the current time is 12:00:03, the next measurement
+    should be taken at 12:00:10. This function starts counting at 00:00:00 system time.
+    Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
+    
+    Args:
+        seconds_between_datapoints: The time between two datapoints in seconds.
+    
+    Returns:
+        The time until the next measurement should be taken in seconds."""
+
+    now = datetime.datetime.now()
+    current_seconds_in_day = now.hour * 3600 + now.minute * 60 + now.second + now.microsecond / 1_000_000
+
+    return seconds_between_datapoints - (
+        current_seconds_in_day % seconds_between_datapoints
+    )
