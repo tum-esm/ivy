@@ -18,7 +18,8 @@ def run(config: src.types.Config) -> None:
 
     while True:
         t = src.utils.functions.get_time_to_next_datapoint(
-            seconds_between_datapoints=10,
+            seconds_between_datapoints=config.system_checks.
+            seconds_between_checks
         )
         logger.debug(f"sleeping for {t} seconds")
         time.sleep(t)

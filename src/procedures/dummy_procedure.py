@@ -23,7 +23,8 @@ def run(config: src.types.Config) -> None:
     # TODO: add exponential backoff
     while True:
         t = src.utils.functions.get_time_to_next_datapoint(
-            seconds_between_datapoints=10,
+            seconds_between_datapoints=config.dummy_procedure.
+            seconds_between_datapoints,
         )
         logger.debug(f"sleeping for {t} seconds")
         time.sleep(t)

@@ -67,6 +67,26 @@ class UpdaterConfig(pydantic.BaseModel):
     )
 
 
+class DummyProcedureConfig(pydantic.BaseModel):
+    seconds_between_datapoints: float = pydantic.Field(
+        ...,
+        ge=1,
+        le=7200,
+        description=
+        "How many seconds should be between each datapoint in the dummy procedure",
+    )
+
+
+class SystemChecksConfig(pydantic.BaseModel):
+    seconds_between_checks: float = pydantic.Field(
+        ...,
+        ge=1,
+        le=7200,
+        description=
+        "How many seconds should be between each run of the system checks",
+    )
+
+
 class Config(pydantic.BaseModel):
     """Schema of the config file for this version of the software.
     
@@ -79,12 +99,20 @@ class Config(pydantic.BaseModel):
         description="The version of the software this config file is for",
         examples=[
             "0.1.0", "1.2.3", "0.4.0-alpha.1", "0.5.0-beta.12", "0.6.0-rc.123"
-        ]
+        ],
     )
     logging_verbosity: LoggingVerbosityConfig = pydantic.Field(default=...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
-        description="If this is not set, the updater will not be used."
+        description="If this is not set, the updater will not be used.",
+    )
+    dummy_procedure: DummyProcedureConfig = pydantic.Field(
+        default=...,
+        description="Settings for the dummy procedure.",
+    )
+    system_checks: SystemChecksConfig = pydantic.Field(
+        default=...,
+        description="Settings for the system checks procedure.",
     )
 
     @staticmethod
