@@ -3,6 +3,7 @@ title: run.py
 ---
 
 # `run`
+
 Entrypoint of the automation
 
 1. Load environment variables from `../.env` and `config/.env` (the latter has priority)

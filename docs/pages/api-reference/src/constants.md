@@ -4,6 +4,7 @@ title: constants.py
 
 # `src.constants`
 
+
 #### VERSION\_REGEX
 
 Valid version name examples `1.2.3`, `4.5.6-alpha.78`, `7.8.9-beta.10`, `11.12.13-rc.14`
@@ -31,5 +32,11 @@ The root directory of the project on a production system = `~/Documents/{NAME}`
 
 #### LOGGING\_LEVEL\_PRIORITIES
 
-Order of the logging levels from the lowest to the
-highest, high number means high priority
+Order of the logging levels from the lowest to
+the highest, high number means high priority
+
+
+#### SECONDS\_PER\_GRACEFUL\_PROCEDURE\_TEARDOWN
+
+Number of seconds to wait for a procedure process
+to tear down gracefully before killing it

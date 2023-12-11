@@ -3,6 +3,7 @@ title: main.py
 ---
 
 # `src.main`
+
 Main loop of the automation
 
 

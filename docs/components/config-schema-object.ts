@@ -1,6 +1,22 @@
 /* prettier-ignore */
 const CONFIG_SCHEMA_OBJECT: any = {
     "$defs": {
+        "DummyProcedureConfig": {
+            "properties": {
+                "seconds_between_datapoints": {
+                    "description": "How many seconds should be between each datapoint in the dummy procedure",
+                    "maximum": 7200,
+                    "minimum": 1,
+                    "title": "Seconds Between Datapoints",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "seconds_between_datapoints"
+            ],
+            "title": "DummyProcedureConfig",
+            "type": "object"
+        },
         "LoggingVerbosityConfig": {
             "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",
             "properties": {
@@ -47,6 +63,22 @@ const CONFIG_SCHEMA_OBJECT: any = {
                 "message_sending"
             ],
             "title": "LoggingVerbosityConfig",
+            "type": "object"
+        },
+        "SystemChecksConfig": {
+            "properties": {
+                "seconds_between_checks": {
+                    "description": "How many seconds should be between each run of the system checks",
+                    "maximum": 7200,
+                    "minimum": 1,
+                    "title": "Seconds Between Checks",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "seconds_between_checks"
+            ],
+            "title": "SystemChecksConfig",
             "type": "object"
         },
         "UpdaterConfig": {
@@ -244,11 +276,55 @@ const CONFIG_SCHEMA_OBJECT: any = {
             ],
             "default": null,
             "description": "If this is not set, the updater will not be used."
+        },
+        "dummy_procedure": {
+            "allOf": [
+                {
+                    "properties": {
+                        "seconds_between_datapoints": {
+                            "description": "How many seconds should be between each datapoint in the dummy procedure",
+                            "maximum": 7200,
+                            "minimum": 1,
+                            "title": "Seconds Between Datapoints",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "seconds_between_datapoints"
+                    ],
+                    "title": "DummyProcedureConfig",
+                    "type": "object"
+                }
+            ],
+            "description": "Settings for the dummy procedure."
+        },
+        "system_checks": {
+            "allOf": [
+                {
+                    "properties": {
+                        "seconds_between_checks": {
+                            "description": "How many seconds should be between each run of the system checks",
+                            "maximum": 7200,
+                            "minimum": 1,
+                            "title": "Seconds Between Checks",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "seconds_between_checks"
+                    ],
+                    "title": "SystemChecksConfig",
+                    "type": "object"
+                }
+            ],
+            "description": "Settings for the system checks procedure."
         }
     },
     "required": [
         "version",
-        "logging_verbosity"
+        "logging_verbosity",
+        "dummy_procedure",
+        "system_checks"
     ],
     "title": "Config",
     "type": "object"

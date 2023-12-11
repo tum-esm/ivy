@@ -4,6 +4,7 @@ title: config.py
 
 # `src.types.config`
 
+
 ## LoggingVerbosityConfig Objects
 
 ```python

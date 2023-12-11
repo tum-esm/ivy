@@ -4,6 +4,7 @@ title: logger.py
 
 # `src.utils.logger`
 
+
 ## Logger Objects
 
 ```python

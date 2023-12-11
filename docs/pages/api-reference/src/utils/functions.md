@@ -4,6 +4,7 @@ title: functions.py
 
 # `src.utils.functions`
 
+
 #### log\_level\_is\_visible
 
 ```python
@@ -84,3 +85,24 @@ with with_automation_lock():
     # or
     run_tests()
 ```
+
+
+#### get\_time\_to\_next\_datapoint
+
+```python
+def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float
+```
+
+Calculates the time until the next measurement should be taken. If the seconds
+between datapoints is 10 and the current time is 12:00:03, the next measurement
+should be taken at 12:00:10. This function starts counting at 00:00:00 system time.
+Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
+
+**Arguments**:
+
+- `seconds_between_datapoints` - The time between two datapoints in seconds.
+  
+
+**Returns**:
+
+  The time until the next measurement should be taken in seconds.

@@ -40,7 +40,7 @@ if os.path.exists(OUTPUT_DIR):
 
 def render_module(relative_path: str) -> None:
     basename = os.path.basename(relative_path)
-    if basename.startswith("__"):
+    if basename.startswith("__") and basename != "__init__.py":
         return
     absolute_path = os.path.join(PROJECT_DIR, relative_path)
     if os.path.isdir(absolute_path):
@@ -64,7 +64,7 @@ def render_module(relative_path: str) -> None:
                 f"title: {basename}",
                 "---",
                 "",
-                f"# `{relative_path.replace('/', '.')[:-3]}`",
+                f"# `{relative_path.replace('/', '.')[:-3]}`\n",
             ] + file_content_lines[3 :]
             with open(target_file, "w") as f2:
                 f2.write("\n".join(file_content_lines))

@@ -4,6 +4,7 @@ title: updater.py
 
 # `src.utils.updater`
 
+
 ## Updater Objects
 
 ```python
