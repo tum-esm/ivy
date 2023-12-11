@@ -54,7 +54,7 @@ def render_module(relative_path: str) -> None:
             file_content = src.utils.functions.run_shell_command(
                 f"pydoc-markdown --package {relative_path[:-3]}"
             ).strip("\n\t ")
-            target_file = f"{OUTPUT_DIR}/{relative_path[:-3]}.md"
+            target_file = f"{OUTPUT_DIR}/{relative_path.replace('__init__.py', 'init.py')[:-3]}.md"
             file_content_lines = [
                 l for l in file_content.split("\n")
                 if not l.startswith(f'<a id="{relative_path[:-3]}')
