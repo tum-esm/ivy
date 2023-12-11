@@ -40,7 +40,7 @@ def _remove_allof_wrapping(o: dict[str, Any]) -> dict[str, Any]:
         return o
 
 
-def generate_readable_schema(o: pydantic.BaseModel) -> str:
+def generate_readable_schema(o: Any) -> str:
     # remove $ref usages
     schema_without_refs = jsonref.loads(
         json.dumps(o.model_json_schema(by_alias=False))
