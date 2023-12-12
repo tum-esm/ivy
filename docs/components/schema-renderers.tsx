@@ -128,13 +128,25 @@ function ObjectAttributeList(props: {
   consideredAttributes: string[];
   object: any;
 }) {
-  return (
-    <div className="flex flex-col gap-y-0">
-      {props.consideredAttributes.map((name) => (
-        <ObjectAttribute name={name} value={props.object[name]} />
-      ))}
-    </div>
-  );
+  const attributes: { name: string; value: any }[] = [];
+
+  props.consideredAttributes.forEach((name) => {
+    if (name in props.object && props.object[name] !== null) {
+      attributes.push({ name, value: props.object[name] });
+    }
+  });
+  //return JSON.stringify(attributes, null, 4);
+  if (attributes.length === 0) {
+    return null;
+  } else {
+    return (
+      <div className="flex flex-col gap-y-0">
+        {attributes.map((attribute) => (
+          <ObjectAttribute name={attribute.name} value={attribute.value} />
+        ))}
+      </div>
+    );
+  }
 }
 
 function ConstProperty(props: {
@@ -155,6 +167,19 @@ function ConstProperty(props: {
         consideredAttributes={["const"]}
         object={props.value}
       />
+    </div>
+  );
+}
+
+function NullProperty(props: {
+  name: string;
+  value: any;
+  className?: string;
+  required: boolean;
+}) {
+  return (
+    <div className={`${props.className} p-4 flex flex-col gap-y-2`}>
+      <ObjectTitle name={props.name} required={props.required} type="null" />
     </div>
   );
 }
@@ -276,6 +301,17 @@ function renderConfigProperty(
     return (
       <div className={COLORS[depth].text}>
         <NumberProperty
+          name={propertyKey}
+          value={propertyObject}
+          required={required}
+        />
+      </div>
+    );
+  }
+  if (propertyObject.type === "null") {
+    return (
+      <div className={COLORS[depth].text}>
+        <NullProperty
           name={propertyKey}
           value={propertyObject}
           required={required}

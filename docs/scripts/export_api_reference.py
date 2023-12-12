@@ -78,7 +78,7 @@ render_module("src")
 # Copy example config file to docs page
 
 CONFIG_TEMPLATE_FILE_TARGET = os.path.join(
-    PROJECT_DIR, "docs", "pages", "guides", "configuration.mdx"
+    PROJECT_DIR, "docs", "pages", "file-interfaces", "configuration.mdx"
 )
 
 print(f"Updating config example files in {CONFIG_TEMPLATE_FILE_TARGET}")

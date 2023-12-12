@@ -21,14 +21,12 @@ class ConfigMessageBody(pydantic.BaseModel):
     config: ForeignConfig
 
 
-class MessageQueueItem(pydantic.BaseModel):
-    identifier: int = pydantic.Field(
-        ..., description="The identifier of the message"
-    )
-    timestamp: float
-    message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
-
-
 class MessageArchiveItem(pydantic.BaseModel):
     timestamp: float
     message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
+
+
+class MessageQueueItem(MessageArchiveItem):
+    identifier: int = pydantic.Field(
+        ..., description="The identifier of the message"
+    )
