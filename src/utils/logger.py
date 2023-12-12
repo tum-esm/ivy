@@ -1,3 +1,4 @@
+import time
 from typing import Literal, Optional
 import os
 import traceback
@@ -179,8 +180,10 @@ class Logger:
         `logs/current-logs.log`"""
 
         now = datetime.datetime.now()
-        utcnow = datetime.datetime.utcnow()
-        utc_offset = round((now - utcnow).total_seconds() / 3600, 1)
+
+        # Credits to https://stackoverflow.com/a/35058476/8255842"""
+        utc_offset = round((-time.timezone) / 3600, 3)
+
         if round(utc_offset) == utc_offset:
             utc_offset = round(utc_offset)
 
@@ -212,7 +215,7 @@ class Logger:
             log_level=level
         ):
             path = os.path.join(
-                LOGS_ARCHIVE_DIR, utcnow.strftime("%Y-%m-%d.log")
+                LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log")
             )
             with self.filelock:
                 with open(path, "a") as f1:

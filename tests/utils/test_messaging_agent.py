@@ -151,7 +151,7 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     # check message archive
     archive_messages = MessagingAgent.load_message_archive(
-        datetime.datetime.utcnow().date()
+        datetime.datetime.now(datetime.UTC).date()
     )
     assert len(archive_messages) == 6, "message archive is wrong"
 

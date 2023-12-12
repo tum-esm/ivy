@@ -51,7 +51,7 @@ class MessagingAgent():
             src.types.ConfigMessageBody,
         ],
     ) -> None:
-        timestamp = datetime.datetime.utcnow().timestamp()
+        timestamp = datetime.datetime.now(datetime.UTC).timestamp()
         message_body_string = message_body.model_dump_json()
 
         # write message to archive
@@ -116,7 +116,7 @@ class MessagingAgent():
     def get_message_archive_file() -> str:
         return os.path.join(
             MESSAGE_ARCHIVE_DIR,
-            datetime.datetime.utcnow().strftime("%Y-%m-%d.csv")
+            datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d.csv")
         )
 
     def teardown(self) -> None:

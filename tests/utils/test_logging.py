@@ -16,7 +16,7 @@ def test_logging_to_files(restore_production_files: None) -> None:
 
     logging_file = os.path.join(
         src.utils.logger.LOGS_ARCHIVE_DIR,
-        datetime.datetime.utcnow().strftime("%Y-%m-%d.log")
+        datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d.log")
     )
     assert not os.path.isfile(logging_file)
 
