@@ -1,5 +1,6 @@
 import datetime
-from typing import Generator, Literal, Optional
+import functools
+from typing import Any, Callable, Generator, Literal, Optional, TypeVar, cast
 import contextlib
 import os
 import re
@@ -136,3 +137,37 @@ def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float:
     return seconds_between_datapoints - (
         current_seconds_in_day % seconds_between_datapoints
     )
+
+
+# typing of higher level decorators:
+# https://github.com/python/mypy/issues/1551#issuecomment-253978622
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+class with_filelock:
+    """FileLock = Mark, that a file is being used and other programs
+    should not interfere. A file "*.lock" will be created and the
+    content of this file will make the wrapped function possibly
+    wait until other programs are done using it.
+
+    See https://en.wikipedia.org/wiki/Semaphore_(programming). Usage:
+
+    ```python
+    @with_filelock(lockfile_path="path/to/lockfile.lock", timeout=10)
+    def some_function():
+        pass
+        
+    some_function() # will be executed within a semaphore 
+    ```"""
+    def __init__(self, lockfile_path: str, timeout: float = -1) -> None:
+        """A timeout of -1 means that the code waits forever."""
+        self.lockfile_path: str = lockfile_path
+        self.timeout: float = timeout
+
+    def __call__(self, f: F) -> F:
+        @functools.wraps(f)
+        def wrapper(*args: tuple[Any], **kwargs: dict[str, Any]) -> Any:
+            with filelock.FileLock(self.lockfile_path, timeout=self.timeout):
+                return f(*args, **kwargs)
+
+        return cast(F, wrapper)
