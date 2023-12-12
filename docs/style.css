@@ -26,15 +26,15 @@ body {
   @apply dark:!hidden;
 }
 .nextra-nav-container {
-  @apply dark:!bg-slate-900 dark:!opacity-100 dark:!filter-none dark:!backdrop-blur-none;
+  @apply dark:!bg-slate-900 dark:!opacity-100 dark:!filter-none dark:!backdrop-blur-none dark:border-b dark:border-slate-750;
 }
 
 .nextra-code-block pre {
-  @apply !bg-slate-100 dark:!bg-slate-900;
+  @apply !bg-balancedSlate-50 dark:!bg-balancedSlate-900 !border border-balancedSlate-150 dark:!border-balancedSlate-800;
 }
 
 code {
-  @apply !bg-slate-100 dark:!bg-slate-800 !border-0 !py-0.5;
+  @apply !bg-slate-100 dark:!bg-slate-900 dark:!border-balancedSlate-800 !border !py-0.5;
 }
 
 input {
