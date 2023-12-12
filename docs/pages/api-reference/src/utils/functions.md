@@ -106,3 +106,34 @@ Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
 **Returns**:
 
   The time until the next measurement should be taken in seconds.
+
+
+## with\_filelock Objects
+
+```python
+class with_filelock()
+```
+
+FileLock = Mark, that a file is being used and other programs
+should not interfere. A file "*.lock" will be created and the
+content of this file will make the wrapped function possibly
+wait until other programs are done using it.
+
+See https://en.wikipedia.org/wiki/Semaphore_(programming). Usage:
+
+```python
+@with_filelock(lockfile_path="path/to/lockfile.lock", timeout=10)
+def some_function():
+    pass
+
+some_function() # will be executed within a semaphore 
+```
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(lockfile_path: str, timeout: float = -1) -> None
+```
+
+A timeout of -1 means that the code waits forever.
