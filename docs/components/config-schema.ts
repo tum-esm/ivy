@@ -1,5 +1,5 @@
 /* prettier-ignore */
-const CONFIG_SCHEMA_OBJECT: any = {
+const CONFIG_SCHEMA: any = {
     "additionalProperties": false,
     "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found in the documentation at TODO.",
     "properties": {
@@ -171,4 +171,4 @@ const CONFIG_SCHEMA_OBJECT: any = {
     "type": "object"
 };
 
-export default CONFIG_SCHEMA_OBJECT;
+export default CONFIG_SCHEMA;
