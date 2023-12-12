@@ -104,15 +104,6 @@ def run_pytests(version: str) -> None
 Run all pytests with the mark "version_change" in the version directory.
 
 
-#### remove\_old\_venvs
-
-```python
-def remove_old_venvs() -> None
-```
-
-Remove all old virtual environments, that are not currently in use.
-
-
 #### update\_cli\_pointer
 
 ```python
@@ -120,3 +111,12 @@ def update_cli_pointer(version: str) -> None
 ```
 
 Update the cli pointer to a new version
+
+
+#### remove\_old\_venvs
+
+```python
+def remove_old_venvs() -> None
+```
+
+Remove all old virtual environments, that are not currently in use.

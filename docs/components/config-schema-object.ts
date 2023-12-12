@@ -4,17 +4,9 @@ const CONFIG_SCHEMA_OBJECT: any = {
     "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found in the documentation at TODO.",
     "properties": {
         "version": {
+            "const": "0.1.0",
             "description": "The version of the software this config file is for",
-            "examples": [
-                "0.1.0",
-                "1.2.3",
-                "0.4.0-alpha.1",
-                "0.5.0-beta.12",
-                "0.6.0-rc.123"
-            ],
-            "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
-            "title": "Version",
-            "type": "string"
+            "title": "Version"
         },
         "logging_verbosity": {
             "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",

@@ -93,13 +93,9 @@ class Config(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
-    version: str = pydantic.Field(
+    version: Literal["0.1.0"] = pydantic.Field(
         ...,
-        pattern=src.constants.VERSION_REGEX,
         description="The version of the software this config file is for",
-        examples=[
-            "0.1.0", "1.2.3", "0.4.0-alpha.1", "0.5.0-beta.12", "0.6.0-rc.123"
-        ],
     )
     logging_verbosity: LoggingVerbosityConfig = pydantic.Field(default=...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
