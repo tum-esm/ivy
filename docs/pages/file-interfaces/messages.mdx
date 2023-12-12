@@ -40,7 +40,7 @@ messaging_agent.add_message(
 
 The different messages will be sent to the configured IOT backend via MQTT.
 
-However, you do not have to manually send out log messages because the logger already does that (see `config.logging_verbosity`):
+However, you do not have to manually send out log messages because the logger already does that (see `config.logging_verbosity.message_sending`):
 
 ```python
 logger = src.utils.Logger(config=..., origin="some-place")
@@ -49,7 +49,7 @@ logger.info("CPU load is high", details="The CPU load was above 75% for the last
 
 ## Local Message MessageArchive
 
-In case the backend is offline for a while or the connection between MQTT broker and server breaks, the messages are stored locally in `data/messages/`. There is one file `YYYY-MM-DD.csv"` per day and each line can be parsed using the schema below. The following script does just that:
+In case the backend is offline for a while or the connection between MQTT broker and server breaks, the messages are stored locally in `data/messages/`. There is one file `YYYY-MM-DD.csv"` per day and each line can be parsed using the schema below. The file name relates to the system date (not UTC date). The following script does just that:
 
 ```python
 import src

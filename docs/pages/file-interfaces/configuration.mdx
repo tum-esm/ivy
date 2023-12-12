@@ -15,6 +15,15 @@ The file `config.json` is used to configure the whol automation. They are locate
 └── 📄 config.template.json
 ```
 
+This file can be loaded from anywhere in the codebase with the following code snippet. The only process that should changes this file is the updater. The config file only has to be loaded once on startup because whenever the updater changes it, it also restarts the whole automation.
+
+```python
+import src
+
+config = src.types.Config.load()
+print(config.version)  # prints "0.1.0"
+```
+
 Below, you can find an example file and the schema definition of the config file. Whenever you try to start the automation with a config that does not comply with this schema, the automation will output a precise error message and shut down.
 
 {/* The following example is synced automatically with the file in `config/config.template.json` whenever running the config schema export. */}
