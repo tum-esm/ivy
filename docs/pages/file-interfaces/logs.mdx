@@ -1,0 +1,29 @@
+# Logs
+
+Logs will be written locally to `data/logs/`. There is one file `YYYY-MM-DD.log"` per day. The file name relates to the system date (not UTC date).
+
+## How to log things
+
+Log lines can have multiple levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `EXCEPTION`. The following code snippet instantiates a logger and writes some log lines.
+
+```python
+import src
+
+config = src.types.Config.load()
+logger = src.utils.Logger(config, origin="some-place")
+
+logger.debug("Hello World!")
+logger.info("Hello again!", details="Some verbose comments or data that does not fit in a subject line")
+logger.warning("Something is not right!")
+logger.error("Something is really wrong!")
+try:
+    4 / 0
+except Exception as e:
+    logger.exception(e, label="Failed while doing X")
+```
+
+## Where do those logs go?
+
+The config has a section "logging_verbosity", where you can define the minimum levels for: 1. printing to console, 2. writing to log files, 3. sending as messages (see next section).
+
+E.g. if `logging_verbosity.console_prints` is set to `WARNING`, then only `WARNING`, `ERROR` and `EXCEPTION` will be printed to console. If it is set to `null`, then nothing will be printed to console.
