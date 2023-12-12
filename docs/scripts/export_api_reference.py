@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import re
 import sys
 import shutil
 
@@ -72,3 +73,31 @@ def render_module(relative_path: str) -> None:
 
 render_module("run.py")
 render_module("src")
+
+# ---------------------------------------------------------
+# Copy example config file to docs page
+
+CONFIG_TEMPLATE_FILE_TARGET = os.path.join(
+    PROJECT_DIR, "docs", "pages", "guides", "configuration.mdx"
+)
+
+print(f"Updating config example files in {CONFIG_TEMPLATE_FILE_TARGET}")
+
+with open(CONFIG_TEMPLATE_FILE_TARGET) as f:
+    md_file_content = f.read()
+
+example_file_blocks = re.findall(
+    r"Example File\n\n```[\s\S]*?```", md_file_content
+)
+assert len(example_file_blocks) == 1
+
+with open(os.path.join(PROJECT_DIR, "config", "config.template.json")) as f:
+    config_template_content = f.read()
+
+md_file_content = md_file_content.replace(
+    example_file_blocks[0],
+    f"Example File\n\n```json\n{config_template_content.strip()}\n```",
+)
+
+with open(CONFIG_TEMPLATE_FILE_TARGET, "w") as f:
+    f.write(md_file_content)
