@@ -5,6 +5,8 @@ import shutil
 import sys
 import pydantic
 import src
+from .logger import Logger
+from .messaging_agent import MessagingAgent
 
 
 class Updater:
@@ -26,6 +28,8 @@ class Updater:
         Updater.instance = self
         self.config = config
         self.processed_config_file_strings: set[str] = set()
+        self.logger = Logger(config=config, origin="updater")
+        self.messaging_agent = MessagingAgent()
 
     def perform_update(self, config_file_string: str) -> None:
         """Perform an update for a received config file.
@@ -63,29 +67,34 @@ class Updater:
                                  everything else is optional."""
 
         if config_file_string in self.processed_config_file_strings:
-            print("Received config file has already been processed")
+            self.logger.debug("Received config file has already been processed")
             return
         else:
             self.processed_config_file_strings.add(config_file_string)
-            print(f"Processing new config: {config_file_string}")
+            self.logger.info(f"Processing new config: {config_file_string}")
 
         try:
             foreign_config = src.types.ForeignConfig.load_from_string(
                 config_file_string
             )
+            self.logger.info(f"Successfully parsed foreign config")
         except pydantic.ValidationError as e:
-            print(f"Could not parse config: {e}")
+            self.logger.exception(e, label="Could not parse foreign config")
 
         if foreign_config.version == self.config.version:
+            self.logger.info("Received config has same version number")
             try:
                 local_config = src.types.Config.load_from_string(
                     config_file_string
                 )
+                self.logger.info(f"Successfully parsed local config")
             except pydantic.ValidationError as e:
-                print(f"Could not parse config: {e}")
+                self.logger.exception(e, label="Could not parse local config")
 
             if local_config == self.config:
-                print("Received config is equal to the currently used config")
+                self.logger.info(
+                    "Received config is equal to the currently used config"
+                )
                 return
             else:
                 print(
@@ -95,46 +104,63 @@ class Updater:
                 local_config.dump()
                 exit(0)
         else:
-            print(
-                f"Switching to new version {foreign_config.version} as specified in config"
+            self.logger.info(
+                f"Received config has different version number ({foreign_config.version})"
             )
-            print(f"Downloading new source code")
+
+            # Download source code
+
+            self.logger.debug(f"Downloading new source code")
             try:
                 self.download_source_code(foreign_config.version)
+                self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
-                print(f"Could not download source code: {e}")
+                self.logger.exception(e, "Could not download source code")
                 return
 
-            print("Installing dependencies")
+            # Install dependencies
+
+            self.logger.debug("Installing dependencies")
             try:
                 self.install_dependencies(foreign_config.version)
+                self.logger.debug("Successfully installed dependencies")
             except Exception as e:
-                print(f"Could not install dependencies: {e}")
+                self.logger.exception(e, "Could not install dependencies")
                 return
 
-            print("Dumping config file")
+            # Write new config file to destination
+
+            self.logger.debug("Dumping config file")
             try:
                 foreign_config.dump()
+                self.logger.debug("Successfully dumped config file")
             except Exception as e:
-                print(f"Could not dump config file: {e}")
+                self.logger.exception(e, "Could not dump config file")
                 return
 
-            print("Running pytests")
+            # Run tests on new version
+
+            self.logger.debug("Running pytests")
             try:
                 self.run_pytests(foreign_config.version)
+                self.logger.debug("Successfully ran pytests")
             except Exception as e:
-                print(f"Could not run pytests: {e}")
+                self.logger.exception(e, "Running pytests failed")
                 return
 
-            print("Successfully tested new config")
-            print("Updating cli pointer")
+            # Update cli pointer
+
+            self.logger.debug("Updating cli pointer")
             try:
                 self.update_cli_pointer(foreign_config.version)
+                self.logger.debug("Successfully updated cli pointer")
             except Exception as e:
-                print(f"Could not update cli pointer: {e}")
+                self.logger.exception(e, "Could not update cli pointer")
                 return
 
-            print(
+            # Quit once update is successful
+
+            self.logger.info(
                 f"Successfully updated to version {foreign_config.version}, shutting down"
             )
             exit(0)
