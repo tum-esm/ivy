@@ -1,5 +1,6 @@
 import {
     ConfigSchema,
+    ForeignConfigSchema
 } from '../../components/schema-renderers';
 
 # Configuration Files
@@ -47,3 +48,11 @@ Below, you can find an example file and the schema definition of the config file
 ### Schema definition
 
 <ConfigSchema  />
+
+
+## Foreign Configuration Files
+
+This codebase can update to any new config schema as long as it follows the `ForeignConfig` schema:
+
+<ForeignConfigSchema/>
+
