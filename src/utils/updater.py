@@ -97,13 +97,19 @@ class Updater:
                     "Received config is equal to the currently used config"
                 )
                 return
-            else:
-                print(
-                    "Received same config version number, only changing config"
-                )
-                print("Dumping config file")
+            self.logger.info(
+                "Received config is not equal to the currently used config."
+            )
+
+            self.logger.debug("Dumping config file")
+            try:
                 local_config.dump()
-                exit(0)
+                self.logger.debug("Successfully dumped config file")
+            except Exception as e:
+                self.logger.exception(e, "Could not dump config file")
+                return
+
+            exit(0)
         else:
             self.logger.info(
                 f"Received config has different version number ({foreign_config.version})"
@@ -233,16 +239,18 @@ class Updater:
 
         venv_path = os.path.join(version_dir, ".venv")
         if os.path.isdir(venv_path):
-            print(f"Removing existing virtual environment at {venv_path}")
+            self.logger.debug(
+                f"Removing existing virtual environment at {venv_path}"
+            )
             shutil.rmtree(venv_path)
 
-        print(f"Creating virtual environment at {venv_path}")
+        self.logger.debug(f"Creating virtual environment at {venv_path}")
         src.utils.functions.run_shell_command(
             f"python3.11 -m venv .venv",
             working_directory=version_dir,
         )
 
-        print(f"Installing dependencies using poetry")
+        self.logger.debug(f"Installing dependencies using poetry")
         src.utils.functions.run_shell_command(
             f"source .venv/bin/activate && poetry install --no-root",
             working_directory=version_dir,
@@ -254,8 +262,6 @@ class Updater:
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
-
-        print(f"running all pytests")
         src.utils.functions.run_shell_command(
             f'.venv/bin/python -m pytest -m "version_change" tests/',
             working_directory=version_dir,
