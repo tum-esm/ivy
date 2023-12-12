@@ -29,6 +29,11 @@ def run(config: src.types.Config) -> None:
         logger.debug(f"sleeping for {t} seconds")
         time.sleep(t)
 
+        state = src.utils.StateInterface.load()
+        if (state.system.last_5_min_load or 0) > 0.75:
+            logger.debug("system load is above 75%, skipping this procedure")
+            continue
+
         # TODO: fetch weather from API
         # TODO: log progress
         # TODO: send out data

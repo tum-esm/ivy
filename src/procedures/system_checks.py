@@ -33,14 +33,18 @@ def run(config: src.types.Config) -> None:
         load_last_5_min = round(loads[1], 2)
         load_last_15_min = round(loads[2], 2)
         logger.debug(
-            "Average system load (last 1/5/15 minutes) [%]:" +
+            "Average CPU load (last 1/5/15 minutes) [%]:" +
             f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
         )
 
-        if load_last_5_min > 70:
+        if load_last_5_min > 75:
             logger.warning(
-                "System load is very high (above 70% in the last 50 minutes)"
+                "System load is very high (above 75% in the last 5 minutes)"
             )
 
         last_boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
         logger.debug(f"Last boot time: {last_boot_time}")
+
+        with src.utils.StateInterface.update() as state:
+            state.system.last_boot_time = last_boot_time
+            state.system.last_5_min_load = load_last_5_min
