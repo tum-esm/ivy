@@ -1,0 +1,67 @@
+import {
+    MessageArchiveItemSchema
+} from '../../components/schema-renderers';
+
+# Messages
+
+## What are "Messages"?
+
+"Messages" are the items sent to the central backend of the network via MQTT. There are three types of messages: `DataMessage`, `LogMessage` and `ConfigMessage`. Below, you can find the internal definition of the message schema: it combines a timestamp with a message body for one of the three message types.
+
+```python
+import src
+
+messaging_agent = src.utils.MessagingAgent()
+
+# send measurement datapoints
+messaging_agent.add_message(
+    src.types.DataMessageBody(
+        message_body={"temperature": 22.7, "humidity": 0.63}
+    )
+)
+
+# send log messsages
+messaging_agent.add_message(
+    src.types.LogMessageBody(
+        level="WARNING",
+        subject="CPU load is high",
+        body="The CPU load was above 75% for the last 5 minutes.",
+    )
+)
+
+# send config "received"/"accepted"/"rejected"/"startup"
+messaging_agent.add_message(
+    src.types.ConfigMessageBody(
+        status="received",
+        config={"version": "0.2.0", ...}
+    )
+)
+```
+
+The different messages will be sent to the configured IOT backend via MQTT.
+
+However, you do not have to manually send out log messages because the logger already does that (see `config.logging_verbosity`):
+
+```python
+logger = src.utils.Logger(config=..., origin="some-place")
+logger.info("CPU load is high", details="The CPU load was above 75% for the last 5 minutes.")
+```
+
+## Local Message MessageArchive
+
+In case the backend is offline for a while or the connection between MQTT broker and server breaks, the messages are stored locally in `data/messages/`. There is one file `YYYY-MM-DD.csv"` per day and each line can be parsed using the schema below. The following script does just that:
+
+```python
+import src
+
+with open("data/messages/2021-01-01.csv", "r") as f:
+    messages = [
+        src.types.MessageArchiveItem.model_validate_json(line)
+        for line in f.read().strip("\n ").split()
+    ]
+```
+
+## Message Archive Schema
+
+<MessageArchiveItemSchema />
+
