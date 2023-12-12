@@ -11,6 +11,7 @@ def run() -> None:
     config = src.types.Config.load()
     logger = src.utils.Logger(config=config, origin="main")
     messaging_agent = src.utils.MessagingAgent()
+    updater = src.utils.Updater(config=config)
 
     # log that automation is starting up
 
@@ -24,7 +25,7 @@ def run() -> None:
 
     # remove old venvs
 
-    # TODO
+    updater.remove_old_venvs()
 
     # initialize procedure managers that are responsible for
     # starting and stopping the processes for each procedure

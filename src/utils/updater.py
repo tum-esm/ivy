@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from typing import Optional
 import os
 import shutil
@@ -260,29 +261,6 @@ class Updater:
             working_directory=version_dir,
         )
 
-    def remove_old_venvs(self) -> None:
-        """Remove all old virtual environments, that are not currently in use."""
-
-        venvs_to_be_removed: list[str] = []
-        for version in os.listdir(src.constants.IVY_ROOT_DIR):
-            venv_path = os.path.join(
-                src.constants.IVY_ROOT_DIR, version, ".venv"
-            )
-            if (
-                src.utils.functions.string_is_valid_version(version) and
-                os.path.isdir(venv_path) and
-                (not (venv_path in sys.executable))
-            ):
-                venvs_to_be_removed.append(venv_path)
-
-        print(f"found {len(venvs_to_be_removed)} old .venvs to be removed")
-
-        for p in venvs_to_be_removed:
-            print(f'removing old .venv at path "{p}"')
-            shutil.rmtree(p)
-
-        print(f"successfully removed all old .venvs")
-
     def update_cli_pointer(self, version: str) -> None:
         """Update the cli pointer to a new version"""
 
@@ -297,3 +275,30 @@ class Updater:
                 "",
                 f"{venv_path}/bin/python {code_path}/cli/main.py $*",
             ])
+
+    def remove_old_venvs(self) -> None:
+        """Remove all old virtual environments, that are not currently in use."""
+
+        self.logger.info("Removing all unused .venvs")
+
+        venvs_to_be_removed: list[str] = []
+        for version in os.listdir(src.constants.IVY_ROOT_DIR):
+            if version == self.config.version:
+                continue
+            venv_path = os.path.join(
+                src.constants.IVY_ROOT_DIR, version, ".venv"
+            )
+            if (
+                src.utils.functions.string_is_valid_version(version) and
+                os.path.isdir(venv_path)
+            ):
+                venvs_to_be_removed.append(venv_path)
+
+        self.logger.debug(
+            f"found {len(venvs_to_be_removed)} old .venvs to be removed",
+            details=f"paths = {json.dumps(venvs_to_be_removed, indent=4)}",
+        )
+        for p in venvs_to_be_removed:
+            shutil.rmtree(p)
+
+        self.logger.debug(f"successfully removed all old .venvs")
