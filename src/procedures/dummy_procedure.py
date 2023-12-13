@@ -1,4 +1,5 @@
 from typing import Any
+import random
 import signal
 import time
 import src
@@ -10,6 +11,9 @@ def run(config: src.types.Config) -> None:
     procedures."""
 
     logger = src.utils.Logger(config=config, origin="dummy-procedure")
+    messaging_agent = src.utils.MessagingAgent()
+    random.seed(time.time())
+    current_positions: tuple[int, int] = [0, 0]
 
     # register a teardown procedure
 
@@ -35,11 +39,21 @@ def run(config: src.types.Config) -> None:
                 state.system.last_5_min_load or 0
             ) < 0.75, "can't perform this procedure while system load is above 75%"
 
-            # TODO: fetch weather from API
-            # TODO: log progress
-            # TODO: send out data
+            # do a random walk
+            current_positions[0] += 1 if (random.random() < 0.5) else (-1)
+            current_positions[1] += 1 if (random.random() < 0.5) else (-1)
 
-            exponential_backoff.clear()
+            # send out data
+            messaging_agent.add_message(
+                src.types.DataMessageBody(
+                    message_body={
+                        "random_walk_a_position": current_positions[0],
+                        "random_walk_b_position": current_positions[1],
+                    }
+                )
+            )
+
+            exponential_backoff.reset()
 
         except Exception as e:
             logger.exception(e)
