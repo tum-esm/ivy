@@ -20,31 +20,39 @@ def run(config: src.types.Config) -> None:
 
     # start procedure loop
 
+    exponential_backoff = src.utils.ExponentialBackoff(logger)
     while True:
-        t = src.utils.functions.get_time_to_next_datapoint(
-            seconds_between_datapoints=config.system_checks.
-            seconds_between_checks
-        )
-        logger.debug(f"sleeping for {t} seconds")
-        time.sleep(t)
+        try:
+            t = src.utils.functions.get_time_to_next_datapoint(
+                seconds_between_datapoints=config.system_checks.
+                seconds_between_checks
+            )
+            logger.debug(f"sleeping for {t} seconds")
+            time.sleep(t)
 
-        loads = psutil.getloadavg()
-        load_last_1_min = round(loads[0], 2)
-        load_last_5_min = round(loads[1], 2)
-        load_last_15_min = round(loads[2], 2)
-        logger.debug(
-            "Average CPU load (last 1/5/15 minutes) [%]:" +
-            f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
-        )
-
-        if load_last_5_min > 75:
-            logger.warning(
-                "System load is very high (above 75% in the last 5 minutes)"
+            loads = psutil.getloadavg()
+            load_last_1_min = round(loads[0], 2)
+            load_last_5_min = round(loads[1], 2)
+            load_last_15_min = round(loads[2], 2)
+            logger.debug(
+                "Average CPU load (last 1/5/15 minutes) [%]:" +
+                f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
             )
 
-        last_boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
-        logger.debug(f"Last boot time: {last_boot_time}")
+            if load_last_5_min > 75:
+                logger.warning(
+                    "System load is very high (above 75% in the last 5 minutes)"
+                )
 
-        with src.utils.StateInterface.update() as state:
-            state.system.last_boot_time = last_boot_time
-            state.system.last_5_min_load = load_last_5_min
+            last_boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
+            logger.debug(f"Last boot time: {last_boot_time}")
+
+            with src.utils.StateInterface.update() as state:
+                state.system.last_boot_time = last_boot_time
+                state.system.last_5_min_load = load_last_5_min
+
+            exponential_backoff.clear()
+
+        except Exception as e:
+            logger.exception(e)
+            exponential_backoff.wait()

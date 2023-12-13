@@ -20,20 +20,27 @@ def run(config: src.types.Config) -> None:
 
     # start procedure loop
 
-    # TODO: add exponential backoff
+    exponential_backoff = src.utils.ExponentialBackoff(logger)
     while True:
-        t = src.utils.functions.get_time_to_next_datapoint(
-            seconds_between_datapoints=config.dummy_procedure.
-            seconds_between_datapoints,
-        )
-        logger.debug(f"sleeping for {t} seconds")
-        time.sleep(t)
+        try:
+            t = src.utils.functions.get_time_to_next_datapoint(
+                seconds_between_datapoints=config.dummy_procedure.
+                seconds_between_datapoints,
+            )
+            logger.debug(f"sleeping for {t} seconds")
+            time.sleep(t)
 
-        state = src.utils.StateInterface.load()
-        if (state.system.last_5_min_load or 0) > 0.75:
-            logger.debug("system load is above 75%, skipping this procedure")
-            continue
+            state = src.utils.StateInterface.load()
+            assert (
+                state.system.last_5_min_load or 0
+            ) < 0.75, "can't perform this procedure while system load is above 75%"
 
-        # TODO: fetch weather from API
-        # TODO: log progress
-        # TODO: send out data
+            # TODO: fetch weather from API
+            # TODO: log progress
+            # TODO: send out data
+
+            exponential_backoff.clear()
+
+        except Exception as e:
+            logger.exception(e)
+            exponential_backoff.wait()
