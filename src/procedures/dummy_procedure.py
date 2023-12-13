@@ -13,7 +13,7 @@ def run(config: src.types.Config) -> None:
     logger = src.utils.Logger(config=config, origin="dummy-procedure")
     messaging_agent = src.utils.MessagingAgent()
     random.seed(time.time())
-    current_positions: tuple[int, int] = [0, 0]
+    current_positions: tuple[int, int] = (0, 0)
 
     # register a teardown procedure
 
@@ -40,8 +40,10 @@ def run(config: src.types.Config) -> None:
             ) < 0.75, "can't perform this procedure while system load is above 75%"
 
             # do a random walk
-            current_positions[0] += 1 if (random.random() < 0.5) else (-1)
-            current_positions[1] += 1 if (random.random() < 0.5) else (-1)
+            current_positions = (
+                current_positions[0] + 1 if (random.random() < 0.5) else (-1),
+                current_positions[1] + 1 if (random.random() < 0.5) else (-1),
+            )
 
             # send out data
             messaging_agent.add_message(

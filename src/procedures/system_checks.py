@@ -1,7 +1,7 @@
+from typing import Any
 import datetime
 import signal
 import time
-from typing import Any
 import psutil
 import src
 
@@ -10,6 +10,7 @@ def run(config: src.types.Config) -> None:
     """Logs the system load and last boot time."""
 
     logger = src.utils.Logger(config=config, origin="system-checks")
+    messaging_agent = src.utils.MessagingAgent()
 
     # register a teardown procedure
 
@@ -30,6 +31,7 @@ def run(config: src.types.Config) -> None:
             logger.debug(f"sleeping for {t} seconds")
             time.sleep(t)
 
+            # get and log CPU load
             loads = psutil.getloadavg()
             load_last_1_min = round(loads[0], 2)
             load_last_5_min = round(loads[1], 2)
@@ -38,20 +40,36 @@ def run(config: src.types.Config) -> None:
                 "Average CPU load (last 1/5/15 minutes) [%]:" +
                 f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
             )
-
             if load_last_5_min > 75:
                 logger.warning(
-                    "System load is very high (above 75% in the last 5 minutes)"
+                    "CPU load is very high",
+                    details=
+                    f"CPU load was at {load_last_5_min} % in the last 5 minutes"
                 )
 
-            last_boot_time = datetime.datetime.fromtimestamp(psutil.boot_time())
+            # get and log last boot time
+            seconds_since_last_boot = psutil.boot_time()
+            last_boot_time = datetime.datetime.fromtimestamp(
+                seconds_since_last_boot
+            )
             logger.debug(f"Last boot time: {last_boot_time}")
 
+            # write system data into state
             with src.utils.StateInterface.update() as state:
                 state.system.last_boot_time = last_boot_time
                 state.system.last_5_min_load = load_last_5_min
 
-            exponential_backoff.clear()
+            # send out system data
+            messaging_agent.add_message(
+                src.types.DataMessageBody(
+                    message_body={
+                        "last_boot_time": last_boot_time,
+                        "last_5_min_load": load_last_5_min,
+                    }
+                )
+            )
+
+            exponential_backoff.reset()
 
         except Exception as e:
             logger.exception(e)

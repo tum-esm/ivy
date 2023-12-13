@@ -20,7 +20,7 @@ exponential_backoff = src.utils.ExponentialBackoff(logger)
 while True:
     try:
         # do something
-        exponential_backoff.clear()
+        exponential_backoff.reset()
     except Exception as e:
         logger.exception(e)
         exponential_backoff.wait()
@@ -42,15 +42,6 @@ Create a new exponential backoff object.
 - `buckets` - The buckets to use for the exponential backoff.
 
 
-#### clear
-
-```python
-def clear() -> None
-```
-
-Reset the waiting period to the first bucket
-
-
 #### wait
 
 ```python
@@ -58,3 +49,12 @@ def wait() -> None
 ```
 
 Wait and increase the wait time to the next bucket.
+
+
+#### reset
+
+```python
+def reset() -> None
+```
+
+Reset the waiting period to the first bucket
