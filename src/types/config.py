@@ -140,6 +140,9 @@ class Config(pydantic.BaseModel):
 
         return Config.model_validate_json(c)
 
+    def to_foreign_config(self) -> ForeignConfig:
+        return ForeignConfig.model_validate_json(self.model_dump_json())
+
 
 class ForeignConfig(pydantic.BaseModel):
     """Schema of a foreign config file for any other version of the software

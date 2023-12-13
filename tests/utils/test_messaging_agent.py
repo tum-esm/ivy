@@ -57,7 +57,7 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
 
 @pytest.mark.ci
 def test_all_message_types(restore_production_files: None, ) -> None:
-    config = src.types.Config.load_template()
+    config = src.types.Config.load_template().to_foreign_config()
     agent = MessagingAgent()
     assert len(
         agent.get_n_latest_messages(20)
@@ -129,7 +129,7 @@ def test_all_message_types(restore_production_files: None, ) -> None:
 def test_message_archive_integrity(restore_production_files: None) -> None:
     agent = MessagingAgent()
 
-    config1 = src.types.Config.load_template()
+    config1 = src.types.Config.load_template().to_foreign_config()
     config2 = config1.model_copy()
     config2.version = "0.0.0"
 
