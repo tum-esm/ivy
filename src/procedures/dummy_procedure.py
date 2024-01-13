@@ -60,4 +60,4 @@ def run(config: src.types.Config) -> None:
 
         except Exception as e:
             logger.exception(e)
-            exponential_backoff.wait()
+            exponential_backoff.sleep()
