@@ -1,7 +1,7 @@
 import datetime
 import os
 import pytest
-from fixtures import restore_production_files
+from ..fixtures import restore_production_files
 import src
 
 

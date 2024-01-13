@@ -4,7 +4,7 @@ import time
 import pytest
 import itertools
 import src
-from fixtures import restore_production_files
+from ..fixtures import restore_production_files
 from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
