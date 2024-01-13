@@ -23,7 +23,7 @@ while True:
         exponential_backoff.reset()
     except Exception as e:
         logger.exception(e)
-        exponential_backoff.wait()
+        exponential_backoff.sleep()
 ```
 
 
@@ -42,10 +42,10 @@ Create a new exponential backoff object.
 - `buckets` - The buckets to use for the exponential backoff.
 
 
-#### wait
+#### sleep
 
 ```python
-def wait() -> None
+def sleep() -> None
 ```
 
 Wait and increase the wait time to the next bucket.

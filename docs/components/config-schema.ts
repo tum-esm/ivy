@@ -8,6 +8,26 @@ const CONFIG_SCHEMA: any = {
             "description": "The version of the software this config file is for",
             "title": "Version"
         },
+        "revision": {
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
+            "title": "Revision"
+        },
+        "system_identifier": {
+            "description": "The identifier of this system",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "System Identifier",
+            "type": "string"
+        },
         "logging_verbosity": {
             "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",
             "properties": {
@@ -126,6 +146,63 @@ const CONFIG_SCHEMA: any = {
             "default": null,
             "description": "If this is not set, the updater will not be used."
         },
+        "backend": {
+            "anyOf": [
+                {
+                    "properties": {
+                        "provider": {
+                            "const": "tenta",
+                            "title": "Provider"
+                        },
+                        "mqtt_host": {
+                            "maxLength": 512,
+                            "minLength": 1,
+                            "title": "Mqtt Host",
+                            "type": "string"
+                        },
+                        "mqtt_port": {
+                            "maximum": 65535,
+                            "minimum": 1,
+                            "title": "Mqtt Port",
+                            "type": "integer"
+                        },
+                        "mqtt_identifier": {
+                            "maxLength": 512,
+                            "minLength": 1,
+                            "title": "Mqtt Identifier",
+                            "type": "string"
+                        },
+                        "mqtt_password": {
+                            "maxLength": 512,
+                            "minLength": 1,
+                            "title": "Mqtt Password",
+                            "type": "string"
+                        },
+                        "max_parallel_messages": {
+                            "maximum": 10000,
+                            "minimum": 1,
+                            "title": "Max Parallel Messages",
+                            "type": "integer"
+                        }
+                    },
+                    "required": [
+                        "provider",
+                        "mqtt_host",
+                        "mqtt_port",
+                        "mqtt_identifier",
+                        "mqtt_password",
+                        "max_parallel_messages"
+                    ],
+                    "title": "BackendConfig",
+                    "type": "object"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "If this is not set, the backend will not be used."
+        },
         "dummy_procedure": {
             "description": "Settings for the dummy procedure.",
             "properties": {
@@ -163,6 +240,7 @@ const CONFIG_SCHEMA: any = {
     },
     "required": [
         "version",
+        "system_identifier",
         "logging_verbosity",
         "dummy_procedure",
         "system_checks"

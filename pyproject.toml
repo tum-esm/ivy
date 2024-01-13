@@ -13,7 +13,6 @@ dependencies = [
     "psutil>=5.9.7",
     "tenta>=0.1.2",
 ]
-# TODO: add tomllib for Python==3.10
 requires-python = ">=3.10,<3.13"
 readme = "README.md"
 license = { text = "MIT" }
