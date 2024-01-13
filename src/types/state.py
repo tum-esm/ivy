@@ -25,3 +25,6 @@ class State(pydantic.BaseModel):
         default=SystemState(),
         description="The state of the system",
     )
+
+    # TODO: store all variables that need to be
+    #       accessed by more than one procedure

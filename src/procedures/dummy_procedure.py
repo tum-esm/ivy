@@ -18,6 +18,7 @@ def run(config: src.types.Config) -> None:
     # register a teardown procedure
 
     def teardown_handler(*args: Any) -> None:
+        # TODO: add your own teardown logic
         logger.debug("nothing to tear down")
 
     signal.signal(signal.SIGTERM, teardown_handler)
