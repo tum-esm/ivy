@@ -14,13 +14,26 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "default": "data",
                             "title": "Variant"
                         },
-                        "message_body": {
-                            "title": "Message Body",
+                        "data": {
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "integer"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "title": "Data",
                             "type": "object"
                         }
                     },
                     "required": [
-                        "message_body"
+                        "data"
                     ],
                     "title": "DataMessageBody",
                     "type": "object"
@@ -90,10 +103,17 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                                     "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
                                     "title": "Version",
                                     "type": "string"
+                                },
+                                "revision": {
+                                    "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
+                                    "minimum": 0,
+                                    "title": "Revision",
+                                    "type": "integer"
                                 }
                             },
                             "required": [
-                                "version"
+                                "version",
+                                "revision"
                             ],
                             "title": "ForeignConfig",
                             "type": "object"
