@@ -1,5 +1,5 @@
-import time
 from typing import Optional
+import time
 import tenta
 import src
 
@@ -14,7 +14,7 @@ def run_tenta_backend(config: src.types.Config) -> None:
         mqtt_identifier=config.backend.mqtt_identifier,
         mqtt_password=config.backend.mqtt_password,
         sensor_identifier=config.system_identifier,
-        on_config_message=lambda x: ...,
+        #on_config_message=...,
     )
     messaging_agent = src.utils.MessagingAgent()
 
@@ -42,7 +42,7 @@ def run_tenta_backend(config: src.types.Config) -> None:
                     mqtt_message_id = tenta_client.publish(
                         tenta.types.MeasurementMessage(
                             value=message.message_body.data,
-                            revision=config.config_revision,
+                            revision=config.revision,
                         )
                     )
                 if message.message_body.variant == "log":
@@ -59,27 +59,33 @@ def run_tenta_backend(config: src.types.Config) -> None:
                                 message.message_body.subject + "\n\n" +
                                 message.message_body.body
                             ),
-                            revision=config.config_revision,
+                            revision=config.revision,
                         )
                     )
                 if message.message_body.variant == "config":
                     if message.message_body.status in ["accepted", "rejected"]:
                         mqtt_message_id = tenta_client.publish(
-                            tenta.types.ConfigurationMessage(
+                            tenta.types.AcknowledgmentMessage(
                                 revision=message.message_body.config.revision,
-                                status=message.message_body.status,
+                                success=(
+                                    message.message_body.status == "accepted"
+                                ),
                             )
                         )
                     # received and startup not implemented in Tenta yet
                 if mqtt_message_id is not None:
                     active_messages.add((mqtt_message_id, message))
 
-        published_messages: set[int] = set()
-        for message in active_messages:
-            if tenta_client.was_message_published(message[0]):
-                published_messages.append(message)
-                messaging_agent.remove_messages([message[1].identifier])
+        published_message_ids: set[int] = set()
+        for message_id, message in active_messages:
+            if tenta_client.was_message_published(message_id):
+                published_message_ids.add(message_id)
+                messaging_agent.remove_messages([message.identifier])
 
-        active_messages = active_messages.difference(published_messages)
+        active_messages = set(
+            filter(
+                lambda m: m[0] not in published_message_ids, active_messages
+            )
+        )
 
         time.sleep(2)
