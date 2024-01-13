@@ -66,7 +66,7 @@ def run(config: src.types.Config) -> None:
             # send out system data
             messaging_agent.add_message(
                 src.types.DataMessageBody(
-                    message_body={
+                    data={
                         "last_boot_time": last_boot_time,
                         "last_5_min_load": load_last_5_min,
                     }

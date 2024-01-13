@@ -18,18 +18,18 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
     assert not os.path.isfile(archive_file)
     assert len(agent.get_n_latest_messages(1)) == 0
 
-    agent.add_message(DataMessageBody(message_body={"test": "test"}))
+    agent.add_message(DataMessageBody(data={"test": "test"}))
     assert os.path.isfile(archive_file)
     with open(archive_file, "r") as f:
         assert len(f.readlines()) == 2
 
     time.sleep(0.1)
-    agent.add_message(DataMessageBody(message_body={"test": "test2"}))
+    agent.add_message(DataMessageBody(data={"test": "test2"}))
     with open(archive_file, "r") as f:
         assert len(f.readlines()) == 3
 
     time.sleep(0.1)
-    agent.add_message(DataMessageBody(message_body={"test": "test3"}))
+    agent.add_message(DataMessageBody(data={"test": "test3"}))
     with open(archive_file, "r") as f:
         assert len(f.readlines()) == 4
 
@@ -64,7 +64,7 @@ def test_all_message_types(restore_production_files: None, ) -> None:
     ) == 0, "message queue is not empty"
 
     # add data message
-    agent.add_message(DataMessageBody(message_body={"test": "test"}))
+    agent.add_message(DataMessageBody(data={"test": "test"}))
     time.sleep(0.01)
     assert len(agent.get_n_latest_messages(20)) == 1, "message was not added"
 
@@ -73,7 +73,6 @@ def test_all_message_types(restore_production_files: None, ) -> None:
         "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"
     ]):
         agent.add_message(
-            # type: ignore
             LogMessageBody(level=level, subject="test", body="test")
         )
         time.sleep(0.01)
@@ -83,10 +82,7 @@ def test_all_message_types(restore_production_files: None, ) -> None:
 
     # add config messages
     for i, status in enumerate(["received", "accepted", "rejected", "startup"]):
-        agent.add_message(
-            # type: ignore
-            ConfigMessageBody(status=status, config=config)
-        )
+        agent.add_message(ConfigMessageBody(status=status, config=config))
         time.sleep(0.01)
         assert len(
             agent.get_n_latest_messages(20)
@@ -135,10 +131,10 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     message_bodies: list[
         DataMessageBody | LogMessageBody | ConfigMessageBody] = [
-            DataMessageBody(message_body={"test": "test"}),
+            DataMessageBody(data={"test": "test"}),
             LogMessageBody(level="INFO", subject="test", body="test"),
             ConfigMessageBody(status="received", config=config1),
-            DataMessageBody(message_body={"test2": "test2"}),
+            DataMessageBody(data={"test2": "test2"}),
             LogMessageBody(level="INFO", subject="test2", body="test2"),
             ConfigMessageBody(status="rejected", config=config2),
         ]
@@ -151,7 +147,7 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     # check message archive
     archive_messages = MessagingAgent.load_message_archive(
-        datetime.datetime.now(datetime.UTC).date()
+        datetime.datetime.now(datetime.timezone.utc).date()
     )
     assert len(archive_messages) == 6, "message archive is wrong"
 
