@@ -54,6 +54,10 @@ def run(config: src.types.Config) -> None:
             )
             logger.debug(f"Last boot time: {last_boot_time}")
 
+            # On Linux system you could use `psutil.sensors_temperatures()`
+            # and `psutil.sensors_fans()` If you know your disk partitions
+            # you can use `psutil.disk_usage()`
+
             # write system data into state
             with src.utils.StateInterface.update() as state:
                 state.system.last_boot_time = last_boot_time
