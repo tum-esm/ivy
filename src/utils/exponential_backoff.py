@@ -15,7 +15,7 @@ class ExponentialBackoff:
             exponential_backoff.reset()
         except Exception as e:
             logger.exception(e)
-            exponential_backoff.wait()
+            exponential_backoff.sleep()
     ```"""
     def __init__(
         self,
@@ -32,7 +32,7 @@ class ExponentialBackoff:
         self.bucket_index = 0  # index of the next wait time bucket
         self.logger = logger
 
-    def wait(self) -> None:
+    def sleep(self) -> None:
         """Wait and increase the wait time to the next bucket."""
 
         self.logger.debug(
