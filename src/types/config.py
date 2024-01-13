@@ -106,10 +106,10 @@ class Config(pydantic.BaseModel):
         ...,
         description="The version of the software this config file is for",
     )
-    config_revision: Optional[int] = pydantic.Field(
+    revision: Optional[int] = pydantic.Field(
         default=None,
         description=
-        "The revision of this config file. This will be incremented automatically when the config file is changed. This is used to tag messages with the settings that were active at the time of sending.",
+        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
     system_identifier: str = pydantic.Field(
         ...,
@@ -180,6 +180,12 @@ class ForeignConfig(pydantic.BaseModel):
         pattern=src.constants.VERSION_REGEX,
         description="The version of the software this config file is for",
         examples=["0.1.0", "0.2.0"]
+    )
+    revision: int = pydantic.Field(
+        ...,
+        ge=0,
+        description=
+        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
 
     @staticmethod
