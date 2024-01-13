@@ -67,6 +67,15 @@ class UpdaterConfig(pydantic.BaseModel):
     )
 
 
+class BackendConfig(pydantic.BaseModel):
+    provider: Literal["tenta"]
+    mqtt_host: str = pydantic.Field(..., min_length=1, max_length=512)
+    mqtt_port: int = pydantic.Field(..., ge=1, le=65535)
+    mqtt_identifier: str = pydantic.Field(..., min_length=1, max_length=512)
+    mqtt_password: str = pydantic.Field(..., min_length=1, max_length=512)
+    max_parallel_messages: int = pydantic.Field(..., ge=1, le=10000)
+
+
 class DummyProcedureConfig(pydantic.BaseModel):
     seconds_between_datapoints: int = pydantic.Field(
         ...,
@@ -97,10 +106,25 @@ class Config(pydantic.BaseModel):
         ...,
         description="The version of the software this config file is for",
     )
+    config_revision: Optional[int] = pydantic.Field(
+        default=None,
+        description=
+        "The revision of this config file. This will be incremented automatically when the config file is changed. This is used to tag messages with the settings that were active at the time of sending.",
+    )
+    system_identifier: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description="The identifier of this system",
+    )
     logging_verbosity: LoggingVerbosityConfig = pydantic.Field(default=...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used.",
+    )
+    backend: Optional[BackendConfig] = pydantic.Field(
+        default=None,
+        description="If this is not set, the backend will not be used.",
     )
     dummy_procedure: DummyProcedureConfig = pydantic.Field(
         default=...,
