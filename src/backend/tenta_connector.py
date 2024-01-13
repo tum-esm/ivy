@@ -39,9 +39,13 @@ def run_tenta_backend(config: src.types.Config) -> None:
             for message in new_messages:
                 mqtt_message_id: Optional[int] = None
                 if message.message_body.variant == "data":
+                    numeric_data_only: dict[str, int | float] = {}
+                    for key, value in message.message_body.data.items():
+                        if isinstance(value, (int, float)):
+                            numeric_data_only[key] = value
                     mqtt_message_id = tenta_client.publish(
                         tenta.types.MeasurementMessage(
-                            value=message.message_body.data,
+                            value=numeric_data_only,
                             revision=config.revision,
                         )
                     )

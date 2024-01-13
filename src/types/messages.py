@@ -5,7 +5,7 @@ from .config import ForeignConfig
 
 class DataMessageBody(pydantic.BaseModel):
     variant: Literal["data"] = "data"
-    data: dict[str, float | int]
+    data: dict[str, float | int | str]
 
 
 class LogMessageBody(pydantic.BaseModel):
