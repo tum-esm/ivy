@@ -7,12 +7,13 @@ repository = "https://github.com/tum-esm/ivy-seed"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<=3.12"
+python = ">=3.11,<3.13"
 python-dotenv = "^1.0.0"
 filelock = "^3.13.1"
 pytest = "^7.4.3"
 pydantic = "^2.5.2"
 psutil = "^5.9.6"
+tenta = "^0.1.2"
 
 [tool.pytest.ini_options]
 markers = [
