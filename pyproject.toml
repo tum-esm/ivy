@@ -1,19 +1,35 @@
-[tool.poetry]
+[project]
 name = "ivy-seed"
 version = "0.1.0"
-description = ""
-authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
-repository = "https://github.com/tum-esm/ivy-seed"
+description = "A Python template for an IoT node automation software supporting over-the air configuration and software updates"
+authors = [
+    { name = "Moritz Makowski", email = "moritz@dostuffthatmatters.dev" },
+]
+dependencies = [
+    "python-dotenv>=1.0.0",
+    "filelock>=3.13.1",
+    "pytest>=7.4.4",
+    "pydantic>=2.5.3",
+    "psutil>=5.9.7",
+    "tenta>=0.1.2",
+]
+requires-python = ">=3.11,<3.13"
 readme = "README.md"
+license = { text = "MIT" }
 
-[tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-python-dotenv = "^1.0.0"
-filelock = "^3.13.1"
-pytest = "^7.4.3"
-pydantic = "^2.5.2"
-psutil = "^5.9.6"
-tenta = "^0.1.2"
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.8.0",
+    "pydoc-markdown>=4.8.2",
+    "jsonref>=1.1.0",
+    "types-psutil>=5.9.5.20240106",
+    "setuptools>=69.0.3",
+]
+[tool.pdm]
+package-type = "application"
+
+[tool.setuptools]
+packages = []
 
 [tool.pytest.ini_options]
 markers = [
@@ -22,20 +38,9 @@ markers = [
     "version_change: will run before switching to a new version",
 ]
 
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.7.0"
-pydoc-markdown = "^4.8.2"
-jsonref = "^1.1.0"
-types-psutil = "^5.9.5.17"
-setuptools = "^69.0.2"
-
 [tool.mypy]
 strict = true
 implicit_reexport = true
-no_warn_unused_ignores = true
 plugins = ["pydantic.mypy"]
 
 [tool.yapf]
@@ -48,7 +53,3 @@ spaces_around_subscript_colon = true
 [[tool.mypy.overrides]]
 module = ["jsonref"]
 ignore_missing_imports = true
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
