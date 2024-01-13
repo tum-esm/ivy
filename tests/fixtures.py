@@ -23,7 +23,7 @@ def restore_production_files() -> Generator[None, None, None]:
     the test is running and vice versa."""
 
     with src.utils.functions.with_automation_lock():
-        utcnow = datetime.datetime.now(datetime.UTC)
+        utcnow = datetime.datetime.now(datetime.timezone.utc)
         assert not (
             (utcnow.hour == 23 and utcnow.minute == 59) or
             (utcnow.hour == 0 and utcnow.minute == 0)

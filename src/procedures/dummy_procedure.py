@@ -49,7 +49,7 @@ def run(config: src.types.Config) -> None:
             # send out data
             messaging_agent.add_message(
                 src.types.DataMessageBody(
-                    message_body={
+                    data={
                         "random_walk_a_position": current_positions[0],
                         "random_walk_b_position": current_positions[1],
                     }
