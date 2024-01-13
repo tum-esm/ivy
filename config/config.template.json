@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
+  "revision": 1,
   "system_identifier": "my-system-1",
-  "config_revision": 1,
   "logging_verbosity": {
     "file_archive": "DEBUG",
     "console_prints": "INFO",
