@@ -1,4 +1,5 @@
 import os
+import sys
 import pytest
 import src
 
@@ -16,5 +17,5 @@ def test_static_types() -> None:
 
     for path in ["src/", "tests/", "run.py", "docs/scripts/"]:
         assert os.system(
-            f"cd {src.constants.PROJECT_DIR} && .venv/bin/python -m mypy {path}"
+            f"cd {src.constants.PROJECT_DIR} && {sys.executable} -m mypy {path}"
         ) == 0
