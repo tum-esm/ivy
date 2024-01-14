@@ -34,14 +34,12 @@ Initialize an Updater instance.
 #### perform\_update
 
 ```python
-def perform_update(config_file_string: str) -> None
+def perform_update(foreign_config: src.types.ForeignConfig) -> None
 ```
 
 Perform an update for a received config file.
 
-1. Parse the received config file string using
-`types.ForeignConfig.load_from_string` to check whether
-it is an object and contains the key `version`.
+1. Check whether this config revision has already been processed.
 2. If version is equal to the current version:
 * Parse the received config file string using
 `types.Config.load_from_string`
