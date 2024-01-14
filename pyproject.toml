@@ -24,6 +24,7 @@ dev = [
     "jsonref>=1.1.0",
     "types-psutil>=5.9.5.20240106",
     "setuptools>=69.0.3",
+    "pytest-cov>=4.1.0",
 ]
 [tool.pdm]
 package-type = "application"
