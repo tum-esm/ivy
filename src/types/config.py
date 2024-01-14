@@ -106,8 +106,9 @@ class Config(pydantic.BaseModel):
         ...,
         description="The version of the software this config file is for",
     )
-    revision: Optional[int] = pydantic.Field(
-        default=None,
+    revision: int = pydantic.Field(
+        ...,
+        ge=0,
         description=
         "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )

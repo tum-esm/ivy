@@ -8,7 +8,7 @@ title: system_checks.py
 #### run
 
 ```python
-def run(config: src.types.Config) -> None
+def run(config: src.types.Config, logger: src.utils.Logger) -> None
 ```
 
 Logs the system load and last boot time.

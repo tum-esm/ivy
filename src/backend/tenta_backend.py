@@ -19,7 +19,7 @@ def run_tenta_backend(
         )
         try:
             foreign_config = src.types.ForeignConfig(
-                **message.config,
+                **message.configuration,
                 revision=message.revision,
             )
             with src.utils.StateInterface.update() as state:

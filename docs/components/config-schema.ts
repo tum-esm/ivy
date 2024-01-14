@@ -9,17 +9,10 @@ const CONFIG_SCHEMA: any = {
             "title": "Version"
         },
         "revision": {
-            "anyOf": [
-                {
-                    "type": "integer"
-                },
-                {
-                    "type": "null"
-                }
-            ],
-            "default": null,
             "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
-            "title": "Revision"
+            "minimum": 0,
+            "title": "Revision",
+            "type": "integer"
         },
         "system_identifier": {
             "description": "The identifier of this system",
@@ -240,6 +233,7 @@ const CONFIG_SCHEMA: any = {
     },
     "required": [
         "version",
+        "revision",
         "system_identifier",
         "logging_verbosity",
         "dummy_procedure",

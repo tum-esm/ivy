@@ -8,7 +8,7 @@ title: dummy_procedure.py
 #### run
 
 ```python
-def run(config: src.types.Config) -> None
+def run(config: src.types.Config, logger: src.utils.Logger) -> None
 ```
 
 Fetches the weather from a weather API. You can simply remove

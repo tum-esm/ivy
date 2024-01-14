@@ -42,7 +42,7 @@ class ProcedureManager():
         )
 
     def check_procedure_status(self) -> None:
-        assert self.procedure_is_running()
+        assert self.process is not None
 
         if self.process.is_alive():
             self.logger.debug("process is alive")

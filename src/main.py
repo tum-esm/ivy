@@ -68,7 +68,7 @@ def run() -> None:
         pending_configs = src.utils.StateInterface.load().pending_configs
         for pending_config in pending_configs:
             updater.perform_update(pending_config)
-        with src.utils.StateInterface.load() as state:
+        with src.utils.StateInterface.update() as state:
             state.pending_configs = state.pending_configs[len(pending_configs):]
 
         time.sleep(5)
