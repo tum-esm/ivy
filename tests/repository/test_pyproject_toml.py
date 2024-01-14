@@ -6,7 +6,7 @@ import src
 try:
     import tomllib  # type: ignore
 except ModuleNotFoundError:
-    import tomli as tomllib
+    import tomli as tomllib  # type: ignore
 
 path = os.path.join(src.constants.PROJECT_DIR, "pyproject.toml")
 
