@@ -1,9 +1,9 @@
 from __future__ import annotations
-import json
 from typing import Optional
+import json
 import os
-import shutil
 import sys
+import shutil
 import pydantic
 import src
 from .logger import Logger
@@ -28,16 +28,14 @@ class Updater:
         assert Updater.instance is None, "There should only be one Updater instance"
         Updater.instance = self
         self.config = config
-        self.processed_config_file_strings: set[str] = set()
+        self.processed_config_revisions: set[int] = set()
         self.logger = Logger(config=config, origin="updater")
         self.messaging_agent = MessagingAgent()
 
-    def perform_update(self, config_file_string: str) -> None:
+    def perform_update(self, foreign_config: src.types.ForeignConfig) -> None:
         """Perform an update for a received config file.
 
-        1. Parse the received config file string using
-            `types.ForeignConfig.load_from_string` to check whether
-            it is an object and contains the key `version`.
+        1. Check whether this config revision has already been processed.
         2. If version is equal to the current version:
             * Parse the received config file string using
                 `types.Config.load_from_string`
@@ -67,26 +65,35 @@ class Updater:
                                  be a JSON object with at least the `version` field,
                                  everything else is optional."""
 
-        if config_file_string in self.processed_config_file_strings:
-            self.logger.debug("Received config file has already been processed")
+        if foreign_config.revision <= self.config.revision:
+            self.logger.info(
+                f"Received config has " + (
+                    "lower revision number than" if
+                    (foreign_config.revision < self.config.revision
+                    ) else "same revision number as"
+                ) +
+                f" current config ({foreign_config.revision}) -> not updating"
+            )
+            return
+
+        if foreign_config.revision in self.processed_config_revisions:
+            self.logger.debug(
+                f"The config with revision {foreign_config.revision} " +
+                "has already been processed"
+            )
             return
         else:
-            self.processed_config_file_strings.add(config_file_string)
-            self.logger.info(f"Processing new config: {config_file_string}")
-
-        try:
-            foreign_config = src.types.ForeignConfig.load_from_string(
-                config_file_string
+            self.processed_config_revisions.add(foreign_config.revision)
+            self.logger.info(
+                f"Processing new config with revision {foreign_config.revision}",
+                details=f"config = {foreign_config.model_dump_json(indent=4)}"
             )
-            self.logger.info(f"Successfully parsed foreign config")
-        except pydantic.ValidationError as e:
-            self.logger.exception(e, label="Could not parse foreign config")
 
         if foreign_config.version == self.config.version:
             self.logger.info("Received config has same version number")
             try:
                 local_config = src.types.Config.load_from_string(
-                    config_file_string
+                    foreign_config.model_dump_json()
                 )
                 self.logger.info(f"Successfully parsed local config")
             except pydantic.ValidationError as e:
@@ -250,7 +257,7 @@ class Updater:
 
         self.logger.debug(f"Creating virtual environment at {venv_path}")
         src.utils.functions.run_shell_command(
-            f"python3.11 -m venv .venv",
+            f"python{sys.version_info.major}.{sys.version_info.minor} -m venv .venv",
             working_directory=version_dir,
         )
 
