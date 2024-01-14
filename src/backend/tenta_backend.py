@@ -6,11 +6,11 @@ import tenta
 import src
 
 
-def run_tenta_backend(config: src.types.Config) -> None:
+def run_tenta_backend(
+    config: src.types.Config, logger: src.utils.Logger
+) -> None:
     assert config.backend is not None
     assert config.backend.provider == "tenta"
-
-    logger = src.utils.Logger(config=config, origin="tenta-backend")
 
     def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
         logger.info(

@@ -6,10 +6,9 @@ import psutil
 import src
 
 
-def run(config: src.types.Config) -> None:
+def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     """Logs the system load and last boot time."""
 
-    logger = src.utils.Logger(config=config, origin="system-checks")
     messaging_agent = src.utils.MessagingAgent()
 
     # register a teardown procedure
