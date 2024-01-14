@@ -109,6 +109,10 @@ class Updater:
                 self.logger.exception(e, "Could not dump config file")
                 return
 
+            self.logger.debug(
+                "Exiting mainloop so that it can " +
+                "be restarted with the new config"
+            )
             exit(0)
         else:
             self.logger.info(

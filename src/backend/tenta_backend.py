@@ -1,5 +1,6 @@
 from typing import Optional
 import time
+import pydantic
 import tenta
 import src
 
@@ -8,18 +9,36 @@ def run_tenta_backend(config: src.types.Config) -> None:
     assert config.backend is not None
     assert config.backend.provider == "tenta"
 
+    # TODO: add try except to log exceptions
+    # TODO: add try except to log exceptions in "on_config_message"
+
+    def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
+        # TODO: log the config message was received
+        try:
+            foreign_config = src.types.ForeignConfig(
+                **message.config,
+                revision=message.revision,
+            )
+            with src.utils.StateInterface.update() as state:
+                state.pending_configs.append(foreign_config)
+            # TODO: log that the config could be parsed and
+            #       will soon be processed by the updater
+        except pydantic.ValidationError as e:
+            # TODO: log why the config was invalid
+            pass
+
+    # TODO: log that the backend is starting
     tenta_client = tenta.TentaClient(
         mqtt_host=config.backend.mqtt_host,
         mqtt_port=config.backend.mqtt_port,
         mqtt_identifier=config.backend.mqtt_identifier,
         mqtt_password=config.backend.mqtt_password,
         sensor_identifier=config.system_identifier,
-        #on_config_message=...,
+        on_config_message=on_config_message,
     )
     messaging_agent = src.utils.MessagingAgent()
 
-    # TODO: subscribe to configs
-    # TODO: write new configs to state file when they arrive
+    # TODO: log that the tenta client could be set up
 
     # active = in the process of sending
     # the first element of the tuple is the mqtt message id
@@ -91,5 +110,4 @@ def run_tenta_backend(config: src.types.Config) -> None:
                 lambda m: m[0] not in published_message_ids, active_messages
             )
         )
-
-        time.sleep(2)
+        time.sleep(5)
