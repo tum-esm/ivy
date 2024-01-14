@@ -1,1 +1,1 @@
-from .tenta_connector import run_tenta_backend
+from .tenta_backend import run_tenta_backend

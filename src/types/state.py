@@ -1,6 +1,7 @@
 from typing import Optional
 import datetime
 import pydantic
+from .config import ForeignConfig
 
 
 class SystemState(pydantic.BaseModel):
@@ -24,6 +25,11 @@ class State(pydantic.BaseModel):
     system: SystemState = pydantic.Field(
         default=SystemState(),
         description="The state of the system",
+    )
+    pending_configs: list[ForeignConfig] = pydantic.Field(
+        default=[],
+        description=
+        "A list of pending config changes. This will be written to by the backend procedure and read by the updater procedure.",
     )
 
     # TODO: store all variables that need to be
