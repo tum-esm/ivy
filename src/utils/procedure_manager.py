@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, Optional
 import signal
 import multiprocessing
+from .logger import Logger
 import src
 
 
@@ -9,44 +10,45 @@ class ProcedureManager():
     def __init__(
         self,
         config: src.types.Config,
-        procedure_entrypoint: Callable[[src.types.Config], None],
+        procedure_entrypoint: Callable[[src.types.Config, Logger], None],
         procedure_name: str,
     ) -> None:
         self.config = config
         self.process: Optional[multiprocessing.Process] = None
         self.procedure_entrypoint = procedure_entrypoint
         self.procedure_name = procedure_name
-        self.logger = src.utils.Logger(
+        self.logger = Logger(
             config=config, origin=f"{self.procedure_name}-procedure-manager"
         )
+        self.procedure_logger = Logger(
+            config=config, origin=f"{self.procedure_name}"
+        )
 
-    def start_process_if_not_running(self) -> bool:
-        if self.process is None:
-            self.process = multiprocessing.Process(
-                target=self.procedure_entrypoint,
-                args=(self.config, ),
-                name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
-                daemon=True,
-            )
-            self.process.start()
-            self.logger.info(
-                "started process",
-                details=f"pid = {self.process.pid}\nname={self.process.name}",
-            )
-            return True
-        else:
-            self.logger.debug("process is already running")
-            return False
+    def procedure_is_running(self) -> bool:
+        return self.process is not None
 
-    def check_process_status(self) -> None:
-        if self.process is not None:
-            if self.process.is_alive():
-                self.logger.debug("process is alive")
-            else:
-                self.logger.error("process died unexpectedly")
-                self.process = None
+    def start_procedure(self) -> None:
+        assert not self.procedure_is_running()
+        self.process = multiprocessing.Process(
+            target=self.procedure_entrypoint,
+            args=(self.config, self.procedure_logger),
+            name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
+            daemon=True,
+        )
+        self.process.start()
+        self.logger.info(
+            "started process",
+            details=f"pid = {self.process.pid}\nname={self.process.name}",
+        )
+
+    def check_procedure_status(self) -> None:
+        assert self.procedure_is_running()
+
+        if self.process.is_alive():
+            self.logger.debug("process is alive")
         else:
-            self.logger.debug("process has not been started yet")
+            self.logger.error("process died unexpectedly")
+            self.process = None
 
     def teardown(self) -> None:
         self.logger.info("starting teardown")

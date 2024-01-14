@@ -5,12 +5,11 @@ import time
 import src
 
 
-def run(config: src.types.Config) -> None:
+def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     """Fetches the weather from a weather API. You can simply remove
     this in your own project and use it as an exaple for your own
     procedures."""
 
-    logger = src.utils.Logger(config=config, origin="dummy-procedure")
     messaging_agent = src.utils.MessagingAgent()
     random.seed(time.time())
     current_positions: tuple[int, int] = (0, 0)

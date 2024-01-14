@@ -61,9 +61,9 @@ def run() -> None:
 
     while True:
         for pm in procedure_managers:
-            new_process_started = pm.start_process_if_not_running()
-            if not new_process_started:
-                pm.check_process_status()
+            if not pm.procedure_is_running():
+                pm.start_procedure()
+            pm.check_procedure_status()
 
         pending_configs = src.utils.StateInterface.load().pending_configs
         for pending_config in pending_configs:
