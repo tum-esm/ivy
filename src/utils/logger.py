@@ -214,9 +214,7 @@ class Logger:
             min_visible_log_level=self.config.logging_verbosity.file_archive,
             log_level=level
         ):
-            path = os.path.join(
-                LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log")
-            )
+            path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
                 with open(path, "a") as f1:
                     f1.write(log_string + body)
@@ -225,7 +223,7 @@ class Logger:
         if log_level_is_visible(
             min_visible_log_level=self.config.logging_verbosity.message_sending,
             log_level=level
-        ):
+        ) and (self.config.backend is not None):
             self.messaging_agent.add_message(
                 src.types.LogMessageBody(
                     level=level,
