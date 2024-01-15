@@ -18,6 +18,7 @@ def run_tenta_backend(
             f"Received config with revision {message.revision}",
             details=json.dumps(message.configuration, indent=4),
         )
+        # TODO: add "receive message" to messaging agent
         try:
             foreign_config = src.types.ForeignConfig(
                 **message.configuration,
@@ -31,6 +32,7 @@ def run_tenta_backend(
                 f"Config with revision {message.revision} was invalid",
                 details=e.json(indent=4),
             )
+            # TODO: add "failed message" to messaging agent
             pass
 
     try:
