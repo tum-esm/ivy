@@ -51,6 +51,14 @@ def run() -> None:
                     procedure_name="tenta-backend",
                 )
             )
+        if config.backend.provider == "thingsboard":
+            procedure_managers.append(
+                src.utils.ProcedureManager(
+                    config=config,
+                    procedure_entrypoint=src.backend.run_thingsboard_backend,
+                    procedure_name="thingsboard-backend",
+                )
+            )
 
     # establish graceful shutdown logic
 
