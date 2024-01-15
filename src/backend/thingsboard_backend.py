@@ -55,19 +55,28 @@ def run_thingsboard_backend(
                     }
                 )
                 for message in new_messages:
-                    mqtt_message_info: Optional[paho.mqtt.client.MQTTMessageInfo
-                                               ] = None
+                    result: Optional[tb_device_mqtt.TBPublishInfo] = None
                     if message.message_body.variant == "data":
-                        # TODO
-                        ...
+                        result = thingsboard_client.send_telemetry(
+                            message.message_body.data
+                        )
                     if message.message_body.variant == "log":
-                        # TODO
-                        ...
+                        result = thingsboard_client.send_telemetry({
+                            "logging": {
+                                "level": message.message_body.level,
+                                "subject": message.message_body.subject,
+                                "body": message.message_body.body,
+                            }
+                        })
                     if message.message_body.variant == "config":
-                        # TODO
-                        ...
-                    if mqtt_message_info is not None:
-                        active_messages.add((mqtt_message_info, message))
+                        result = thingsboard_client.send_telemetry({
+                            "configuration": {
+                                "status": message.message_body.status,
+                                "config": message.message_body.model_dump(),
+                            }
+                        })
+                    if result is not None:
+                        active_messages.add((result.message_info, message))
 
             # determine which messages have been published
             published_message_identifiers: set[int] = set()
