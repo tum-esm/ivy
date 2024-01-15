@@ -7,7 +7,8 @@ import src
 
 
 def run_tenta_backend(
-    config: src.types.Config, logger: src.utils.Logger
+    config: src.types.Config,
+    logger: src.utils.Logger,
 ) -> None:
     assert config.backend is not None
     assert config.backend.provider == "tenta"
@@ -43,11 +44,11 @@ def run_tenta_backend(
             sensor_identifier=config.system_identifier,
             on_config_message=on_config_message,
         )
-        messaging_agent = src.utils.MessagingAgent()
         logger.info("Tenta client has been set up")
 
         # active = in the process of sending
         # the first element of the tuple is the mqtt message id
+        messaging_agent = src.utils.MessagingAgent()
         active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
 
         while True:

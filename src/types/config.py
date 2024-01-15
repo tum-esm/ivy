@@ -68,7 +68,7 @@ class UpdaterConfig(pydantic.BaseModel):
 
 
 class BackendConfig(pydantic.BaseModel):
-    provider: Literal["tenta"]
+    provider: Literal["tenta", "thingsboard"]
     mqtt_host: str = pydantic.Field(..., min_length=1, max_length=512)
     mqtt_port: int = pydantic.Field(..., ge=1, le=65535)
     mqtt_identifier: str = pydantic.Field(..., min_length=1, max_length=512)
