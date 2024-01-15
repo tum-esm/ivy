@@ -55,10 +55,10 @@ def run_tenta_backend(
         active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
 
         while True:
+            # send new messages
             open_message_slots = config.backend.max_parallel_messages - len(
                 active_messages
             )
-            new_messages: list[src.types.MessageQueueItem] = []
             if open_message_slots > 0:
                 new_messages = messaging_agent.get_n_latest_messages(
                     open_message_slots,
@@ -115,15 +115,20 @@ def run_tenta_backend(
                     if mqtt_message_id is not None:
                         active_messages.add((mqtt_message_id, message))
 
-            published_message_ids: set[int] = set()
-            for message_id, message in active_messages:
-                if tenta_client.was_message_published(message_id):
-                    published_message_ids.add(message_id)
-                    messaging_agent.remove_messages([message.identifier])
+            # determine which messages have been published
+            published_message_identifiers: set[int] = set()
+            for mqtt_message_id, message in active_messages:
+                if tenta_client.was_message_published(mqtt_message_id):
+                    published_message_identifiers.add(message.identifier)
 
+            # remove published messages from local message queue database
+            messaging_agent.remove_messages(published_message_identifiers)
+
+            # remove published messages from the active set
             active_messages = set(
                 filter(
-                    lambda m: m[0] not in published_message_ids, active_messages
+                    lambda m: m[1].identifier not in
+                    published_message_identifiers, active_messages
                 )
             )
             time.sleep(5)
