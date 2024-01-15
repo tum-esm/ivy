@@ -98,6 +98,8 @@ class Updater:
                 self.logger.info(f"Successfully parsed local config")
             except pydantic.ValidationError as e:
                 self.logger.exception(e, label="Could not parse local config")
+                # TODO: add "failed message" to messaging agent
+                return
 
             if local_config == self.config:
                 self.logger.info(
@@ -114,8 +116,10 @@ class Updater:
                 self.logger.debug("Successfully dumped config file")
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
+                # TODO: add "failed message" to messaging agent
                 return
 
+            # TODO: add "success message" to messaging agent
             self.logger.debug(
                 "Exiting mainloop so that it can " +
                 "be restarted with the new config"
@@ -134,6 +138,7 @@ class Updater:
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
+                # TODO: add "failed message" to messaging agent
                 return
 
             # Install dependencies
@@ -144,6 +149,7 @@ class Updater:
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
+                # TODO: add "failed message" to messaging agent
                 return
 
             # Write new config file to destination
@@ -154,6 +160,7 @@ class Updater:
                 self.logger.debug("Successfully dumped config file")
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
+                # TODO: add "failed message" to messaging agent
                 return
 
             # Run tests on new version
@@ -164,6 +171,7 @@ class Updater:
                 self.logger.debug("Successfully ran pytests")
             except Exception as e:
                 self.logger.exception(e, "Running pytests failed")
+                # TODO: add "failed message" to messaging agent
                 return
 
             # Update cli pointer
@@ -174,10 +182,12 @@ class Updater:
                 self.logger.debug("Successfully updated cli pointer")
             except Exception as e:
                 self.logger.exception(e, "Could not update cli pointer")
+                # TODO: add "failed message" to messaging agent
                 return
 
             # Quit once update is successful
 
+            # TODO: add "success message" to messaging agent
             self.logger.info(
                 f"Successfully updated to version {foreign_config.version}, shutting down"
             )
