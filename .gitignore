@@ -8,6 +8,10 @@ data/**/*.sqlite3
 hidden/
 .pdm-python
 
+# certificates
+*.pem
+!config/tb-cloud-root-ca.pem
+
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,windows,node,nextjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,python,windows,node,nextjs
 
@@ -74,9 +78,6 @@ Temporary Items
 
 # production
 /build
-
-# misc
-*.pem
 
 # debug
 npm-debug.log*
