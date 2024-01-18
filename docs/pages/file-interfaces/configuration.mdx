@@ -32,9 +32,11 @@ Below, you can find an example file and the schema definition of the config file
 
 ```json
 {
-  "version": "0.1.0",
-  "revision": 1,
-  "system_identifier": "my-system-1",
+  "general": {
+    "config_revision": 1,
+    "software_version": "0.1.0",
+    "system_identifier": "my-system-1"
+  },
   "logging_verbosity": {
     "file_archive": "DEBUG",
     "console_prints": "INFO",
@@ -51,7 +53,8 @@ Below, you can find an example file and the schema definition of the config file
     "provider": "tenta",
     "mqtt_host": "...",
     "mqtt_port": 1883,
-    "mqtt_identifier": "...",
+    "mqtt_client_id": "...",
+    "mqtt_username": "...",
     "mqtt_password": "...",
     "max_parallel_messages": 50
   },
