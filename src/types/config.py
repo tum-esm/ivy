@@ -71,7 +71,8 @@ class BackendConfig(pydantic.BaseModel):
     provider: Literal["tenta", "thingsboard"]
     mqtt_host: str = pydantic.Field(..., min_length=1, max_length=512)
     mqtt_port: int = pydantic.Field(..., ge=1, le=65535)
-    mqtt_identifier: str = pydantic.Field(..., min_length=1, max_length=512)
+    mqtt_client_id: str = pydantic.Field(..., min_length=1, max_length=512)
+    mqtt_username: str = pydantic.Field(..., min_length=1, max_length=512)
     mqtt_password: str = pydantic.Field(..., min_length=1, max_length=512)
     max_parallel_messages: int = pydantic.Field(..., ge=1, le=10000)
 

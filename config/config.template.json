@@ -18,7 +18,8 @@
     "provider": "tenta",
     "mqtt_host": "...",
     "mqtt_port": 1883,
-    "mqtt_identifier": "...",
+    "mqtt_client_id": "...",
+    "mqtt_username": "...",
     "mqtt_password": "...",
     "max_parallel_messages": 50
   },
