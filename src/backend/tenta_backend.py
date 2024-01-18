@@ -16,38 +16,42 @@ def run_tenta_backend(
     def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
         logger.info(
             f"Received config with revision {message.revision}",
-            details=json.dumps(message.configuration, indent=4),
+            details=json.dumps(message, indent=4),
         )
         # TODO: add "receive message" to messaging agent
         try:
-            foreign_config = src.types.ForeignConfig(
-                **message.configuration,
-                revision=message.revision,
+            foreign_config = src.types.ForeignConfig.model_validate_json(
+                message.configuration
             )
+            foreign_config.general.config_revision = message.revision
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
             logger.info(f"Config with revision {message.revision} was parsed")
-        except pydantic.ValidationError as e:
-            logger.error(
-                f"Config with revision {message.revision} was invalid",
-                details=e.json(indent=4),
-            )
+        except (pydantic.ValidationError, AssertionError) as e:
+            if isinstance(e, AssertionError):
+                logger.exception(
+                    e,
+                    f"Config with revision {message.revision} was invalid",
+                )
+            else:
+                logger.error(
+                    f"Config with revision {message.revision} was invalid",
+                    details=e.json(indent=4),
+                )
             # TODO: add "failed message" to messaging agent
-            pass
 
     try:
 
         logger.info("Starting Tenta backend")
         tenta_client = tenta.TentaClient(
+            mqtt_client_id=config.backend.mqtt_client_id,
             mqtt_host=config.backend.mqtt_host,
             mqtt_port=config.backend.mqtt_port,
-            mqtt_identifier=config.backend.mqtt_identifier,
+            mqtt_identifier=config.backend.mqtt_username,
             mqtt_password=config.backend.mqtt_password,
-            sensor_identifier=config.system_identifier,
+            sensor_identifier=config.general.system_identifier,
             on_config_message=on_config_message,
-            # TODO: possibly add your TLS configuration here: we recommend
-            #       including the TLS certificate files in your repository
-            #       and only changing this with a software update
+            # TODO: possibly add your TLS configuration here
         )
         logger.info("Tenta client has been set up")
 
