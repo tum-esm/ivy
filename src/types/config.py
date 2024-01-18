@@ -183,10 +183,11 @@ class ForeignGeneralConfig(pydantic.BaseModel):
         description=
         "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
-    software_version: str = pydantic.Field(
-        ...,
+    software_version: Optional[str] = pydantic.Field(
+        None,
         pattern=src.constants.VERSION_REGEX,
-        description="The version of the software this config file is for",
+        description=
+        "The version of the software this config file is for. The updater only works if this is set.",
         examples=["0.1.0", "0.2.0"]
     )
 

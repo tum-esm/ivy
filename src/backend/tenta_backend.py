@@ -12,13 +12,13 @@ def run_tenta_backend(
 ) -> None:
     assert config.backend is not None
     assert config.backend.provider == "tenta"
+    messaging_agent = src.utils.MessagingAgent()
 
     def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
         logger.info(
             f"Received config with revision {message.revision}",
             details=json.dumps(message, indent=4),
         )
-        # TODO: add "receive message" to messaging agent
         try:
             foreign_config = src.types.ForeignConfig.model_validate_json(
                 message.configuration
@@ -27,18 +27,21 @@ def run_tenta_backend(
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
             logger.info(f"Config with revision {message.revision} was parsed")
-        except (pydantic.ValidationError, AssertionError) as e:
-            if isinstance(e, AssertionError):
-                logger.exception(
-                    e,
-                    f"Config with revision {message.revision} was invalid",
+        except pydantic.ValidationError as e:
+            logger.error(
+                f"Config with revision {message.revision} is invalid",
+                details=e.json(indent=4),
+            )
+            messaging_agent.add_message(
+                src.types.ConfigMessageBody(
+                    status="rejected",
+                    config=src.types.ForeignConfig(
+                        general=src.types.config.ForeignGeneralConfig(
+                            config_revision=message.revision,
+                        ),
+                    ),
                 )
-            else:
-                logger.error(
-                    f"Config with revision {message.revision} was invalid",
-                    details=e.json(indent=4),
-                )
-            # TODO: add "failed message" to messaging agent
+            )
 
     try:
 
@@ -57,7 +60,6 @@ def run_tenta_backend(
 
         # active = in the process of sending
         # the first element of the tuple is the mqtt message id
-        messaging_agent = src.utils.MessagingAgent()
         active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
 
         while True:
@@ -83,7 +85,7 @@ def run_tenta_backend(
                         mqtt_message_id = tenta_client.publish(
                             tenta.types.MeasurementMessage(
                                 value=numeric_data_only,
-                                revision=config.revision,
+                                revision=config.general.config_revision,
                             )
                         )
                     if message.message_body.variant == "log":
@@ -100,7 +102,7 @@ def run_tenta_backend(
                                     message.message_body.subject + "\n\n" +
                                     message.message_body.body
                                 ),
-                                revision=config.revision,
+                                revision=config.general.config_revision,
                             )
                         )
                     if message.message_body.variant == "config":
@@ -110,7 +112,7 @@ def run_tenta_backend(
                             mqtt_message_id = tenta_client.publish(
                                 tenta.types.AcknowledgmentMessage(
                                     revision=message.message_body.config.
-                                    revision,
+                                    general.config_revision,
                                     success=(
                                         message.message_body.status ==
                                         "accepted"
