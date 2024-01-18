@@ -5,6 +5,25 @@ import pydantic
 import src
 
 
+class GeneralConfig(pydantic.BaseModel):
+    config_revision: int = pydantic.Field(
+        ...,
+        ge=0,
+        description=
+        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
+    )
+    software_version: Literal["0.1.0"] = pydantic.Field(
+        ...,
+        description="The version of the software this config file is for",
+    )
+    system_identifier: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description="The identifier of this system",
+    )
+
+
 class LoggingVerbosityConfig(pydantic.BaseModel):
     """How verbose to log to the different data streams.
     
@@ -103,23 +122,8 @@ class Config(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
-    version: Literal["0.1.0"] = pydantic.Field(
-        ...,
-        description="The version of the software this config file is for",
-    )
-    revision: int = pydantic.Field(
-        ...,
-        ge=0,
-        description=
-        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
-    )
-    system_identifier: str = pydantic.Field(
-        ...,
-        min_length=1,
-        max_length=512,
-        description="The identifier of this system",
-    )
-    logging_verbosity: LoggingVerbosityConfig = pydantic.Field(default=...)
+    general: GeneralConfig = pydantic.Field(...)
+    logging_verbosity: LoggingVerbosityConfig = pydantic.Field(...)
     updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used.",
@@ -170,6 +174,23 @@ class Config(pydantic.BaseModel):
         return ForeignConfig.model_validate_json(self.model_dump_json())
 
 
+class ForeignGeneralConfig(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(extra="allow")
+
+    config_revision: int = pydantic.Field(
+        ...,
+        ge=0,
+        description=
+        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
+    )
+    software_version: str = pydantic.Field(
+        ...,
+        pattern=src.constants.VERSION_REGEX,
+        description="The version of the software this config file is for",
+        examples=["0.1.0", "0.2.0"]
+    )
+
+
 class ForeignConfig(pydantic.BaseModel):
     """Schema of a foreign config file for any other version of the software
     to update to.
@@ -177,18 +198,7 @@ class ForeignConfig(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="allow")
-    version: str = pydantic.Field(
-        ...,
-        pattern=src.constants.VERSION_REGEX,
-        description="The version of the software this config file is for",
-        examples=["0.1.0", "0.2.0"]
-    )
-    revision: int = pydantic.Field(
-        ...,
-        ge=0,
-        description=
-        "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
-    )
+    general: ForeignGeneralConfig = pydantic.Field(...)
 
     @staticmethod
     def load_from_string(c: str) -> ForeignConfig:
