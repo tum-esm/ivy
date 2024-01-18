@@ -3,23 +3,34 @@ const CONFIG_SCHEMA: any = {
     "additionalProperties": false,
     "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found in the documentation at TODO.",
     "properties": {
-        "version": {
-            "const": "0.1.0",
-            "description": "The version of the software this config file is for",
-            "title": "Version"
-        },
-        "revision": {
-            "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
-            "minimum": 0,
-            "title": "Revision",
-            "type": "integer"
-        },
-        "system_identifier": {
-            "description": "The identifier of this system",
-            "maxLength": 512,
-            "minLength": 1,
-            "title": "System Identifier",
-            "type": "string"
+        "general": {
+            "properties": {
+                "config_revision": {
+                    "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
+                    "minimum": 0,
+                    "title": "Config Revision",
+                    "type": "integer"
+                },
+                "software_version": {
+                    "const": "0.1.0",
+                    "description": "The version of the software this config file is for",
+                    "title": "Software Version"
+                },
+                "system_identifier": {
+                    "description": "The identifier of this system",
+                    "maxLength": 512,
+                    "minLength": 1,
+                    "title": "System Identifier",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "config_revision",
+                "software_version",
+                "system_identifier"
+            ],
+            "title": "GeneralConfig",
+            "type": "object"
         },
         "logging_verbosity": {
             "description": "How verbose to log to the different data streams.\n\nFor example, If the level is set to \"WARNING\", only warnings, errors\nand exceptions will be written to the respective data stream. If the\nlevel is set to \"DEBUG\", all logs will be written to the respective\ndata stream.\n\nImportance: DEBUG > INFO > WARNING > ERROR > EXCEPTION\n\nIf the level is set to None, no logs will be written to the respective\ndata stream.",
@@ -144,8 +155,12 @@ const CONFIG_SCHEMA: any = {
                 {
                     "properties": {
                         "provider": {
-                            "const": "tenta",
-                            "title": "Provider"
+                            "enum": [
+                                "tenta",
+                                "thingsboard"
+                            ],
+                            "title": "Provider",
+                            "type": "string"
                         },
                         "mqtt_host": {
                             "maxLength": 512,
@@ -159,10 +174,16 @@ const CONFIG_SCHEMA: any = {
                             "title": "Mqtt Port",
                             "type": "integer"
                         },
-                        "mqtt_identifier": {
+                        "mqtt_client_id": {
                             "maxLength": 512,
                             "minLength": 1,
-                            "title": "Mqtt Identifier",
+                            "title": "Mqtt Client Id",
+                            "type": "string"
+                        },
+                        "mqtt_username": {
+                            "maxLength": 512,
+                            "minLength": 1,
+                            "title": "Mqtt Username",
                             "type": "string"
                         },
                         "mqtt_password": {
@@ -182,7 +203,8 @@ const CONFIG_SCHEMA: any = {
                         "provider",
                         "mqtt_host",
                         "mqtt_port",
-                        "mqtt_identifier",
+                        "mqtt_client_id",
+                        "mqtt_username",
                         "mqtt_password",
                         "max_parallel_messages"
                     ],
@@ -232,9 +254,7 @@ const CONFIG_SCHEMA: any = {
         }
     },
     "required": [
-        "version",
-        "revision",
-        "system_identifier",
+        "general",
         "logging_verbosity",
         "dummy_procedure",
         "system_checks"
