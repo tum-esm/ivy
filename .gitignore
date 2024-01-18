@@ -10,7 +10,8 @@ hidden/
 
 # certificates
 *.pem
-!config/tb-cloud-root-ca.pem
+!config/mosquitto-org-ca-root.pem
+!config/thingsboard-cloud-ca-root.pem
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,windows,node,nextjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,python,windows,node,nextjs
