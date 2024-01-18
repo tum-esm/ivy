@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:0d364d6c7aeadc777d22a8bde2d9f352bb77064f65eba25c1003d841a4df5754"
+content_hash = "sha256:99a9c955ae2ed4d7cd9e1573c368395f2a66447cb6258523b28e4143eeed8bcd"
 
 [[package]]
 name = "annotated-types"
@@ -816,6 +816,17 @@ dependencies = [
 files = [
     {file = "typeapi-2.1.1-py3-none-any.whl", hash = "sha256:ef41577f316bfd362572e727ba349dab80a7362318a80fc72e6a807017d04c5c"},
     {file = "typeapi-2.1.1.tar.gz", hash = "sha256:49b3c1d3382e27dccbb59132a3a823c61954f679a0c61f119fd6d8470073a298"},
+]
+
+[[package]]
+name = "types-paho-mqtt"
+version = "1.6.0.20240106"
+requires_python = ">=3.8"
+summary = "Typing stubs for paho-mqtt"
+groups = ["dev"]
+files = [
+    {file = "types-paho-mqtt-1.6.0.20240106.tar.gz", hash = "sha256:6b486b9e4438c856cc0ac8312bf6a81c2bca1697bf36cde6d2ecddb44513550e"},
+    {file = "types_paho_mqtt-1.6.0.20240106-py3-none-any.whl", hash = "sha256:1d233c2c017a512ebbec24d6a90d94302767c75a33a7c2584a660eac7fade248"},
 ]
 
 [[package]]

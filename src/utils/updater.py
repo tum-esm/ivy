@@ -65,31 +65,34 @@ class Updater:
                                  be a JSON object with at least the `version` field,
                                  everything else is optional."""
 
-        if foreign_config.revision <= self.config.revision:
+        if foreign_config.general.config_revision <= self.config.general.config_revision:
             self.logger.info(
                 f"Received config has " + (
-                    "lower revision number than" if
-                    (foreign_config.revision < self.config.revision
+                    "lower revision number than" if (
+                        foreign_config.general.config_revision <
+                        self.config.general.config_revision
                     ) else "same revision number as"
                 ) +
-                f" current config ({foreign_config.revision}) -> not updating"
+                f" current config ({foreign_config.general.config_revision}) -> not updating"
             )
             return
 
-        if foreign_config.revision in self.processed_config_revisions:
+        if foreign_config.general.config_revision in self.processed_config_revisions:
             self.logger.debug(
-                f"The config with revision {foreign_config.revision} " +
-                "has already been processed"
+                f"The config with revision {foreign_config.general.config_revision} "
+                + "has already been processed"
             )
             return
         else:
-            self.processed_config_revisions.add(foreign_config.revision)
+            self.processed_config_revisions.add(
+                foreign_config.general.config_revision
+            )
             self.logger.info(
-                f"Processing new config with revision {foreign_config.revision}",
+                f"Processing new config with revision {foreign_config.general.config_revision}",
                 details=f"config = {foreign_config.model_dump_json(indent=4)}"
             )
 
-        if foreign_config.version == self.config.version:
+        if foreign_config.general.software_version == self.config.general.software_version:
             self.logger.info("Received config has same version number")
             try:
                 local_config = src.types.Config.load_from_string(
@@ -127,14 +130,16 @@ class Updater:
             exit(0)
         else:
             self.logger.info(
-                f"Received config has different version number ({foreign_config.version})"
+                f"Received config has different version number ({foreign_config.general.software_version})"
             )
 
             # Download source code
 
             self.logger.debug(f"Downloading new source code")
             try:
-                self.download_source_code(foreign_config.version)
+                self.download_source_code(
+                    foreign_config.general.software_version
+                )
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
@@ -145,7 +150,9 @@ class Updater:
 
             self.logger.debug("Installing dependencies")
             try:
-                self.install_dependencies(foreign_config.version)
+                self.install_dependencies(
+                    foreign_config.general.software_version
+                )
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
@@ -167,7 +174,7 @@ class Updater:
 
             self.logger.debug("Running pytests")
             try:
-                self.run_pytests(foreign_config.version)
+                self.run_pytests(foreign_config.general.software_version)
                 self.logger.debug("Successfully ran pytests")
             except Exception as e:
                 self.logger.exception(e, "Running pytests failed")
@@ -178,7 +185,7 @@ class Updater:
 
             self.logger.debug("Updating cli pointer")
             try:
-                self.update_cli_pointer(foreign_config.version)
+                self.update_cli_pointer(foreign_config.general.software_version)
                 self.logger.debug("Successfully updated cli pointer")
             except Exception as e:
                 self.logger.exception(e, "Could not update cli pointer")
@@ -189,7 +196,7 @@ class Updater:
 
             # TODO: add "success message" to messaging agent
             self.logger.info(
-                f"Successfully updated to version {foreign_config.version}, shutting down"
+                f"Successfully updated to version {foreign_config.general.software_version}, shutting down"
             )
             exit(0)
 
@@ -310,7 +317,7 @@ class Updater:
 
         venvs_to_be_removed: list[str] = []
         for version in os.listdir(src.constants.IVY_ROOT_DIR):
-            if version == self.config.version:
+            if version == self.config.general.software_version:
                 continue
             venv_path = os.path.join(
                 src.constants.IVY_ROOT_DIR, version, ".venv"

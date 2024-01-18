@@ -183,8 +183,8 @@ class ForeignGeneralConfig(pydantic.BaseModel):
         description=
         "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
-    software_version: Optional[str] = pydantic.Field(
-        None,
+    software_version: str = pydantic.Field(
+        ...,
         pattern=src.constants.VERSION_REGEX,
         description=
         "The version of the software this config file is for. The updater only works if this is set.",
@@ -211,7 +211,8 @@ class ForeignConfig(pydantic.BaseModel):
         """Dump the config file to the path `<ivy_root>/<version>/config/config.json`"""
 
         path = os.path.join(
-            src.constants.IVY_ROOT_DIR, self.version, "config", "config.json"
+            src.constants.IVY_ROOT_DIR, self.general.software_version, "config",
+            "config.json"
         )
         with open(path, "w") as f:
             f.write(self.model_dump_json(indent=4))

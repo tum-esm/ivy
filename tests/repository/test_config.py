@@ -9,7 +9,7 @@ def test_config_templates() -> None:
     config schema and the foreign config schema."""
 
     config = src.types.Config.load_template()
-    assert config.version == src.constants.VERSION, "Version in config.template.json is not the same as in src/constants.py"
+    assert config.general.software_version == src.constants.VERSION, "Version in config.template.json is not the same as in src/constants.py"
 
     src.types.ForeignConfig.model_validate_json(
         src.types.Config.load_template().model_dump_json()

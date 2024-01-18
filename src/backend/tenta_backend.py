@@ -38,6 +38,8 @@ def run_tenta_backend(
                     config=src.types.ForeignConfig(
                         general=src.types.config.ForeignGeneralConfig(
                             config_revision=message.revision,
+                            software_version=
+                            "0.0.0",  # using a dummy version here simplifies the rest of the codebase
                         ),
                     ),
                 )
