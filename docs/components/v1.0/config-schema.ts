@@ -29,7 +29,7 @@ const CONFIG_SCHEMA: any = {
                 "software_version",
                 "system_identifier"
             ],
-            "title": "GeneralConfig",
+            "title": "_GeneralConfig",
             "type": "object"
         },
         "logging_verbosity": {
@@ -77,7 +77,7 @@ const CONFIG_SCHEMA: any = {
                 "console_prints",
                 "message_sending"
             ],
-            "title": "LoggingVerbosityConfig",
+            "title": "_LoggingVerbosityConfig",
             "type": "object"
         },
         "updater": {
@@ -140,7 +140,7 @@ const CONFIG_SCHEMA: any = {
                         "provider",
                         "provider_host"
                     ],
-                    "title": "UpdaterConfig",
+                    "title": "_UpdaterConfig",
                     "type": "object"
                 },
                 {
@@ -208,7 +208,7 @@ const CONFIG_SCHEMA: any = {
                         "mqtt_password",
                         "max_parallel_messages"
                     ],
-                    "title": "BackendConfig",
+                    "title": "_BackendConfig",
                     "type": "object"
                 },
                 {
@@ -219,7 +219,6 @@ const CONFIG_SCHEMA: any = {
             "description": "If this is not set, the backend will not be used."
         },
         "dummy_procedure": {
-            "description": "Settings for the dummy procedure.",
             "properties": {
                 "seconds_between_datapoints": {
                     "description": "How many seconds should be between each datapoint in the dummy procedure",
@@ -232,11 +231,11 @@ const CONFIG_SCHEMA: any = {
             "required": [
                 "seconds_between_datapoints"
             ],
-            "title": "DummyProcedureConfig",
-            "type": "object"
+            "title": "_DummyProcedureConfig",
+            "type": "object",
+            "description": "Settings for the dummy procedure."
         },
         "system_checks": {
-            "description": "Settings for the system checks procedure.",
             "properties": {
                 "seconds_between_checks": {
                     "description": "How many seconds should be between each run of the system checks",
@@ -249,8 +248,9 @@ const CONFIG_SCHEMA: any = {
             "required": [
                 "seconds_between_checks"
             ],
-            "title": "SystemChecksConfig",
-            "type": "object"
+            "title": "_SystemChecksConfig",
+            "type": "object",
+            "description": "Settings for the system checks procedure."
         }
     },
     "required": [

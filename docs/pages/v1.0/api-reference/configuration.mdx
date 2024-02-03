@@ -1,0 +1,25 @@
+import {Schema} from '../../../components/schema-renderers';
+import CONFIG_SCHEMA from '../../../components/v1.0/config-schema';
+import FOREIGN_CONFIG_SCHEMA from '../../../components/v1.0/foreign-config-schema';
+
+# Configuration
+
+## `config.json`
+
+### Example File
+
+{/* The following example is synced automatically with the file in `config/config.template.json` whenever running the config schema export. */}
+
+```json
+{"tada": 40}
+```
+
+### Schema definition
+
+<Schema schema={CONFIG_SCHEMA} />
+
+## Foreign `config.json`
+
+### Schema definition
+
+<Schema schema={FOREIGN_CONFIG_SCHEMA} />

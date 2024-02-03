@@ -76,7 +76,7 @@ export default {
   sidebar: {
     titleComponent({ title, type, route }) {
       if (type === "doc") {
-        if (route.split("/").length <= 2) {
+        if (route.split("/").length <= 3) {
           return (
             <span className="font-semibold text-gray-800 dark:text-gray-200">
               {title}

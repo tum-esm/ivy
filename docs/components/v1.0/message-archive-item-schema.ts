@@ -128,7 +128,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                                         "config_revision",
                                         "software_version"
                                     ],
-                                    "title": "ForeignGeneralConfig",
+                                    "title": "_ForeignGeneralConfig",
                                     "type": "object"
                                 }
                             },
