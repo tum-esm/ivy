@@ -1,13 +1,8 @@
-import {
-    ConfigSchema,
-    ForeignConfigSchema
-} from '../../components/schema-renderers';
-
 # Configuration Files
 
 ## How to configure the automation
 
-The file `config.json` is used to configure the whol automation. They are located inside the `config` directory, alonside with a template file that can be used to create a new configuration file.
+The file at `config/config.json` is used to configure the whole automation. A template file at `config/config.template.json` can be used to create a new configuration file.
 
 ```
 📁 config
@@ -15,7 +10,7 @@ The file `config.json` is used to configure the whol automation. They are locate
 └── 📄 config.template.json
 ```
 
-This file can be loaded from anywhere in the codebase with the following code snippet. The only process that should changes this file is the updater. The config file only has to be loaded once on startup because whenever the updater changes it, it also restarts the whole automation.
+This file can be loaded from anywhere in the codebase with the following code snippet. The only process that should change this file is the updater (or a human). The config file only has to be loaded once on startup because whenever the updater changes it, the whole automation will be restarted.
 
 ```python
 import src
@@ -24,7 +19,13 @@ config = src.types.Config.load()
 print(config.version)  # prints "0.1.0"
 ```
 
-Below, you can find an example file and the schema definition of the config file. Whenever you try to start the automation with a config that does not comply with this schema, the automation will output a precise error message and shut down.
+Below, you can find an example file for the `config.json`. Whenever you try to start the automation with a config that does not comply with this schema, the automation will output a precise error message and shut down.
+
+An exact schema reference of the config object is defined [in the API Reference section](/api-reference/configuration).
+
+## Foreign Configuration Files
+
+The term **"foreign config"** describes a configuration object that belongs to a different version of the automation software. This distinction exists, because the configuration schema can radically change between different software versions. Only a few fields (like version number) have to be present in any version you want to update this software to.
 
 {/* The following example is synced automatically with the file in `config/config.template.json` whenever running the config schema export. */}
 
@@ -66,15 +67,3 @@ Below, you can find an example file and the schema definition of the config file
   }
 }
 ```
-
-### Schema definition
-
-<ConfigSchema  />
-
-
-## Foreign Configuration Files
-
-This codebase can update to any new config schema as long as it follows the `ForeignConfig` schema:
-
-<ForeignConfigSchema/>
-
