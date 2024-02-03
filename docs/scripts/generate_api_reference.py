@@ -71,9 +71,9 @@ def get_object_source(obj: Any) -> tuple[str, str]:
 
 
 def clean_type_name(type_name: Any) -> str:
-    type_name = str(type_name)
+    type_name = str(type_name).replace("NoneType", "None")
     if type_name.startswith("<class '") and type_name.endswith("'>"):
-        return type_name[8 :-2]
+        type_name = type_name[8 :-2]
     return type_name
 
 
@@ -135,6 +135,35 @@ def _render_variables(module: object, module_depth: int) -> str:
     return output
 
 
+def _render_function(function: Any) -> str:
+    output = f"**`{function.__name__}`**\n\n```python\n"
+    decorators, _ = get_object_source(function)
+    if decorators != "":
+        output += f"{decorators}\n"
+    # it is good to use the argspec instead of the header
+    # because the header might contain some weird edge cases
+    # that are not correclty parsed by `get_object_source`
+    output += f"def {function.__name__}"
+    argspec = inspect.getfullargspec(function)
+    type_hints = typing.get_type_hints(function)
+    if len(argspec.args) == 0:
+        output += f"() -> {clean_type_name(type_hints.get('return', Any))}:\n```\n\n"
+    else:
+        output += "(\n"
+        for i, arg in enumerate(argspec.args):
+            output += f"    {arg}"
+            if i > 0 or arg != "self":
+                annotation = type_hints.get(arg, Any)
+                output += f": {clean_type_name(annotation)}"
+                if argspec.defaults is not None and arg in argspec.defaults:
+                    output += f" = {argspec.defaults[argspec.args.index(arg)]}"
+            output += ",\n"
+        output += f") -> {clean_type_name(type_hints.get('return', Any))}:\n```\n\n"
+
+    output += prettify_docstring(function)
+    return output
+
+
 def get_module_markdown(module: object, module_depth: int = 1) -> str:
     output = f"{'#' * module_depth} `{module.__name__}`\n\n"
     if module.__doc__ is not None:
@@ -142,7 +171,13 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
 
     output += _render_variables(module, module_depth)
 
-    if not module.__file__.endswith("__init__.py"):
+    if module.__file__.endswith("__init__.py"):
+        for m in sorted(
+            inspect.getmembers(module, inspect.ismodule),
+            key=lambda x: 1 if x[1].__file__.endswith("__init__.py") else 0
+        ):
+            output += get_module_markdown(m[1], module_depth + 1)
+    else:
         functions = [
             f[1] for f in inspect.getmembers(module, inspect.isfunction)
             if (f[1].__module__ == module.__name__)
@@ -150,30 +185,7 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
         if len(functions) > 0:
             output += f"{'#' * (module_depth + 1)} Functions\n\n"
             for function in functions:
-                decorators, _ = get_object_source(function)
-                output += f"**`{function.__name__}`**\n\n```python\n"
-                if decorators != "":
-                    output += f"{decorators}\n"
-                # it is good to use the argspec instead of the header
-                # because the header might contain some weird edge cases
-                # that are not correclty parsed by `get_object_source`
-                output += f"def {function.__name__}"
-                argspec = inspect.getfullargspec(function)
-                if len(argspec.args) == 0:
-                    output += f"() -> {clean_type_name(argspec.annotations.get('return', Any))}\n```\n\n"
-                else:
-                    output += "(\n"
-                    for arg in argspec.args:
-                        output += f"    {arg}"
-                        annotation = argspec.annotations.get(arg, None)
-                        if annotation is not None:
-                            output += f": {clean_type_name(annotation)}"
-                        if argspec.defaults is not None and arg in argspec.defaults:
-                            output += f" = {argspec.defaults[argspec.args.index(arg)]}"
-                        output += ",\n"
-                    output += f") -> {argspec.annotations.get('return', Any)}:\n```\n\n"
-
-                output += prettify_docstring(function)
+                output += _render_function(function)
 
         classes = [
             c[1] for c in inspect.getmembers(module, inspect.isclass)
@@ -199,39 +211,9 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
                             (function.__name__ != "__init__")
                         ) or (function.__name__ not in c.__dict__)):
                             continue
-                        output += f"**`{function.__name__}`**\n\n```python\n"
-                        decorators, _ = get_object_source(function)
-                        if decorators != "":
-                            output += f"{decorators}\n"
-                        output += f"def {function.__name__}"
-                        argspec = inspect.getfullargspec(function)
-                        if len(argspec.args) == 0:
-                            output += f"() -> {clean_type_name(argspec.annotations.get('return', Any))}\n```\n\n"
-                        else:
-                            output += "(\n"
-                            for arg in argspec.args:
-                                output += f"    {arg}"
+                        output += _render_function(function)
 
-                                annotation = argspec.annotations.get(arg, None)
-                                if annotation is not None:
-                                    output += f": {clean_type_name(annotation)}"
-                                if argspec.defaults is not None and arg in argspec.defaults:
-                                    output += f" = {argspec.defaults[argspec.args.index(arg)]}"
-                                output += ",\n"
-                            output += f") -> {clean_type_name(argspec.annotations.get('return', Any))}:\n```\n\n"
-
-                        output += prettify_docstring(function)
-        return output
-    else:
-        members = inspect.getmembers(module, inspect.ismodule)
-        members = sorted(
-            members,
-            key=lambda x: 1 if x[1].__file__.endswith("__init__.py") else 0
-        )
-        for m in members:
-            output += get_module_markdown(m[1], module_depth + 1)
-
-        return output
+    return output
 
 
 markdown_content = get_module_markdown(src)
