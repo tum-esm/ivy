@@ -1,17 +1,24 @@
 from __future__ import annotations
 import contextlib
-from typing import Generator
+from typing import Annotated, Generator
 import os
 import pydantic
 import src
 from .functions import with_filelock
 
-STATE_FILE = os.path.join(
+STATE_FILE: Annotated[
+    str,
+    "Points to `data/state.json` where the state is communicated with all threads"
+] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
     "state.json",
 )
-STATE_FILE_LOCK = os.path.join(
+
+STATE_FILE_LOCK: Annotated[
+    str,
+    "Points to `data/state.lock` which is used to ensure that only one thread can access the state at a time."
+] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
     "state.lock",
