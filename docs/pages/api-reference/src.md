@@ -516,18 +516,6 @@ A timeout of -1 means that the code waits forever.
 
 ### `src.utils.logger`
 
-#### Functions
-
-**`_pad_str_right`**
-
-```python
-def _pad_str_right(
-    text: str,
-    min_width: int,
-    fill_char: typing.Literal['0', ' ', '-'],
-) -> str:
-```
-
 #### Classes
 
 **`Logger`**
