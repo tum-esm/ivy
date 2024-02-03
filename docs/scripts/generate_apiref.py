@@ -83,7 +83,8 @@ def _render_variables(module: object, module_depth: int) -> str:
     type_hint_extras = typing.get_type_hints(module, include_extras=True)
     output: str = ""
     if len(type_hints) > 0:
-        output += f"{'#' * (module_depth + 1)} Variables\n\n"
+        output += f"{'#' * (module_depth + 1)} Variables"
+        output += f" [#{module.__name__}.variables]\n\n"
         for name, type_hint in type_hints.items():
             output += f"```python\n{name}: {_clean_type_name(type_hint)}\n```\n\n"
             if name in type_hint_extras:
@@ -147,7 +148,8 @@ def _render_class(cls: object) -> str:
 def generate_module_reference(module: object, module_depth: int = 1) -> str:
     """Generate the markdown API Reference for a module."""
 
-    output = f"{'#' * module_depth} `{module.__name__}`\n\n"
+    output = f"{'#' * module_depth} `{module.__name__}`"
+    output += f" [#{module.__name__}]\n\n"
     if module.__doc__ is not None:
         output += f"{module.__doc__}\n\n"
 
@@ -167,7 +169,8 @@ def generate_module_reference(module: object, module_depth: int = 1) -> str:
             (f[1].__module__ == module.__name__) and not f[0].startswith("_")
         ]
         if len(functions) > 0:
-            output += f"{'#' * (module_depth + 1)} Functions\n\n"
+            output += f"{'#' * (module_depth + 1)} Functions"
+            output += f" [#{module.__name__}.functions]\n\n"
             for function in functions:
                 output += _render_function(function)
 
@@ -176,7 +179,8 @@ def generate_module_reference(module: object, module_depth: int = 1) -> str:
             if c[1].__module__ == module.__name__ and not c[0].startswith("_")
         ]
         if len(classes) > 0:
-            output += f"{'#' * (module_depth + 1)} Classes\n\n"
+            output += f"{'#' * (module_depth + 1)} Classes"
+            output += f" [#{module.__name__}.classes]\n\n"
             for c in classes:
                 output += _render_class(c)
 
