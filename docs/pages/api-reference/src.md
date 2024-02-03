@@ -62,7 +62,7 @@ Main loop of the automation
 **`run`**
 
 ```python
-def run() -> None
+def run() -> None:
 ```
 
 Run the automation
@@ -175,7 +175,7 @@ Dump the config file to the path `<ivy_root>/<version>/config/config.json`
 
 ```python
 @staticmethod
-def load() -> Config
+def load() -> src.types.config.Config:
 ```
 
 Load the config file from the path `project_dir/config/config.json`
@@ -186,7 +186,7 @@ Load the config file from the path `project_dir/config/config.json`
 @staticmethod
 def load_from_string(
     c: str,
-) -> Config:
+) -> src.types.config.Config:
 ```
 
 Load the object from a string
@@ -195,7 +195,7 @@ Load the object from a string
 
 ```python
 @staticmethod
-def load_template() -> Config
+def load_template() -> src.types.config.Config:
 ```
 
 Load the config file from the path `project_dir/config/config.template.json`
@@ -205,7 +205,7 @@ Load the config file from the path `project_dir/config/config.template.json`
 ```python
 def to_foreign_config(
     self,
-) -> ForeignConfig:
+) -> src.types.config.ForeignConfig:
 ```
 
 **`ForeignConfig`**
@@ -236,7 +236,7 @@ Dump the config file to the path `<ivy_root>/<version>/config/config.json`
 @staticmethod
 def load_from_string(
     c: str,
-) -> ForeignConfig:
+) -> src.types.config.ForeignConfig:
 ```
 
 Load the object from a string
@@ -343,8 +343,8 @@ Create a new exponential backoff object.
 
 **Arguments:**
 
-- `logger`: The logger to use for logging when waiting certain amount of time.
-- `buckets`: The buckets to use for the exponential backoff.
+ * `logger`: The logger to use for logging when waiting certain amount of time.
+ * `buckets`: The buckets to use for the exponential backoff.
 
 **`reset`**
 
@@ -375,7 +375,7 @@ Wait and increase the wait time to the next bucket.
 ```python
 def get_time_to_next_datapoint(
     seconds_between_datapoints: int,
-) -> <class 'float'>:
+) -> float:
 ```
 
 Calculates the time until the next measurement should be taken. If the seconds
@@ -386,7 +386,7 @@ Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
 
 **Arguments:**
 
-- `seconds_between_datapoints`: The time between two datapoints in seconds.
+ * `seconds_between_datapoints`: The time between two datapoints in seconds.
 
 **Returns:** The time until the next measurement should be taken in seconds.
 
@@ -396,16 +396,16 @@ Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
 def log_level_is_visible(
     min_visible_log_level: typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION', None],
     log_level: typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION'],
-) -> <class 'bool'>:
+) -> bool:
 ```
 
 Checks if a log level is forwarded to the user.
 
 **Arguments:**
 
-- `min_log_level`: The minimum log level to forward, if None, no log
-  levels are forwarded.
-- `log_level`: The log level to check
+ * `min_log_level`:  The minimum log level to forward, if None, no log
+levels are forwarded.
+ * `log_level`:      The log level to check
 
 **`run_shell_command`**
 
@@ -414,7 +414,7 @@ def run_shell_command(
     command: str,
     working_directory: typing.Optional[str],
     executable: str,
-) -> <class 'str'>:
+) -> str:
 ```
 
 runs a shell command and raises a `CommandLineException`
@@ -427,7 +427,7 @@ if the return code is not zero, returns the stdout. Uses
 ```python
 def string_is_valid_version(
     version_string: str,
-) -> <class 'bool'>:
+) -> bool:
 ```
 
 Check if the version string is valid = should match
@@ -436,7 +436,7 @@ Check if the version string is valid = should match
 
 **Arguments:**
 
-- `version_string`: version string to check.
+ * `version_string`: version string to check.
 
 **Returns:** True if the version string is valid, False otherwise.
 
@@ -444,7 +444,7 @@ Check if the version string is valid = should match
 
 ```python
 @contextlib.contextmanager
-def with_automation_lock() -> typing.Generator[NoneType, NoneType, NoneType]
+def with_automation_lock() -> typing.Generator[None, None, None]:
 ```
 
 This function will lock the automation with a file lock so that
@@ -488,7 +488,7 @@ class with_filelock:
 
 FileLock = Mark, that a file is being used and other programs
 
-should not interfere. A file "\*.lock" will be created and the
+should not interfere. A file "*.lock" will be created and the
 content of this file will make the wrapped function possibly
 wait until other programs are done using it.
 
@@ -498,8 +498,8 @@ See https://en.wikipedia.org/wiki/Semaphore_(programming). Usage:
 @with_filelock(lockfile_path="path/to/lockfile.lock", timeout=10)
 def some_function():
     pass
-
-some_function() # will be executed within a semaphore
+    
+some_function() # will be executed within a semaphore 
 ```
 
 **`__init__`**
@@ -525,7 +525,7 @@ def _pad_str_right(
     text: str,
     min_width: int,
     fill_char: typing.Literal['0', ' ', '-'],
-) -> <class 'str'>:
+) -> str:
 ```
 
 #### Classes
@@ -588,9 +588,9 @@ Initializes the logger.
 
 **Arguments:**
 
-- `config`: The config object
-- `origin`: The origin of the log messages, will be displayed
-  in the log lines.
+ * `config`:  The config object
+ * `origin`:  The origin of the log messages, will be displayed
+in the log lines.
 
 **`_write_log_line`**
 
@@ -621,8 +621,8 @@ Writes a INFO log line.
 
 **Arguments:**
 
-- `message`: The message to log
-- `details`: Additional details to log, useful for verbose output.
+ * `message`:  The message to log
+ * `details`:  Additional details to log, useful for verbose output.
 
 **`error`**
 
@@ -638,8 +638,8 @@ Writes an error log line.
 
 **Arguments:**
 
-- `message`: The message to log
-- `details`: Additional details to log, useful for verbose output.
+ * `message`:  The message to log
+ * `details`:  Additional details to log, useful for verbose output.
 
 **`exception`**
 
@@ -661,8 +661,8 @@ The subject will be formatted like this:
 
 **Arguments:**
 
-- `e`: The exception to log
-- `label`: A label to prepend to the exception name.
+ * `e`:      The exception to log
+ * `label`:  A label to prepend to the exception name.
 
 **`horizontal_line`**
 
@@ -689,8 +689,8 @@ Writes a INFO log line.
 
 **Arguments:**
 
-- `message`: The message to log
-- `details`: Additional details to log, useful for verbose output.
+ * `message`:  The message to log
+ * `details`:  Additional details to log, useful for verbose output.
 
 **`warning`**
 
@@ -706,8 +706,8 @@ Writes a WARNING log line.
 
 **Arguments:**
 
-- `message`: The message to log
-- `details`: Additional details to log, useful for verbose output.
+ * `message`:  The message to log
+ * `details`:  Additional details to log, useful for verbose output.
 
 ### `src.utils.messaging_agent`
 
@@ -740,7 +740,7 @@ def add_message(
 
 ```python
 @staticmethod
-def get_message_archive_file() -> str
+def get_message_archive_file() -> str:
 ```
 
 **`get_n_latest_messages`**
@@ -794,8 +794,8 @@ class ProcedureManager():
 ```python
 def __init__(
     self,
-    config: src.types.Config,
-    procedure_entrypoint: Callable[[src.types.Config, Logger], None],
+    config: src.types.config.Config,
+    procedure_entrypoint: typing.Callable[[src.types.config.Config, src.utils.logger.Logger], None],
     procedure_name: str,
 ) -> None:
 ```
@@ -861,7 +861,7 @@ class StateInterface():
 ```python
 @with_filelock(STATE_FILE_LOCK, timeout=6)
 @staticmethod
-def load() -> src.types.State
+def load() -> src.types.state.State:
 ```
 
 Load the state file from the path `project_dir/data/state.json`
@@ -872,7 +872,7 @@ Load the state file from the path `project_dir/data/state.json`
 @with_filelock(STATE_FILE_LOCK, timeout=6)
 @staticmethod
 @contextlib.contextmanager
-def update() -> Generator[src.types.State, None, None]
+def update() -> typing.Generator[src.types.state.State, None, None]:
 ```
 
 Load the state file and update it within a semaphore. Usage:
@@ -904,7 +904,7 @@ currently used version of the automation software.
 ```python
 def __init__(
     self,
-    config: src.types.Config,
+    config: src.types.config.Config,
 ) -> None:
 ```
 
@@ -912,7 +912,7 @@ Initialize an Updater instance.
 
 **Arguments:**
 
-- `config`: The current config.
+ * `config`: The current config.
 
 **`download_source_code`**
 
@@ -947,7 +947,7 @@ the version directory using poetry.
 ```python
 def perform_update(
     self,
-    foreign_config: src.types.ForeignConfig,
+    foreign_config: src.types.config.ForeignConfig,
 ) -> None:
 ```
 
@@ -955,20 +955,20 @@ Perform an update for a received config file.
 
 1. Check whether this config revision has already been processed.
 2. If version is equal to the current version:
-   - Parse the received config file string using
-     `types.Config.load_from_string`
-   - If the received config is equal to the current
-     config, do nothing
-   - Otherwise, dump the received config to the config
-     file path and exit with status code 0
+    * Parse the received config file string using
+        `types.Config.load_from_string`
+    * If the received config is equal to the current
+        config, do nothing
+    * Otherwise, dump the received config to the config
+        file path and exit with status code 0
 3. Otherwise:
-   - Download the source code of the new version
-   - Create a virtual environment
-   - Install dependencies
-   - Dump the received config to the config file path
-   - Run the integration pytests
-   - Update the cli pointer
-   - Exit with status code 0
+    * Download the source code of the new version
+    * Create a virtual environment
+    * Install dependencies
+    * Dump the received config to the config file path
+    * Run the integration pytests
+    * Update the cli pointer
+    * Exit with status code 0
 
 If any of the steps above fails, log the error and return. The
 automation will continue with the current config. If the pytests
@@ -978,11 +978,11 @@ does not work.
 
 **Arguments:**
 
-- `config_file_string`: The content of the config file to be processed.
-  This is a string, which will be parsed using
-  `types.ForeignConfig.load_from_string`. It should
-  be a JSON object with at least the `version` field,
-  everything else is optional.
+ * `config_file_string`: The content of the config file to be processed.
+This is a string, which will be parsed using
+`types.ForeignConfig.load_from_string`. It should
+be a JSON object with at least the `version` field,
+everything else is optional.
 
 **`remove_old_venvs`**
 
@@ -1015,3 +1015,4 @@ def update_cli_pointer(
 ```
 
 Update the cli pointer to a new version
+
