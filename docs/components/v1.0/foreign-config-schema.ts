@@ -27,7 +27,7 @@ const FOREIGN_CONFIG_SCHEMA: any = {
                 "config_revision",
                 "software_version"
             ],
-            "title": "ForeignGeneralConfig",
+            "title": "_ForeignGeneralConfig",
             "type": "object"
         }
     },

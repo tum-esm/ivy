@@ -1,13 +1,22 @@
 {
-  "index": "🪴 Introduction",
-  "core-concepts": "🕯️ Core Concepts",
-  "---2": {
-    "type": "separator"
+  "index": {
+    "type": "page",
+    "layout": "raw",
+    "display": "hidden"
   },
-  "file-interfaces": "💾 File Interfaces",
-  "iot-backends": "🦑 IoT Backends",
-  "---3": {
-    "type": "separator"
+  "v1.0": {
+    "type": "page",
+    "title": "v1.0",
+    "display": "hidden"
   },
-  "api-reference": "⚙️ API Reference"
+  "Versions": {
+    "title": "Versions",
+    "type": "menu",
+    "items": {
+      "v1.0": {
+        "title": "v1.0",
+        "href": "/v1.0"
+      }
+    }
+  }
 }

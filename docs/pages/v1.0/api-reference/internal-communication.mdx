@@ -1,7 +1,6 @@
-import {
-    StateSchema,
-    MessageArchiveItemSchema,
-} from '../../components/schema-renderers';
+import {Schema} from '../../../components/schema-renderers';
+import STATE_SCHEMA from '../../../components/v1.0/state-schema';
+import MESSAGE_ARCHIVE_ITEM_SCHEMA from '../../../components/v1.0/message-archive-item-schema';
 
 # Internal Commnuication
 
@@ -11,7 +10,7 @@ The file state file at `data/state.json` is used to communicate between the para
 
 ### Schema definition
 
-<StateSchema />
+<Schema schema={STATE_SCHEMA} />
 
 ## Message Archive Item
 
@@ -19,4 +18,4 @@ The message archive at `data/messages` is split into daily files, with each line
 
 ### Schema definition
 
-<MessageArchiveItemSchema />
+<Schema schema={MESSAGE_ARCHIVE_ITEM_SCHEMA} />

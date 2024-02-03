@@ -1,8 +1,4 @@
 import React from "react";
-import CONFIG_SCHEMA from "./config-schema";
-import FOREIGN_CONFIG_SCHEMA from "./foreign-config-schema";
-import MESSAGE_ARCHIVE_ITEM_SCHEMA from "./message-archive-item-schema";
-import STATE_SCHEMA from "./state-schema";
 
 const COLORS: {
   [key in number]: string;
@@ -389,26 +385,10 @@ function renderConfigProperty(
   return null;
 }
 
-function Schema(props: { schema: any }) {
+export function Schema(props: { schema: any }) {
   return (
     <div className={`flex flex-col mt-4 rounded-lg gap-y-2 text-slate-950`}>
       {renderConfigProperty(1, "root", props.schema, true)}
     </div>
   );
-}
-
-export function ConfigSchema() {
-  return <Schema schema={CONFIG_SCHEMA} />;
-}
-
-export function ForeignConfigSchema() {
-  return <Schema schema={FOREIGN_CONFIG_SCHEMA} />;
-}
-
-export function MessageArchiveItemSchema() {
-  return <Schema schema={MESSAGE_ARCHIVE_ITEM_SCHEMA} />;
-}
-
-export function StateSchema() {
-  return <Schema schema={STATE_SCHEMA} />;
 }
