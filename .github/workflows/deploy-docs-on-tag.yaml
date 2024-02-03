@@ -5,13 +5,14 @@ on:
     tags:
       - "v*.*.*"
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: |
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Test
         run: |
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
+          DOCS_DEPLOY_VERSION=$(echo "${{ github.ref_name }}" | cut -d. -f1-2)
+          echo "DOCS_DEPLOY_VERSION = $DOCS_DEPLOY_VERSION"
