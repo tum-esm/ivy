@@ -1,4 +1,5 @@
 export default {
+  logoLink: "/latest",
   logo: (
     <div className="flex flex-row items-center justify-center w-[calc(100%+1.5rem)] -ml-6 gap-x-3 sm:gap-x-4">
       <svg
@@ -74,11 +75,13 @@ export default {
   },
   faviconGlyph: "🌱",
   sidebar: {
-    titleComponent({ title, type, route }) {
-      if (type === "doc") {
+    defaultMenuCollapseLevel: 1,
+    autoCollapse: true,
+    titleComponent({ title, route }) {
+      if (route !== "#" || title !== "Other") {
         if (route.split("/").length <= 3) {
           return (
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
+            <span className="font-semibold text-gray-800 whitespace-pre dark:text-gray-200">
               {title}
             </span>
           );
@@ -97,4 +100,5 @@ export default {
   toc: {
     float: true,
   },
+  gitTimestamp: () => {},
 };

@@ -1,21 +1,16 @@
 {
-  "index": {
+  "latest": {
     "type": "page",
-    "layout": "raw",
-    "display": "hidden"
-  },
-  "v1.0": {
-    "type": "page",
-    "title": "v1.0",
+    "title": "Latest",
     "display": "hidden"
   },
   "Versions": {
-    "title": "Versions",
+    "title": "Documentation Versions",
     "type": "menu",
     "items": {
-      "v1.0": {
-        "title": "v1.0",
-        "href": "/v1.0"
+      "latest": {
+        "title": "Latest (v1.0)",
+        "href": "/latest"
       }
     }
   }
