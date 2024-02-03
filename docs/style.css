@@ -2,56 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.dark\:nx-bg-dark {
-  @apply dark:!bg-slate-950 dark:!shadow-none;
-}
-
-.dark\:nx-bg-neutral-800 {
-  @apply dark:!bg-slate-800;
-}
-
-.dark\:nx-border-neutral-800 {
-  @apply dark:!border-slate-800;
-}
-
-.dark\:before\:nx-bg-neutral-800 {
-  @apply dark:before:!bg-slate-800;
-}
-
-body {
-  @apply dark:!bg-slate-950;
-}
-
-.nextra-nav-container-blur {
-  @apply dark:!hidden;
-}
-.nextra-nav-container {
-  @apply dark:!bg-slate-900 dark:!opacity-100 dark:!filter-none dark:!backdrop-blur-none dark:border-b dark:border-slate-750;
-}
-
-.nextra-code-block pre {
-  @apply !bg-balancedSlate-50 dark:!bg-balancedSlate-900 !border border-balancedSlate-150 dark:!border-balancedSlate-800;
-}
-
-code {
-  @apply !bg-slate-100 dark:!bg-slate-900 dark:!border-balancedSlate-800 !border !py-0.5;
-}
-
-input {
-  @apply !bg-slate-100 dark:!bg-slate-800;
-}
-
-footer {
-  @apply !bg-slate-200 dark:!bg-slate-900;
-}
-
-.nextra-menu-desktop {
-  button,
-  a {
-    @apply hover:!bg-slate-100 dark:hover:!bg-slate-800;
-  }
-}
-
 .nx-duration-500 {
   transition-duration: 100ms;
 }
@@ -60,6 +10,6 @@ footer {
   transition-duration: 50ms;
 }
 
-footer div.nx-py-12 {
-  @apply py-3 font-semibold text-sm text-gray-800 items-center justify-center;
+.nextra-banner-container {
+  @apply !bg-amber-200 !text-amber-950 !border-b !border-amber-300 dark:!border-0 !bg-none;
 }

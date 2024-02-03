@@ -1,17 +1,19 @@
 export default {
   logo: (
-    <div className="flex flex-row items-center justify-center -ml-6 gap-x-4">
+    <div className="flex flex-row items-center justify-center w-[calc(100%+1.5rem)] -ml-6 gap-x-3 sm:gap-x-4">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 5334 2792"
-        className="h-[var(--nextra-navbar-height)] p-[1.375rem] bg-slate-900 text-slate-50 border-r border-slate-300 dark:border-slate-800 dark:bg-transparent"
+        width={5334}
+        height={2792}
+        className="h-[var(--nextra-navbar-height)] w-[calc((var(--nextra-navbar-height)-2.5rem)*(5334/2792)+2.5rem)] p-5 bg-slate-900 text-slate-50 border-r border-slate-300 dark:border-slate-700 dark:bg-transparent flex-shrink-0 flex-grow-0"
       >
         <path
           d="M4266.67,2791.67l-0,-2258.33l533.333,0l0,2258.33l533.333,-0l0,-2791.67l-2666.67,0l-0,2258.33l-533.334,0l0,-2258.33l-2133.33,0l0,533.333l533.333,0l0,2258.33l533.334,-0l-0,-2258.33l533.333,0l0,2258.33l1600,-0l0,-2258.33l533.333,0l0,2258.33l533.334,-0Z"
-          className="fill-current"
+          className="flex-grow-0 fill-current"
         />
       </svg>
-      <div className="flex-shrink-0 text-xl whitespace-nowrap font-regular">
+      <div className="flex-shrink-0 text-base md:text-xl whitespace-nowrap font-regular">
         <span className="font-semibold">Ivy Seed</span>
         <span className="hidden lg:inline">
           {" "}
@@ -45,6 +47,7 @@ export default {
     ),
   },
   docsRepositoryBase: "https://github.com/tum-esm/ivy-seed/blob/main/docs",
+  //primaryHue: 43,
   navigation: true,
   useNextSeoProps() {
     return {
@@ -70,10 +73,27 @@ export default {
     ),
   },
   faviconGlyph: "🌱",
-  //banner: {
-  //    key: 'v1.0.0-release',
-  //    text: '🎉 The EM27 Retreival Pipeline 1.0.0 has been released',
-  //},
+  sidebar: {
+    titleComponent({ title, type, route }) {
+      if (type === "doc") {
+        if (route.split("/").length <= 2) {
+          return (
+            <span className="font-semibold text-gray-800 dark:text-gray-200">
+              {title}
+            </span>
+          );
+        } else {
+          return (
+            <span className="text-gray-600 dark:text-gray-400">{title}</span>
+          );
+        }
+      }
+    },
+  },
+  banner: {
+    key: "v1.0.0",
+    text: "🪴 The Ivy Seed 1.0.0 has been released",
+  },
   toc: {
     float: true,
   },
