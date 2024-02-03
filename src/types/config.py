@@ -5,7 +5,7 @@ import pydantic
 import src
 
 
-class GeneralConfig(pydantic.BaseModel):
+class _GeneralConfig(pydantic.BaseModel):
     config_revision: int = pydantic.Field(
         ...,
         ge=0,
@@ -24,7 +24,7 @@ class GeneralConfig(pydantic.BaseModel):
     )
 
 
-class LoggingVerbosityConfig(pydantic.BaseModel):
+class _LoggingVerbosityConfig(pydantic.BaseModel):
     """How verbose to log to the different data streams.
     
     For example, If the level is set to "WARNING", only warnings, errors
@@ -57,7 +57,7 @@ class LoggingVerbosityConfig(pydantic.BaseModel):
         )
 
 
-class UpdaterConfig(pydantic.BaseModel):
+class _UpdaterConfig(pydantic.BaseModel):
     repository: str = pydantic.Field(
         ...,
         pattern=r"[a-zA-Z0-9-]+/[a-zA-Z0-9-]+",
@@ -86,7 +86,7 @@ class UpdaterConfig(pydantic.BaseModel):
     )
 
 
-class BackendConfig(pydantic.BaseModel):
+class _BackendConfig(pydantic.BaseModel):
     provider: Literal["tenta", "thingsboard"]
     mqtt_host: str = pydantic.Field(..., min_length=1, max_length=512)
     mqtt_port: int = pydantic.Field(..., ge=1, le=65535)
@@ -96,7 +96,7 @@ class BackendConfig(pydantic.BaseModel):
     max_parallel_messages: int = pydantic.Field(..., ge=1, le=10000)
 
 
-class DummyProcedureConfig(pydantic.BaseModel):
+class _DummyProcedureConfig(pydantic.BaseModel):
     seconds_between_datapoints: int = pydantic.Field(
         ...,
         ge=1,
@@ -106,7 +106,7 @@ class DummyProcedureConfig(pydantic.BaseModel):
     )
 
 
-class SystemChecksConfig(pydantic.BaseModel):
+class _SystemChecksConfig(pydantic.BaseModel):
     seconds_between_checks: int = pydantic.Field(
         ...,
         ge=1,
@@ -122,21 +122,21 @@ class Config(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
-    general: GeneralConfig = pydantic.Field(...)
-    logging_verbosity: LoggingVerbosityConfig = pydantic.Field(...)
-    updater: Optional[UpdaterConfig] = pydantic.Field(
+    general: _GeneralConfig = pydantic.Field(...)
+    logging_verbosity: _LoggingVerbosityConfig = pydantic.Field(...)
+    updater: Optional[_UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used.",
     )
-    backend: Optional[BackendConfig] = pydantic.Field(
+    backend: Optional[_BackendConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the backend will not be used.",
     )
-    dummy_procedure: DummyProcedureConfig = pydantic.Field(
+    dummy_procedure: _DummyProcedureConfig = pydantic.Field(
         default=...,
         description="Settings for the dummy procedure.",
     )
-    system_checks: SystemChecksConfig = pydantic.Field(
+    system_checks: _SystemChecksConfig = pydantic.Field(
         default=...,
         description="Settings for the system checks procedure.",
     )
@@ -174,7 +174,7 @@ class Config(pydantic.BaseModel):
         return ForeignConfig.model_validate_json(self.model_dump_json())
 
 
-class ForeignGeneralConfig(pydantic.BaseModel):
+class _ForeignGeneralConfig(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra="allow")
 
     config_revision: int = pydantic.Field(
@@ -199,7 +199,7 @@ class ForeignConfig(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="allow")
-    general: ForeignGeneralConfig = pydantic.Field(...)
+    general: _ForeignGeneralConfig = pydantic.Field(...)
 
     @staticmethod
     def load_from_string(c: str) -> ForeignConfig:
