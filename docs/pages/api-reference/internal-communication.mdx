@@ -1,0 +1,22 @@
+import {
+    StateSchema,
+    MessageArchiveItemSchema,
+} from '../../components/schema-renderers';
+
+# Internal Commnuication
+
+## `state.json`
+
+The file state file at `data/state.json` is used to communicate between the parallel parts of the software.
+
+### Schema definition
+
+<StateSchema />
+
+## Message Archive Item
+
+The message archive at `data/messages` is split into daily files, with each line representing a message. Each line follows the schema defined below.
+
+### Schema definition
+
+<MessageArchiveItemSchema />
