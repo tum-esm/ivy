@@ -139,7 +139,7 @@ def _render_class(cls: object) -> str:
             ) or (function.__name__ not in cls.__dict__)):
                 continue
             output += _render_function(function)
-        # FIXME: does not render "@property" and "@classmethod" methods
+        # does not render "@property" and "@classmethod" methods (yet)
 
     return output
 
@@ -154,11 +154,13 @@ def generate_module_reference(module: object, module_depth: int = 1) -> str:
     output += _render_variables(module, module_depth)
 
     if module.__file__.endswith("__init__.py"):
+        # render submodules (directories first, then files)
         for m in sorted(
             inspect.getmembers(module, inspect.ismodule),
             key=lambda x: 1 if x[1].__file__.endswith("__init__.py") else 0
         ):
             output += generate_module_reference(m[1], module_depth + 1)
+
     else:
         functions = [
             f[1] for f in inspect.getmembers(module, inspect.isfunction) if

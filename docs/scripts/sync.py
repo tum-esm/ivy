@@ -1,17 +1,35 @@
 import os
 import sys
+from generate_jsonschema import generate_jsonschema_tsfile
 from generate_apiref import generate_module_reference
 
 PROJECT_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 sys.path.append(PROJECT_DIR)
-
 import src
 
-markdown_content = generate_module_reference(src)
+# API REFERENCE OF CODEBASE
+
 with open(
     os.path.join(PROJECT_DIR, "docs", "pages", "api-reference", "src.md"), "w"
 ) as f:
     f.write("# API Reference of the `src` Module\n\n")
-    f.write(markdown_content)
+    f.write(generate_module_reference(src))
+
+# JSON SCHEMA REFERENCES
+
+for obj, label in [
+    (src.types.Config, "config"),
+    (src.types.ForeignConfig, "foreign-config"),
+    (src.types.State, "state-schema"),
+    (src.types.MessageArchiveItem, "message-archive-item"),
+]:
+    path = os.path.join(PROJECT_DIR, "docs", "components", f"{label}-schema.ts")
+    with open(path, "w") as f:
+        variable_name = f'{label.replace("-", "_").upper()}_SCHEMA'
+        f.write(generate_jsonschema_tsfile(obj, variable_name))
+
+# README
+
+# TODO
