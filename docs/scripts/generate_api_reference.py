@@ -1,3 +1,4 @@
+import re
 from typing import Any
 import typing
 import docstring_parser
@@ -5,13 +6,68 @@ import inspect
 import sys
 import os
 
-sys.path.append(
-    os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
+PROJECT_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
+sys.path.append(PROJECT_DIR)
 
 import src
+
+
+def get_object_source(obj: Any) -> tuple[str, str]:
+    """Get the source code of an object and split it into decorator
+    and header. Works for functions and classes. The header is useful
+    because `inspect` does not provide the full inheritance information
+    (like generics) for classes.
+    
+    For the following code:
+
+    ```python
+    @decorator(
+        arg1: int,
+    )
+    @decorator2
+    def function(arg: int) -> str:
+        pass
+    ```
+
+    The output will be:
+
+    ```
+    (
+        "@decorator(\n    arg1: int,\n)\n@decorator2",
+        "def function(arg: int) -> str:"
+    )
+    ```
+
+    Args:
+        obj: The object to get the source code from.
+    
+    Returns:
+        A tuple containing the decorator (0) and the header (1)
+        of the object.
+    """
+    s = inspect.getsource(obj)
+    indent: str = re.match(r"^(\s*)", s).group(0)
+    s = "\n".join([l[len(indent):] for l in s.split("\n")])
+    decorator: str = ""
+    header: str = ""
+    for i, l in enumerate(s.split("\n")):
+        if l.startswith("def ") or l.startswith("class "):
+            decorator = "\n".join(s.split("\n")[: i])
+            header = "\n".join(s.split("\n")[i :])
+            break
+
+    header_depth: int = 0
+    for i, c in enumerate(header):
+        if c == "(":
+            header_depth += 1
+        if c == ")":
+            header_depth -= 1
+        if c == ":" and header_depth == 0:
+            header = header[: i + 1]
+            break
+    return decorator, header
 
 
 def clean_type_name(type_name: Any) -> str:
@@ -62,25 +118,31 @@ def prettify_docstring(module: Any) -> str:
     return docstring_text
 
 
+def _render_variables(module: object, module_depth: int) -> str:
+    type_hints = typing.get_type_hints(module)
+    type_hint_extras = typing.get_type_hints(module, include_extras=True)
+    output: str = ""
+    if len(type_hints) > 0:
+        output += f"{'#' * (module_depth + 1)} Variables\n\n"
+        for name, type_hint in type_hints.items():
+            output += f"```python\n{name}: {clean_type_name(type_hint)}\n```\n\n"
+            if name in type_hint_extras:
+                extra_type_hint = type_hint_extras[name]
+                if isinstance(extra_type_hint, typing._AnnotatedAlias):
+                    metadata = extra_type_hint.__metadata__
+                    if len(metadata) > 0 and isinstance(metadata[0], str):
+                        output += f"{metadata[0]}\n\n"
+    return output
+
+
 def get_module_markdown(module: object, module_depth: int = 1) -> str:
     output = f"{'#' * module_depth} `{module.__name__}`\n\n"
     if module.__doc__ is not None:
         output += f"{module.__doc__}\n\n"
 
-    if not module.__file__.endswith("__init__.py"):
-        variables = inspect.get_annotations(module)
-        if len(variables) > 0:
-            output += f"{'#' * (module_depth + 1)} Variables\n\n"
-            for var, t in variables.items():
-                output += f"```python\n{var}: "
-                if isinstance(t, typing._AnnotatedAlias):
-                    output += f"{clean_type_name(t.__origin__)}\n```\n\n"
-                    if len(t.__metadata__
-                          ) > 0 and isinstance(t.__metadata__[0], str):
-                        output += f"{t.__metadata__[0]}\n\n"
-                else:
-                    output += f"{t}\n```\n\n"
+    output += _render_variables(module, module_depth)
 
+    if not module.__file__.endswith("__init__.py"):
         functions = [
             f[1] for f in inspect.getmembers(module, inspect.isfunction)
             if (f[1].__module__ == module.__name__)
@@ -88,7 +150,14 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
         if len(functions) > 0:
             output += f"{'#' * (module_depth + 1)} Functions\n\n"
             for function in functions:
-                output += f"```python\ndef {function.__name__}"
+                decorators, _ = get_object_source(function)
+                output += f"**`{function.__name__}`**\n\n```python\n"
+                if decorators != "":
+                    output += f"{decorators}\n"
+                # it is good to use the argspec instead of the header
+                # because the header might contain some weird edge cases
+                # that are not correclty parsed by `get_object_source`
+                output += f"def {function.__name__}"
                 argspec = inspect.getfullargspec(function)
                 if len(argspec.args) == 0:
                     output += f"() -> {clean_type_name(argspec.annotations.get('return', Any))}\n```\n\n"
@@ -113,11 +182,13 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
         if len(classes) > 0:
             output += f"{'#' * (module_depth + 1)} Classes\n\n"
             for c in classes:
-                output += f"```python\nclass {c.__name__}:\n"
-                class_variables = inspect.get_annotations(c)
-                for var, t in class_variables.items():
-                    output += f"    {var}: {clean_type_name(t)}\n"
-                output += "```\n\n"
+                decorators, header = get_object_source(c)
+
+                output += f"**`{c.__name__}`**\n\n```python\n"
+                if decorators != "":
+                    output += f"{decorators}\n"
+                output += f"{header}\n```\n\n"
+
                 output += prettify_docstring(c)
 
                 for member in inspect.getmembers(c):
@@ -128,12 +199,10 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
                             (function.__name__ != "__init__")
                         ) or (function.__name__ not in c.__dict__)):
                             continue
-                        output += f"```python\n"
-                        if isinstance(
-                            c.__dict__.get(function.__name__, None),
-                            staticmethod
-                        ):
-                            output += f"@staticmethod\n"
+                        output += f"**`{function.__name__}`**\n\n```python\n"
+                        decorators, _ = get_object_source(function)
+                        if decorators != "":
+                            output += f"{decorators}\n"
                         output += f"def {function.__name__}"
                         argspec = inspect.getfullargspec(function)
                         if len(argspec.args) == 0:
@@ -166,5 +235,8 @@ def get_module_markdown(module: object, module_depth: int = 1) -> str:
 
 
 markdown_content = get_module_markdown(src)
-with open("output.md", "w") as f:
+with open(
+    os.path.join(PROJECT_DIR, "docs", "pages", "api-reference", "src.md"), "w"
+) as f:
+    f.write("# API Reference of the `src` Module\n\n")
     f.write(markdown_content)
