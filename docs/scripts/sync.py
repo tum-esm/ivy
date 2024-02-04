@@ -9,8 +9,8 @@ PROJECT_DIR = os.path.dirname(
 sys.path.append(PROJECT_DIR)
 import src
 
-DOCS_PAGES_PATH = os.path.join(PROJECT_DIR, "docs", "pages", "latest")
-DOCS_COMPONENTS_PATH = os.path.join(PROJECT_DIR, "docs", "components", "latest")
+DOCS_PAGES_PATH = os.path.join(PROJECT_DIR, "docs", "pages")
+DOCS_COMPONENTS_PATH = os.path.join(PROJECT_DIR, "docs", "components")
 
 # API REFERENCE OF CODEBASE
 
