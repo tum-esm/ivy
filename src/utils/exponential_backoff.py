@@ -32,14 +32,18 @@ class ExponentialBackoff:
         self.bucket_index = 0  # index of the next wait time bucket
         self.logger = logger
 
-    def sleep(self) -> None:
-        """Wait and increase the wait time to the next bucket."""
+    def sleep(self) -> int:
+        """Wait and increase the wait time to the next bucket.
+        
+        Returns:
+            The amount of seconds waited."""
 
-        self.logger.info(
-            f"waiting for {self.buckets[self.bucket_index]/60} minute(s)"
-        )
-        time.sleep(self.buckets[self.bucket_index])
+        sleep_seconds = self.buckets[self.bucket_index]
+        self.logger.info(f"waiting for {sleep_seconds/60} minute(s)")
+        time.sleep(sleep_seconds)
+        # TODO: log progress steps
         self.bucket_index = min(self.bucket_index + 1, len(self.buckets) - 1)
+        return sleep_seconds
 
     def reset(self) -> None:
         """Reset the waiting period to the first bucket"""
