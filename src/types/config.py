@@ -14,13 +14,14 @@ class _GeneralConfig(pydantic.BaseModel):
     )
     software_version: Literal["1.0.0"] = pydantic.Field(
         ...,
-        description="The version of the software this config file is for",
+        description="The version of the software this config file is for.",
     )
     system_identifier: str = pydantic.Field(
         ...,
         min_length=1,
         max_length=512,
-        description="The identifier of this system",
+        description=
+        "The identifier of this system. If possible, it is convenient to use the hostname of the system.",
     )
 
 
@@ -70,7 +71,8 @@ class _UpdaterConfig(pydantic.BaseModel):
     provider_host: str = pydantic.Field(
         ...,
         min_length=3,
-        examples=["github.com", "gitlab.com", "gitlab.yourcompany.com"]
+        examples=["github.com", "gitlab.com", "gitlab.yourcompany.com"],
+        description="The host of the code provider."
     )
     access_token: Optional[str] = pydantic.Field(
         None,
@@ -87,13 +89,56 @@ class _UpdaterConfig(pydantic.BaseModel):
 
 
 class _BackendConfig(pydantic.BaseModel):
-    provider: Literal["tenta", "thingsboard"]
-    mqtt_host: str = pydantic.Field(..., min_length=1, max_length=512)
-    mqtt_port: int = pydantic.Field(..., ge=1, le=65535)
-    mqtt_client_id: str = pydantic.Field(..., min_length=1, max_length=512)
-    mqtt_username: str = pydantic.Field(..., min_length=1, max_length=512)
-    mqtt_password: str = pydantic.Field(..., min_length=1, max_length=512)
-    max_parallel_messages: int = pydantic.Field(..., ge=1, le=10000)
+    provider: Literal["tenta", "thingsboard"] = pydantic.Field(
+        ...,
+        description=
+        "The provider to use for the backend. The template ships with these two providers but is easily extendable to support other backends."
+    )
+    mqtt_host: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description="The host to use for the MQTT connection"
+    )
+    mqtt_port: int = pydantic.Field(
+        ...,
+        ge=1,
+        le=65535,
+        description="The port to use for the MQTT connection"
+    )
+    mqtt_client_id: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description=
+        "The client ID to use for the MQTT connection. Not necessarily the same as the username."
+    )
+    mqtt_username: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description="The username to use for the MQTT connection."
+    )
+    mqtt_password: str = pydantic.Field(
+        ...,
+        min_length=1,
+        max_length=512,
+        description="The password to use for the MQTT connection."
+    )
+    max_parallel_messages: int = pydantic.Field(
+        ...,
+        ge=1,
+        le=10000,
+        description=
+        "How many messages that are not published yet should be passed to the backend at once"
+    )
+    max_drain_time: int = pydantic.Field(
+        ...,
+        ge=10,
+        le=7200,
+        description=
+        "When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages."
+    )
 
 
 class _DummyProcedureConfig(pydantic.BaseModel):
