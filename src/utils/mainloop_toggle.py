@@ -10,7 +10,8 @@ import psutil
 import src
 
 SCRIPT_PATH: Annotated[
-    str, "Absolute path of the `run.py` file that starts an infinite mainloop"
+    str,
+    "Absolute path of the `run.py` file that starts an infinite mainloop",
 ] = os.path.join(src.constants.PROJECT_DIR, "run.py")
 
 
@@ -115,9 +116,7 @@ class MainloopToggle:
 
         current_pids = _get_process_pids(SCRIPT_PATH)
         if len(current_pids) > 0:
-            click.echo(
-                f"Background processes already exists with PID(s) {current_pids}"
-            )
+            click.echo(f"Background processes already exists with PID(s) {current_pids}")
             exit(1)
         else:
             os.system(f"nohup {sys.executable} {SCRIPT_PATH} &")

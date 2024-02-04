@@ -12,8 +12,8 @@ version_regex = re.compile(src.constants.VERSION_REGEX)
 
 
 def log_level_is_visible(
-    min_visible_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR",
-                                   "EXCEPTION", None],
+    min_visible_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
+                                   None],
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
 ) -> bool:
     """Checks if a log level is forwarded to the user.

@@ -79,14 +79,12 @@ class Updater:
 
         if foreign_config.general.config_revision in self.processed_config_revisions:
             self.logger.debug(
-                f"The config with revision {foreign_config.general.config_revision} "
-                + "has already been processed"
+                f"The config with revision {foreign_config.general.config_revision} " +
+                "has already been processed"
             )
             return
 
-        self.processed_config_revisions.add(
-            foreign_config.general.config_revision
-        )
+        self.processed_config_revisions.add(foreign_config.general.config_revision)
         self.logger.info(
             f"Processing new config with revision {foreign_config.general.config_revision}",
             details=f"config = {foreign_config.model_dump_json(indent=4)}"
@@ -102,20 +100,14 @@ class Updater:
             except pydantic.ValidationError as e:
                 self.logger.exception(e, label="Could not parse local config")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
             if local_config == self.config:
-                self.logger.info(
-                    "Received config is equal to the currently used config"
-                )
+                self.logger.info("Received config is equal to the currently used config")
                 return
-            self.logger.info(
-                "Received config is not equal to the currently used config."
-            )
+            self.logger.info("Received config is not equal to the currently used config.")
 
             self.logger.debug("Dumping config file")
             try:
@@ -124,16 +116,12 @@ class Updater:
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=local_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=local_config)
                 )
                 return
 
             self.messaging_agent.add_message(
-                src.types.ConfigMessageBody(
-                    status="accepted", config=local_config
-                )
+                src.types.ConfigMessageBody(status="accepted", config=local_config)
             )
             self.logger.debug(
                 "Exiting mainloop so that it can be restarted with the new config"
@@ -148,16 +136,12 @@ class Updater:
 
             self.logger.debug(f"Downloading new source code")
             try:
-                self.download_source_code(
-                    foreign_config.general.software_version
-                )
+                self.download_source_code(foreign_config.general.software_version)
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
@@ -165,16 +149,12 @@ class Updater:
 
             self.logger.debug("Installing dependencies")
             try:
-                self.install_dependencies(
-                    foreign_config.general.software_version
-                )
+                self.install_dependencies(foreign_config.general.software_version)
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
@@ -187,9 +167,7 @@ class Updater:
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
@@ -202,9 +180,7 @@ class Updater:
             except Exception as e:
                 self.logger.exception(e, "Running pytests failed")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
@@ -217,18 +193,14 @@ class Updater:
             except Exception as e:
                 self.logger.exception(e, "Could not update cli pointer")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(
-                        status="rejected", config=foreign_config
-                    )
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
                 )
                 return
 
             # Quit once update is successful
 
             self.messaging_agent.add_message(
-                src.types.ConfigMessageBody(
-                    status="accepted", config=foreign_config
-                )
+                src.types.ConfigMessageBody(status="accepted", config=foreign_config)
             )
             self.logger.info(
                 f"Successfully updated to version {foreign_config.general.software_version}, shutting down"
@@ -302,9 +274,7 @@ class Updater:
 
         venv_path = os.path.join(version_dir, ".venv")
         if os.path.isdir(venv_path):
-            self.logger.debug(
-                f"Removing existing virtual environment at {venv_path}"
-            )
+            self.logger.debug(f"Removing existing virtual environment at {venv_path}")
             shutil.rmtree(venv_path)
 
         self.logger.debug(f"Creating virtual environment at {venv_path}")
@@ -335,9 +305,7 @@ class Updater:
 
         venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
         code_path = os.path.join(src.constants.IVY_ROOT_DIR, version, "src")
-        with open(
-            f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w"
-        ) as f:
+        with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
             f.writelines([
                 "#!/bin/bash",
                 "set -o errexit",
@@ -354,9 +322,7 @@ class Updater:
         for version in os.listdir(src.constants.IVY_ROOT_DIR):
             if version == self.config.general.software_version:
                 continue
-            venv_path = os.path.join(
-                src.constants.IVY_ROOT_DIR, version, ".venv"
-            )
+            venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
             if (
                 src.utils.functions.string_is_valid_version(version) and
                 os.path.isdir(venv_path)

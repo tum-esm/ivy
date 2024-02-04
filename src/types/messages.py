@@ -8,10 +8,7 @@ class DataMessageBody(pydantic.BaseModel):
     data: dict[str, float | int | str] = pydantic.Field(
         ...,
         description="The data to send to the backend",
-        examples=[
-            {"temperature": 19.7},
-            {"temperature": 19.7, "humidity": 45.3},
-        ],
+        examples=[{"temperature": 19.7}, {"temperature": 19.7, "humidity": 45.3}],
     )
 
     @pydantic.field_validator("data", mode="after")
@@ -44,6 +41,4 @@ class MessageArchiveItem(pydantic.BaseModel):
 
 
 class MessageQueueItem(MessageArchiveItem):
-    identifier: int = pydantic.Field(
-        ..., description="The identifier of the message"
-    )
+    identifier: int = pydantic.Field(..., description="The identifier of the message")

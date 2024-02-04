@@ -39,22 +39,18 @@ class _LoggingVerbosityConfig(pydantic.BaseModel):
     data stream."""
 
     file_archive: Literal[
-        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION", None
-    ] = pydantic.Field(
-        default=...,
-        description="The minimum log level for the file archive in `data/logs`"
-    )
-    console_prints: Literal[
-        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
-        None] = pydantic.Field(
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION", None] = pydantic.Field(
             default=...,
-            description="The minimum log level for the console prints"
+            description="The minimum log level for the file archive in `data/logs`"
+        )
+    console_prints: Literal[
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION", None] = pydantic.Field(
+            default=...,
+            description="The minimum log level for the console prints",
         )
     message_sending: Literal[
-        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
-        None] = pydantic.Field(
-            default=...,
-            description="The minimum log level for the message sending"
+        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION", None] = pydantic.Field(
+            default=..., description="The minimum log level for the message sending"
         )
 
 
@@ -101,10 +97,7 @@ class _BackendConfig(pydantic.BaseModel):
         description="The host to use for the MQTT connection"
     )
     mqtt_port: int = pydantic.Field(
-        ...,
-        ge=1,
-        le=65535,
-        description="The port to use for the MQTT connection"
+        ..., ge=1, le=65535, description="The port to use for the MQTT connection"
     )
     mqtt_client_id: str = pydantic.Field(
         ...,
@@ -156,8 +149,7 @@ class _SystemChecksConfig(pydantic.BaseModel):
         ...,
         ge=1,
         le=7200,
-        description=
-        "How many seconds should be between each run of the system checks",
+        description="How many seconds should be between each run of the system checks",
     )
 
 
@@ -196,9 +188,7 @@ class Config(pydantic.BaseModel):
     @staticmethod
     def load_template() -> Config:
         """Load the config file from the path `project_dir/config/config.template.json`"""
-        path = os.path.join(
-            src.constants.PROJECT_DIR, "config", "config.template.json"
-        )
+        path = os.path.join(src.constants.PROJECT_DIR, "config", "config.template.json")
         with open(path, "r") as f:
             return Config.model_validate_json(f.read())
 

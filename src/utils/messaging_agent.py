@@ -25,9 +25,7 @@ MESSAGE_ARCHIVE_DIR_LOCK = os.path.join(
 
 class MessagingAgent():
     def __init__(self) -> None:
-        self.connection = sqlite3.connect(
-            ACTIVE_QUEUE_FILE, check_same_thread=True
-        )
+        self.connection = sqlite3.connect(ACTIVE_QUEUE_FILE, check_same_thread=True)
         self.message_archive_lock = filelock.FileLock(
             MESSAGE_ARCHIVE_DIR_LOCK,
             timeout=5,
@@ -123,9 +121,7 @@ class MessagingAgent():
         self.connection.close()
 
     @staticmethod
-    def load_message_archive(
-        date: datetime.date
-    ) -> list[src.types.MessageArchiveItem]:
+    def load_message_archive(date: datetime.date) -> list[src.types.MessageArchiveItem]:
         path = os.path.join(MESSAGE_ARCHIVE_DIR, date.strftime("%Y-%m-%d.csv"))
         results: list[src.types.MessageArchiveItem] = []
         if os.path.isfile(path):
@@ -136,8 +132,7 @@ class MessagingAgent():
                 line_parts = line.split(",")
                 assert len(line_parts) >= 2
                 timestamp = line_parts[0]
-                message_body = ",".join(line_parts[1 :]).replace('""',
-                                                                 '"')[1 :-1]
+                message_body = ",".join(line_parts[1 :]).replace('""', '"')[1 :-1]
                 results.append(
                     src.types.MessageArchiveItem(
                         timestamp=float(timestamp),

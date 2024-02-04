@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 from .logger import Logger
 
 
@@ -32,13 +33,19 @@ class ExponentialBackoff:
         self.bucket_index = 0  # index of the next wait time bucket
         self.logger = logger
 
-    def sleep(self) -> int:
+    def sleep(self, max_sleep_time: Optional[float]) -> int:
         """Wait and increase the wait time to the next bucket.
+        
+        Args:
+            max_sleep_time: The maximum time to sleep. If None, no maximum is set.
         
         Returns:
             The amount of seconds waited."""
 
         sleep_seconds = self.buckets[self.bucket_index]
+        if max_sleep_time is not None:
+            sleep_seconds = min(sleep_seconds, max_sleep_time)
+
         self.logger.info(f"waiting for {sleep_seconds/60} minute(s)")
         time.sleep(sleep_seconds)
         # TODO: log progress steps
