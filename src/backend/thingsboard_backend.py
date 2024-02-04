@@ -62,7 +62,7 @@ def run_thingsboard_backend(
             ),
             cert_reqs=ssl.CERT_REQUIRED,
             tls_version=ssl.PROTOCOL_TLSv1_2,
-            # TODO: add your own TLS configuration here
+            # possibly add your own TLS configuration here
         )
         client.tls_insecure_set(False)
         client.on_message = on_config_message

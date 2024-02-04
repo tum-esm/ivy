@@ -54,7 +54,7 @@ const STATE_SCHEMA: any = {
             "description": "A list of pending config changes. This will be written to by the backend procedure and read by the updater procedure.",
             "items": {
                 "additionalProperties": true,
-                "description": "Schema of a foreign config file for any other version of the software\nto update to.\n\nA rendered API reference can be found in the documentation at TODO.",
+                "description": "Schema of a foreign config file for any other version of the software\nto update to.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
                 "properties": {
                     "general": {
                         "additionalProperties": true,

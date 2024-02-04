@@ -78,7 +78,7 @@ export default {
     autoCollapse: true,
     titleComponent({ title, route }) {
       if (route !== "#" || title !== "Other") {
-        if (route.split("/").length <= 3) {
+        if (route.split("/").length <= 2) {
           return (
             <span className="font-semibold text-gray-800 whitespace-pre dark:text-gray-200">
               {title}

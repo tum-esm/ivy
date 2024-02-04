@@ -32,5 +32,4 @@ class State(pydantic.BaseModel):
         "A list of pending config changes. This will be written to by the backend procedure and read by the updater procedure.",
     )
 
-    # TODO: store all variables that need to be
-    #       accessed by more than one procedure
+    # store all variables that need to be accessed by more than one procedure

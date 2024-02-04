@@ -34,4 +34,4 @@ LOGGING_LEVEL_PRIORITIES: Annotated[
 SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: Annotated[
     int,
     "Number of seconds to wait for a procedure process to tear down gracefully before killing it"
-] = 10
+] = 30

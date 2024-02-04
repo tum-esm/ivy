@@ -56,7 +56,7 @@ def run_tenta_backend(
             mqtt_password=config.backend.mqtt_password,
             sensor_identifier=config.general.system_identifier,
             on_config_message=on_config_message,
-            # TODO: possibly add your TLS configuration here
+            # possibly add your TLS configuration here
         )
         logger.info("Tenta client has been set up")
 
