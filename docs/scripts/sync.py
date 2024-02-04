@@ -32,4 +32,16 @@ for obj, label in [
 
 # README
 
-# TODO
+with open(os.path.join(DOCS_PAGES_PATH, "index.mdx")) as _f:
+    current_docs_landing_page = _f.read()
+
+xs = current_docs_landing_page.split('##')
+assert len(xs) >= 2
+
+with open(os.path.join(PROJECT_DIR, "README.md")) as _f:
+    readme = _f.read().strip(" \t\n")
+
+with open(os.path.join(DOCS_PAGES_PATH, "index.mdx"), "w") as _f:
+    _f.write("---\ntitle: Introduction\n---\n\n")
+    _f.write(readme.replace("🌱 ", "") + "\n\n##")
+    _f.write("##".join(xs[1 :]))
