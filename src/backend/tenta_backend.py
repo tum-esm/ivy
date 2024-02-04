@@ -1,4 +1,5 @@
-from typing import Optional
+import signal
+from typing import Any, Optional
 import time
 import json
 import pydantic
@@ -13,6 +14,8 @@ def run_tenta_backend(
     assert config.backend is not None
     assert config.backend.provider == "tenta"
     messaging_agent = src.utils.MessagingAgent()
+
+    # parse incoming config messages
 
     def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
         logger.info(
@@ -45,8 +48,16 @@ def run_tenta_backend(
                 )
             )
 
-    try:
+    # active = in the process of sending
+    # the first element of the tuple is the mqtt message id
+    active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
+    tenta_client: Optional[tenta.TentaClient] = None
+    exponential_backoff = src.utils.ExponentialBackoff(
+        logger, buckets=[120, 900, 3600]
+    )
 
+    def connect(
+    ) -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
         logger.info("Starting Tenta backend")
         tenta_client = tenta.TentaClient(
             mqtt_client_id=config.backend.mqtt_client_id,
@@ -59,92 +70,105 @@ def run_tenta_backend(
             # possibly add your TLS configuration here
         )
         logger.info("Tenta client has been set up")
+        return tenta_client, set()
 
-        # active = in the process of sending
-        # the first element of the tuple is the mqtt message id
-        active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
-
-        # TODO: add graceful teardown to send the remaining messages
-        # TODO: add parameter `skip_remaining_messages_on_update`
+    try:
+        tenta_client, active_messages = connect()
 
         while True:
-            # send new messages
-            open_message_slots = config.backend.max_parallel_messages - len(
-                active_messages
-            )
-            if open_message_slots > 0:
-                new_messages = messaging_agent.get_n_latest_messages(
-                    open_message_slots,
-                    excluded_message_ids={
-                        m[1].identifier
-                        for m in active_messages
-                    }
+            try:
+                if not tenta_client.client.is_connected():
+                    raise ConnectionError("MQTT client is not connected")
+                else:
+                    exponential_backoff.reset()
+
+                # send new messages
+                open_message_slots = config.backend.max_parallel_messages - len(
+                    active_messages
                 )
-                for message in new_messages:
-                    mqtt_message_id: Optional[int] = None
-                    if message.message_body.variant == "data":
-                        numeric_data_only: dict[str, int | float] = {}
-                        for key, value in message.message_body.data.items():
-                            if isinstance(value, (int, float)):
-                                numeric_data_only[key] = value
-                        mqtt_message_id = tenta_client.publish(
-                            tenta.types.MeasurementMessage(
-                                value=numeric_data_only,
-                                revision=config.general.config_revision,
-                            )
-                        )
-                    if message.message_body.variant == "log":
-                        mqtt_message_id = tenta_client.publish(
-                            tenta.types.LogMessage(
-                                severity={ # type: ignore
-                                    "DEBUG": "info",
-                                    "INFO": "info",
-                                    "WARNING": "warning",
-                                    "ERROR": "error",
-                                    "EXCEPTION": "error",
-                                }[message.message_body.level],
-                                message=(
-                                    message.message_body.subject + "\n\n" +
-                                    message.message_body.body
-                                ),
-                                revision=config.general.config_revision,
-                            )
-                        )
-                    if message.message_body.variant == "config":
-                        if message.message_body.status in [
-                            "accepted", "rejected"
-                        ]:
+                if open_message_slots > 0:
+                    new_messages = messaging_agent.get_n_latest_messages(
+                        open_message_slots,
+                        excluded_message_ids={
+                            m[1].identifier
+                            for m in active_messages
+                        }
+                    )
+                    for message in new_messages:
+                        mqtt_message_id: Optional[int] = None
+                        if message.message_body.variant == "data":
+                            numeric_data_only: dict[str, int | float] = {}
+                            for key, value in message.message_body.data.items():
+                                if isinstance(value, (int, float)):
+                                    numeric_data_only[key] = value
                             mqtt_message_id = tenta_client.publish(
-                                tenta.types.AcknowledgmentMessage(
-                                    revision=message.message_body.config.
-                                    general.config_revision,
-                                    success=(
-                                        message.message_body.status ==
-                                        "accepted"
-                                    ),
+                                tenta.types.MeasurementMessage(
+                                    value=numeric_data_only,
+                                    revision=config.general.config_revision,
                                 )
                             )
-                        # received and startup not implemented in Tenta yet
-                    if mqtt_message_id is not None:
-                        active_messages.add((mqtt_message_id, message))
+                        if message.message_body.variant == "log":
+                            mqtt_message_id = tenta_client.publish(
+                                tenta.types.LogMessage(
+                                    severity={ # type: ignore
+                                        "DEBUG": "info",
+                                        "INFO": "info",
+                                        "WARNING": "warning",
+                                        "ERROR": "error",
+                                        "EXCEPTION": "error",
+                                    }[message.message_body.level],
+                                    message=(
+                                        message.message_body.subject + "\n\n" +
+                                        message.message_body.body
+                                    ),
+                                    revision=config.general.config_revision,
+                                )
+                            )
+                        if message.message_body.variant == "config":
+                            if message.message_body.status in [
+                                "accepted", "rejected"
+                            ]:
+                                mqtt_message_id = tenta_client.publish(
+                                    tenta.types.AcknowledgmentMessage(
+                                        revision=message.message_body.config.
+                                        general.config_revision,
+                                        success=(
+                                            message.message_body.status ==
+                                            "accepted"
+                                        ),
+                                    )
+                                )
+                            # received and startup not implemented in Tenta yet
+                        if mqtt_message_id is not None:
+                            active_messages.add((mqtt_message_id, message))
 
-            # determine which messages have been published
-            published_message_identifiers: set[int] = set()
-            for mqtt_message_id, message in active_messages:
-                if tenta_client.was_message_published(mqtt_message_id):
-                    published_message_identifiers.add(message.identifier)
+                # determine which messages have been published
+                published_message_identifiers: set[int] = set()
+                for mqtt_message_id, message in active_messages:
+                    if tenta_client.was_message_published(mqtt_message_id):
+                        published_message_identifiers.add(message.identifier)
 
-            # remove published messages from local message queue database
-            messaging_agent.remove_messages(published_message_identifiers)
+                # remove published messages from local message queue database
+                messaging_agent.remove_messages(published_message_identifiers)
 
-            # remove published messages from the active set
-            active_messages = set(
-                filter(
-                    lambda m: m[1].identifier not in
-                    published_message_identifiers, active_messages
+                # remove published messages from the active set
+                active_messages = set(
+                    filter(
+                        lambda m: m[1].identifier not in
+                        published_message_identifiers, active_messages
+                    )
                 )
-            )
-            time.sleep(5)
+                time.sleep(5)
+
+            except ConnectionError:
+                logger.error("The Tenta backend is not connected")
+                logger.debug("Tearing down the Tenta Client")
+                tenta_client.teardown()
+                sleep_seconds = exponential_backoff.sleep()
+                if sleep_seconds == exponential_backoff.buckets[-1]:
+                    logger.debug("Fully tearing down the procedure")
+                    exit(0)
+                tenta_client, active_messages = connect()
 
     except Exception as e:
         logger.exception(e, "The Tenta backend encountered an exception")
