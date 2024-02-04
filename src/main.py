@@ -87,4 +87,4 @@ def run() -> None:
         with src.utils.StateInterface.update() as state:
             state.pending_configs = state.pending_configs[len(pending_configs):]
 
-        time.sleep(5)
+        time.sleep(10)
