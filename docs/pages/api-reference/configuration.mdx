@@ -1,6 +1,6 @@
 import {Schema} from '../../components/schema-renderers';
-import CONFIG_SCHEMA from '../../components/config-schema';
-import FOREIGN_CONFIG_SCHEMA from '../../components/foreign-config-schema';
+import CONFIG_SCHEMA from '../../components/schemas/config-schema';
+import FOREIGN_CONFIG_SCHEMA from '../../components/schemas/foreign-config-schema';
 
 # Configuration
 
@@ -11,7 +11,41 @@ import FOREIGN_CONFIG_SCHEMA from '../../components/foreign-config-schema';
 {/* The following example is synced automatically with the file in `config/config.template.json` whenever running the config schema export. */}
 
 ```json
-{"tada": 40}
+{
+  "general": {
+    "config_revision": 1,
+    "software_version": "1.0.0",
+    "system_identifier": "my-system-1"
+  },
+  "logging_verbosity": {
+    "file_archive": "DEBUG",
+    "console_prints": "INFO",
+    "message_sending": "WARNING"
+  },
+  "updater": {
+    "repository": "tum-esm/ivy-seed",
+    "provider": "github",
+    "provider_host": "github.com",
+    "access_token": null,
+    "source_conflict_behaviour": "reuse"
+  },
+  "backend": {
+    "provider": "tenta",
+    "mqtt_host": "...",
+    "mqtt_port": 1883,
+    "mqtt_client_id": "...",
+    "mqtt_username": "...",
+    "mqtt_password": "...",
+    "max_parallel_messages": 50
+  },
+  "dummy_procedure": {
+    "seconds_between_datapoints": 10
+  },
+  "system_checks": {
+    "seconds_between_checks": 120
+  }
+}
+
 ```
 
 ### Schema definition
