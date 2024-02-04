@@ -75,9 +75,7 @@ def run() -> None:
 
     # start the main loop
 
-    exponential_backoff = src.utils.ExponentialBackoff(
-        logger, buckets=[60, 240, 900]
-    )
+    exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[60, 240, 900])
     while True:
         try:
             for pm in procedure_managers:
@@ -89,8 +87,7 @@ def run() -> None:
             for pending_config in pending_configs:
                 updater.perform_update(pending_config)
             with src.utils.StateInterface.update() as state:
-                state.pending_configs = state.pending_configs[
-                    len(pending_configs):]
+                state.pending_configs = state.pending_configs[len(pending_configs):]
 
             exponential_backoff.reset()
             time.sleep(10)

@@ -25,8 +25,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     while True:
         try:
             t = src.utils.functions.get_time_to_next_datapoint(
-                seconds_between_datapoints=config.system_checks.
-                seconds_between_checks
+                seconds_between_datapoints=config.system_checks.seconds_between_checks
             )
             logger.debug(f"sleeping for {t} seconds")
             time.sleep(t)
@@ -43,15 +42,12 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
             if load_last_5_min > 75:
                 logger.warning(
                     "CPU load is very high",
-                    details=
-                    f"CPU load was at {load_last_5_min} % in the last 5 minutes"
+                    details=f"CPU load was at {load_last_5_min} % in the last 5 minutes"
                 )
 
             # get and log last boot time
             seconds_since_last_boot = psutil.boot_time()
-            last_boot_time = datetime.datetime.fromtimestamp(
-                seconds_since_last_boot
-            )
+            last_boot_time = datetime.datetime.fromtimestamp(seconds_since_last_boot)
             logger.debug(f"Last boot time: {last_boot_time}")
 
             # On Linux system you could use `psutil.sensors_temperatures()`

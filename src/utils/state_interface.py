@@ -7,8 +7,7 @@ import src
 from .functions import with_filelock
 
 STATE_FILE: Annotated[
-    str,
-    "Points to `data/state.json` where the state is communicated with all threads"
+    str, "Points to `data/state.json` where the state is communicated with all threads"
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
