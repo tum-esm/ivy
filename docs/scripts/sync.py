@@ -1,15 +1,14 @@
 import os
-import re
 import sys
 from generate_jsonschema import generate_jsonschema_tsfile
 from generate_apiref import generate_module_reference
-from utils import replace_json_block_in_file
+from utils import replace_json_block_in_file, generate_recursive_help
 
 PROJECT_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 sys.path.append(PROJECT_DIR)
-import src
+import src, cli, run
 
 DOCS_PAGES_PATH = os.path.join(PROJECT_DIR, "docs", "pages")
 DOCS_SCHEMA_PATH = os.path.join(PROJECT_DIR, "docs", "components", "schemas")
@@ -17,6 +16,8 @@ DOCS_SCHEMA_PATH = os.path.join(PROJECT_DIR, "docs", "components", "schemas")
 # API REFERENCE OF CODEBASE
 
 with open(os.path.join(DOCS_PAGES_PATH, "api-reference", "src.md"), "w") as f:
+    f.write(generate_module_reference(run))
+    f.write("\n\n")
     f.write(generate_module_reference(src))
 
 # JSON SCHEMA REFERENCES
@@ -60,3 +61,9 @@ with open(os.path.join(DOCS_PAGES_PATH, "index.mdx"), "w") as _f:
     _f.write("---\ntitle: Introduction\n---\n\n")
     _f.write(readme.replace("🌱 ", "") + "\n\n##")
     _f.write("##".join(xs[1 :]))
+
+# CLI COMMANDS
+
+with open(os.path.join(DOCS_PAGES_PATH, "api-reference", "cli.md"), "w") as f:
+    f.write("# CLI Reference\n\n")
+    f.write(generate_recursive_help(cli.cli))
