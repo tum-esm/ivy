@@ -35,13 +35,15 @@ def run() -> None:
     procedure_managers: list[src.utils.ProcedureManager] = [
         src.utils.ProcedureManager(
             config=config,
-            procedure_entrypoint=src.procedures.dummy_procedure.run,
+            entrypoint=src.procedures.dummy_procedure.run,
             procedure_name="dummy-procedure",
+            variant="procedure",
         ),
         src.utils.ProcedureManager(
             config=config,
-            procedure_entrypoint=src.procedures.system_checks.run,
+            entrypoint=src.procedures.system_checks.run,
             procedure_name="system-checks",
+            variant="procedure",
         ),
     ]
     if config.backend is not None:
@@ -49,16 +51,18 @@ def run() -> None:
             procedure_managers.append(
                 src.utils.ProcedureManager(
                     config=config,
-                    procedure_entrypoint=src.backend.run_tenta_backend,
+                    entrypoint=src.backend.tenta_backend.run,
                     procedure_name="tenta-backend",
+                    variant="backend",
                 )
             )
         if config.backend.provider == "thingsboard":
             procedure_managers.append(
                 src.utils.ProcedureManager(
                     config=config,
-                    procedure_entrypoint=src.backend.run_thingsboard_backend,
+                    entrypoint=src.backend.thingsboard_backend.run,
                     procedure_name="thingsboard-backend",
+                    variant="backend",
                 )
             )
 
