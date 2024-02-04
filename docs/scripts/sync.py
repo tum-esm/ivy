@@ -1,7 +1,9 @@
 import os
+import re
 import sys
 from generate_jsonschema import generate_jsonschema_tsfile
 from generate_apiref import generate_module_reference
+from utils import replace_json_block_in_file
 
 PROJECT_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,7 +12,7 @@ sys.path.append(PROJECT_DIR)
 import src
 
 DOCS_PAGES_PATH = os.path.join(PROJECT_DIR, "docs", "pages")
-DOCS_COMPONENTS_PATH = os.path.join(PROJECT_DIR, "docs", "components")
+DOCS_SCHEMA_PATH = os.path.join(PROJECT_DIR, "docs", "components", "schemas")
 
 # API REFERENCE OF CODEBASE
 
@@ -25,10 +27,23 @@ for obj, label in [
     (src.types.State, "state"),
     (src.types.MessageArchiveItem, "message-archive-item"),
 ]:
-    path = os.path.join(DOCS_COMPONENTS_PATH, f"{label}-schema.ts")
+    path = os.path.join(DOCS_SCHEMA_PATH, f"{label}-schema.ts")
     with open(path, "w") as f:
         variable_name = f'{label.replace("-", "_").upper()}_SCHEMA'
         f.write(generate_jsonschema_tsfile(obj, variable_name))
+
+# CONFIG TEMPLATE
+
+replace_json_block_in_file(
+    os.path.join(PROJECT_DIR, "config", "config.template.json"),
+    os.path.join(DOCS_PAGES_PATH, "api-reference", "configuration.mdx"),
+    json_block_index=0,
+)
+replace_json_block_in_file(
+    os.path.join(PROJECT_DIR, "config", "config.template.json"),
+    os.path.join(DOCS_PAGES_PATH, "file-interfaces", "configuration.mdx"),
+    json_block_index=0,
+)
 
 # README
 
