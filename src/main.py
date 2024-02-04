@@ -22,7 +22,7 @@ def run() -> None:
         details=f"config = {config.model_dump_json(indent=4)}"
     )
     messaging_agent.add_message(
-        src.types.ConfigMessageBody(config=config, status="startup")
+        src.types.ConfigMessageBody(status="startup", config=config)
     )
 
     # remove old venvs
@@ -75,16 +75,25 @@ def run() -> None:
 
     # start the main loop
 
+    exponential_backoff = src.utils.ExponentialBackoff(
+        logger, buckets=[60, 240, 900]
+    )
     while True:
-        for pm in procedure_managers:
-            if not pm.procedure_is_running():
-                pm.start_procedure()
-            pm.check_procedure_status()
+        try:
+            for pm in procedure_managers:
+                if not pm.procedure_is_running():
+                    pm.start_procedure()
+                pm.check_procedure_status()
 
-        pending_configs = src.utils.StateInterface.load().pending_configs
-        for pending_config in pending_configs:
-            updater.perform_update(pending_config)
-        with src.utils.StateInterface.update() as state:
-            state.pending_configs = state.pending_configs[len(pending_configs):]
+            pending_configs = src.utils.StateInterface.load().pending_configs
+            for pending_config in pending_configs:
+                updater.perform_update(pending_config)
+            with src.utils.StateInterface.update() as state:
+                state.pending_configs = state.pending_configs[
+                    len(pending_configs):]
 
-        time.sleep(10)
+            exponential_backoff.reset()
+            time.sleep(10)
+        except Exception as e:
+            logger.exception(e, label="Exception in main loop")
+            exponential_backoff.sleep()

@@ -35,7 +35,7 @@ class ExponentialBackoff:
     def sleep(self) -> None:
         """Wait and increase the wait time to the next bucket."""
 
-        self.logger.debug(
+        self.logger.info(
             f"waiting for {self.buckets[self.bucket_index]/60} minute(s)"
         )
         time.sleep(self.buckets[self.bucket_index])
