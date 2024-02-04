@@ -1,5 +1,6 @@
-import signal
 from typing import Any, Optional
+import multiprocessing.synchronize
+import signal
 import time
 import json
 import pydantic
@@ -7,9 +8,10 @@ import tenta
 import src
 
 
-def run_tenta_backend(
+def run(
     config: src.types.Config,
     logger: src.utils.Logger,
+    teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
     assert config.backend is not None
     assert config.backend.provider == "tenta"

@@ -1,16 +1,18 @@
+from typing import Any, Optional
 import json
+import multiprocessing.synchronize
 import os
 import ssl
 import time
-from typing import Any, Optional
 import paho.mqtt.client
 import pydantic
 import src
 
 
-def run_thingsboard_backend(
+def run(
     config: src.types.Config,
     logger: src.utils.Logger,
+    teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
     assert config.backend is not None
     assert config.backend.provider == "thingsboard"
@@ -100,8 +102,7 @@ def run_thingsboard_backend(
 
         while True:
             # send new messages
-            assert client.is_connected(
-            ), "The Thingsboard client is not connected"
+            assert client.is_connected(), "The Thingsboard client is not connected"
 
             open_message_slots = config.backend.max_parallel_messages - len(
                 active_messages
@@ -109,14 +110,11 @@ def run_thingsboard_backend(
             if open_message_slots > 0:
                 new_messages = messaging_agent.get_n_latest_messages(
                     open_message_slots,
-                    excluded_message_ids={
-                        m[1].identifier
-                        for m in active_messages
-                    },
+                    excluded_message_ids={m[1].identifier
+                                          for m in active_messages},
                 )
                 for message in new_messages:
-                    message_info: Optional[paho.mqtt.client.MQTTMessageInfo
-                                          ] = None
+                    message_info: Optional[paho.mqtt.client.MQTTMessageInfo] = None
                     if message.message_body.variant == "data":
                         message_info = send_telemetry(
                             message.timestamp, message.message_body.data
@@ -157,8 +155,7 @@ def run_thingsboard_backend(
             # remove published messages from the active set
             active_messages = set(
                 filter(
-                    lambda m: m[1].identifier not in
-                    published_message_identifiers,
+                    lambda m: m[1].identifier not in published_message_identifiers,
                     active_messages,
                 )
             )
