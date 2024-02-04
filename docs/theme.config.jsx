@@ -1,5 +1,4 @@
 export default {
-  logoLink: "/latest",
   logo: (
     <div className="flex flex-row items-center justify-center w-[calc(100%+1.5rem)] -ml-6 gap-x-3 sm:gap-x-4">
       <svg
