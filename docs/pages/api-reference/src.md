@@ -157,7 +157,7 @@ class Config(pydantic.BaseModel):
 
 Schema of the config file for this version of the software.
 
-A rendered API reference can be found in the documentation at TODO.
+A rendered API reference can be found [in the documentation](/api-reference/configuration).
 
 **`dump`**
 
@@ -216,7 +216,7 @@ Schema of a foreign config file for any other version of the software
 
 to update to.
 
-A rendered API reference can be found in the documentation at TODO.
+A rendered API reference can be found [in the documentation](/api-reference/configuration).
 
 **`dump`**
 

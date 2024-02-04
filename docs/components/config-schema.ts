@@ -1,7 +1,7 @@
 /* prettier-ignore */
 const CONFIG_SCHEMA: any = {
     "additionalProperties": false,
-    "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found in the documentation at TODO.",
+    "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
     "properties": {
         "general": {
             "properties": {

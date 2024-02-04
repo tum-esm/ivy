@@ -102,7 +102,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                         },
                         "config": {
                             "additionalProperties": true,
-                            "description": "Schema of a foreign config file for any other version of the software\nto update to.\n\nA rendered API reference can be found in the documentation at TODO.",
+                            "description": "Schema of a foreign config file for any other version of the software\nto update to.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
                             "properties": {
                                 "general": {
                                     "additionalProperties": true,

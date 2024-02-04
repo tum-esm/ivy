@@ -16,6 +16,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     def teardown_handler(*args: Any) -> None:
         logger.debug("nothing to tear down")
 
+    signal.signal(signal.SIGINT, teardown_handler)
     signal.signal(signal.SIGTERM, teardown_handler)
 
     # start procedure loop

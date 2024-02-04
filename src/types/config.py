@@ -119,7 +119,7 @@ class _SystemChecksConfig(pydantic.BaseModel):
 class Config(pydantic.BaseModel):
     """Schema of the config file for this version of the software.
     
-    A rendered API reference can be found in the documentation at TODO."""
+    A rendered API reference can be found [in the documentation](/api-reference/configuration)."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
     general: _GeneralConfig = pydantic.Field(...)
@@ -196,7 +196,7 @@ class ForeignConfig(pydantic.BaseModel):
     """Schema of a foreign config file for any other version of the software
     to update to.
     
-    A rendered API reference can be found in the documentation at TODO."""
+    A rendered API reference can be found [in the documentation](/api-reference/configuration)."""
 
     model_config = pydantic.ConfigDict(extra="allow")
     general: ForeignGeneralConfig = pydantic.Field(...)
