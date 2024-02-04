@@ -83,14 +83,14 @@ class Updater:
                 + "has already been processed"
             )
             return
-        else:
-            self.processed_config_revisions.add(
-                foreign_config.general.config_revision
-            )
-            self.logger.info(
-                f"Processing new config with revision {foreign_config.general.config_revision}",
-                details=f"config = {foreign_config.model_dump_json(indent=4)}"
-            )
+
+        self.processed_config_revisions.add(
+            foreign_config.general.config_revision
+        )
+        self.logger.info(
+            f"Processing new config with revision {foreign_config.general.config_revision}",
+            details=f"config = {foreign_config.model_dump_json(indent=4)}"
+        )
 
         if foreign_config.general.software_version == self.config.general.software_version:
             self.logger.info("Received config has same version number")
@@ -101,7 +101,11 @@ class Updater:
                 self.logger.info(f"Successfully parsed local config")
             except pydantic.ValidationError as e:
                 self.logger.exception(e, label="Could not parse local config")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             if local_config == self.config:
@@ -119,13 +123,20 @@ class Updater:
                 self.logger.debug("Successfully dumped config file")
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=local_config
+                    )
+                )
                 return
 
-            # TODO: add "success message" to messaging agent
+            self.messaging_agent.add_message(
+                src.types.ConfigMessageBody(
+                    status="accepted", config=local_config
+                )
+            )
             self.logger.debug(
-                "Exiting mainloop so that it can " +
-                "be restarted with the new config"
+                "Exiting mainloop so that it can be restarted with the new config"
             )
             exit(0)
         else:
@@ -143,7 +154,11 @@ class Updater:
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             # Install dependencies
@@ -156,7 +171,11 @@ class Updater:
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             # Write new config file to destination
@@ -167,7 +186,11 @@ class Updater:
                 self.logger.debug("Successfully dumped config file")
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             # Run tests on new version
@@ -178,7 +201,11 @@ class Updater:
                 self.logger.debug("Successfully ran pytests")
             except Exception as e:
                 self.logger.exception(e, "Running pytests failed")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             # Update cli pointer
@@ -189,12 +216,20 @@ class Updater:
                 self.logger.debug("Successfully updated cli pointer")
             except Exception as e:
                 self.logger.exception(e, "Could not update cli pointer")
-                # TODO: add "failed message" to messaging agent
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=foreign_config
+                    )
+                )
                 return
 
             # Quit once update is successful
 
-            # TODO: add "success message" to messaging agent
+            self.messaging_agent.add_message(
+                src.types.ConfigMessageBody(
+                    status="accepted", config=foreign_config
+                )
+            )
             self.logger.info(
                 f"Successfully updated to version {foreign_config.general.software_version}, shutting down"
             )
