@@ -64,6 +64,9 @@ def run_tenta_backend(
         # the first element of the tuple is the mqtt message id
         active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
 
+        # TODO: add graceful teardown to send the remaining messages
+        # TODO: add parameter `skip_remaining_messages_on_update`
+
         while True:
             # send new messages
             open_message_slots = config.backend.max_parallel_messages - len(
