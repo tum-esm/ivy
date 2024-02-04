@@ -1,7 +1,7 @@
 {
   "general": {
     "config_revision": 1,
-    "software_version": "0.1.0",
+    "software_version": "1.0.0",
     "system_identifier": "my-system-1"
   },
   "logging_verbosity": {

@@ -1,13 +1,11 @@
-# API Reference of the `src` Module
-
-# `src` [#src]
+# Module `src` [#src]
 
 Package of the sensor system automation software.
 
 Import hierarchy (`a` -> `b` means that `a` cannot import from `b`):
 `constants` -> `types` -> `utils` -> `procedures` -> `main`
 
-## `src.constants` [#src.constants]
+## Module `src.constants` [#src.constants]
 
 ### Variables [#src.constants.variables]
 
@@ -24,7 +22,7 @@ PROJECT_DIR: str
 The root directory of the project (the parent of `src/`)
 
 ```python
-VERSION: str
+VERSION: typing.Literal['1.0.0']
 ```
 
 The current version of the project
@@ -53,7 +51,7 @@ SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: int
 
 Number of seconds to wait for a procedure process to tear down gracefully before killing it
 
-## `src.main` [#src.main]
+## Module `src.main` [#src.main]
 
 Main loop of the automation
 
@@ -67,9 +65,9 @@ def run() -> None:
 
 Run the automation
 
-## `src.backend` [#src.backend]
+## Module `src.backend` [#src.backend]
 
-### `src.backend.tenta_backend` [#src.backend.tenta_backend]
+### Module `src.backend.tenta_backend` [#src.backend.tenta_backend]
 
 #### Functions [#src.backend.tenta_backend.functions]
 
@@ -82,7 +80,7 @@ def run_tenta_backend(
 ) -> None:
 ```
 
-### `src.backend.thingsboard_backend` [#src.backend.thingsboard_backend]
+### Module `src.backend.thingsboard_backend` [#src.backend.thingsboard_backend]
 
 #### Functions [#src.backend.thingsboard_backend.functions]
 
@@ -95,7 +93,7 @@ def run_thingsboard_backend(
 ) -> None:
 ```
 
-## `src.procedures` [#src.procedures]
+## Module `src.procedures` [#src.procedures]
 
 This modules provides all procedures that the automation software
 should run. They should all be run in parallel processes and each file
@@ -109,7 +107,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     ...
 ```
 
-### `src.procedures.dummy_procedure` [#src.procedures.dummy_procedure]
+### Module `src.procedures.dummy_procedure` [#src.procedures.dummy_procedure]
 
 #### Functions [#src.procedures.dummy_procedure.functions]
 
@@ -127,7 +125,7 @@ Fetches the weather from a weather API. You can simply remove
 this in your own project and use it as an exaple for your own
 procedures.
 
-### `src.procedures.system_checks` [#src.procedures.system_checks]
+### Module `src.procedures.system_checks` [#src.procedures.system_checks]
 
 #### Functions [#src.procedures.system_checks.functions]
 
@@ -142,12 +140,12 @@ def run(
 
 Logs the system load and last boot time.
 
-## `src.types` [#src.types]
+## Module `src.types` [#src.types]
 
 This module contains all type definitions of the codebase and
 may implement loading and dumping functionality like `Config.load`.
 
-### `src.types.config` [#src.types.config]
+### Module `src.types.config` [#src.types.config]
 
 #### Classes [#src.types.config.classes]
 
@@ -241,7 +239,13 @@ def load_from_string(
 
 Load the object from a string
 
-### `src.types.messages` [#src.types.messages]
+**`ForeignGeneralConfig`**
+
+```python
+class ForeignGeneralConfig(pydantic.BaseModel):
+```
+
+### Module `src.types.messages` [#src.types.messages]
 
 #### Classes [#src.types.messages.classes]
 
@@ -275,7 +279,7 @@ class MessageArchiveItem(pydantic.BaseModel):
 class MessageQueueItem(MessageArchiveItem):
 ```
 
-### `src.types.state` [#src.types.state]
+### Module `src.types.state` [#src.types.state]
 
 #### Classes [#src.types.state.classes]
 
@@ -295,7 +299,7 @@ class SystemState(pydantic.BaseModel):
 
 State values determined in the system checks procedure.
 
-## `src.utils` [#src.utils]
+## Module `src.utils` [#src.utils]
 
 This module contains all utility functionality of the codebase.
 
@@ -303,7 +307,7 @@ Some of the functions have been used from https://github.com/tum-esm/utils
 but this library has not been added as a dependency to reduce the number of
 third party libaries this software depends on.
 
-### `src.utils.exponential_backoff` [#src.utils.exponential_backoff]
+### Module `src.utils.exponential_backoff` [#src.utils.exponential_backoff]
 
 #### Classes [#src.utils.exponential_backoff.classes]
 
@@ -366,7 +370,7 @@ def sleep(
 
 Wait and increase the wait time to the next bucket.
 
-### `src.utils.functions` [#src.utils.functions]
+### Module `src.utils.functions` [#src.utils.functions]
 
 #### Functions [#src.utils.functions.functions]
 
@@ -514,7 +518,7 @@ def __init__(
 
 A timeout of -1 means that the code waits forever.
 
-### `src.utils.logger` [#src.utils.logger]
+### Module `src.utils.logger` [#src.utils.logger]
 
 #### Classes [#src.utils.logger.classes]
 
@@ -697,7 +701,7 @@ Writes a WARNING log line.
  * `message`:  The message to log
  * `details`:  Additional details to log, useful for verbose output.
 
-### `src.utils.messaging_agent` [#src.utils.messaging_agent]
+### Module `src.utils.messaging_agent` [#src.utils.messaging_agent]
 
 #### Classes [#src.utils.messaging_agent.classes]
 
@@ -767,7 +771,7 @@ def teardown(
 ) -> None:
 ```
 
-### `src.utils.procedure_manager` [#src.utils.procedure_manager]
+### Module `src.utils.procedure_manager` [#src.utils.procedure_manager]
 
 #### Classes [#src.utils.procedure_manager.classes]
 
@@ -820,7 +824,7 @@ def teardown(
 ) -> None:
 ```
 
-### `src.utils.state_interface` [#src.utils.state_interface]
+### Module `src.utils.state_interface` [#src.utils.state_interface]
 
 #### Variables [#src.utils.state_interface.variables]
 
@@ -870,7 +874,7 @@ with State.update() as state:
     state.system.last_boot_time = datetime.datetime.now()
 ```
 
-### `src.utils.updater` [#src.utils.updater]
+### Module `src.utils.updater` [#src.utils.updater]
 
 #### Classes [#src.utils.updater.classes]
 

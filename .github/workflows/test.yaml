@@ -2,10 +2,10 @@ name: "test"
 on:
   push:
     branches:
-      - never
+      - main
   pull_request:
     branches:
-      - never
+      - main
 
 jobs:
   test:

@@ -36,10 +36,10 @@ def run_tenta_backend(
                 src.types.ConfigMessageBody(
                     status="rejected",
                     config=src.types.ForeignConfig(
+                        # using a dummy version here simplifies the rest of the codebase
                         general=src.types.config.ForeignGeneralConfig(
                             config_revision=message.revision,
-                            software_version=
-                            "0.0.0",  # using a dummy version here simplifies the rest of the codebase
+                            software_version="0.0.0",
                         ),
                     ),
                 )

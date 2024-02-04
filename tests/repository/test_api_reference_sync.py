@@ -15,7 +15,7 @@ def get_checksum() -> str:
 def test_api_reference_state() -> None:
     checksum_before = get_checksum()
     src.utils.functions.run_shell_command(
-        f"{sys.executable} docs/scripts/export_api_reference.py",
+        f"{sys.executable} docs/scripts/sync.py",
         working_directory=src.constants.PROJECT_DIR,
     )
     checksum_after = get_checksum()

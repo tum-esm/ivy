@@ -12,9 +12,9 @@ PROJECT_DIR: Annotated[
 ] = os.path.dirname(os.path.dirname(__file__))
 
 VERSION: Annotated[
-    str,
+    Literal["1.0.0"],
     "The current version of the project",
-] = "0.1.0"
+] = "1.0.0"
 
 NAME: Annotated[str, "The name of the project"] = "ivy-seed"
 

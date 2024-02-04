@@ -3,11 +3,7 @@ const STATE_SCHEMA: any = {
     "description": "Central state used to communicate between prodedures and with the mainloop.",
     "properties": {
         "system": {
-            "default": {
-                "last_boot_time": null,
-                "last_5_min_load": null
-            },
-            "description": "State values determined in the system checks procedure.",
+            "description": "The state of the system",
             "properties": {
                 "last_boot_time": {
                     "anyOf": [
@@ -47,7 +43,11 @@ const STATE_SCHEMA: any = {
                 }
             },
             "title": "SystemState",
-            "type": "object"
+            "type": "object",
+            "default": {
+                "last_boot_time": null,
+                "last_5_min_load": null
+            }
         },
         "pending_configs": {
             "default": [],
