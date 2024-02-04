@@ -14,9 +14,13 @@
     "title": "Versions",
     "type": "menu",
     "items": {
-      "latest": {
-        "title": "Latest (v1.0)",
+      "nightly": {
+        "title": "Nightly (v1.0)",
         "href": "/"
+      },
+      "v1.0": {
+        "title": "v1.0",
+        "href": "https://docs-v1-0.ivy-seed.pages.dev/"
       }
     }
   }

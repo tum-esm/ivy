@@ -15,7 +15,6 @@ DOCS_COMPONENTS_PATH = os.path.join(PROJECT_DIR, "docs", "components")
 # API REFERENCE OF CODEBASE
 
 with open(os.path.join(DOCS_PAGES_PATH, "api-reference", "src.md"), "w") as f:
-    f.write("# API Reference of the `src` Module\n\n")
     f.write(generate_module_reference(src))
 
 # JSON SCHEMA REFERENCES

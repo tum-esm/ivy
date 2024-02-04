@@ -8,7 +8,7 @@ def _get_object_source(obj: typing.Any) -> tuple[str, str]:
     """Get the definition and decorators of a function or class.
     This is used to detect decorators and class inheritance."""
     s = inspect.getsource(obj)
-    indent: str = re.match(r"^(\s*)", s).group(0)
+    indent: str = re.match(r"^(\s*)", s).group(0)  # type: ignore
     s = "\n".join([l[len(indent):] for l in s.split("\n")])
     decorator: str = ""
     definition: str = ""
@@ -31,10 +31,13 @@ def _get_object_source(obj: typing.Any) -> tuple[str, str]:
 
 
 def _clean_type_name(type_name: typing.Any) -> str:
-    type_name = str(type_name).replace("NoneType", "None")
-    if type_name.startswith("<class '") and type_name.endswith("'>"):
-        type_name = type_name[8 :-2]
-    return type_name
+    parsed_type_name = str(type_name).replace("NoneType", "None")
+    if (
+        parsed_type_name.startswith("<class '") and
+        parsed_type_name.endswith("'>")
+    ):
+        parsed_type_name = parsed_type_name[8 :-2]
+    return parsed_type_name
 
 
 def _prettify_docstring(module: typing.Any) -> str:
@@ -78,7 +81,7 @@ def _prettify_docstring(module: typing.Any) -> str:
     return docstring_text
 
 
-def _render_variables(module: object, module_depth: int) -> str:
+def _render_variables(module: typing.Any, module_depth: int) -> str:
     type_hints = typing.get_type_hints(module)
     type_hint_extras = typing.get_type_hints(module, include_extras=True)
     output: str = ""
@@ -89,7 +92,10 @@ def _render_variables(module: object, module_depth: int) -> str:
             output += f"```python\n{name}: {_clean_type_name(type_hint)}\n```\n\n"
             if name in type_hint_extras:
                 extra_type_hint = type_hint_extras[name]
-                if isinstance(extra_type_hint, typing._AnnotatedAlias):
+                if isinstance(
+                    extra_type_hint,
+                    typing._AnnotatedAlias  # type: ignore
+                ):
                     metadata = extra_type_hint.__metadata__
                     if len(metadata) > 0 and isinstance(metadata[0], str):
                         output += f"{metadata[0]}\n\n"
@@ -122,7 +128,7 @@ def _render_function(function: typing.Any) -> str:
     return output
 
 
-def _render_class(cls: object) -> str:
+def _render_class(cls: typing.Any) -> str:
     output = f"**`{cls.__name__}`**\n\n```python\n"
     decorators, definition = _get_object_source(cls)
     if decorators != "":
@@ -145,10 +151,10 @@ def _render_class(cls: object) -> str:
     return output
 
 
-def generate_module_reference(module: object, module_depth: int = 1) -> str:
+def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
     """Generate the markdown API Reference for a module."""
 
-    output = f"{'#' * module_depth} `{module.__name__}`"
+    output = f"{'#' * module_depth} Module `{module.__name__}`"
     output += f" [#{module.__name__}]\n\n"
     if module.__doc__ is not None:
         output += f"{module.__doc__}\n\n"
@@ -159,7 +165,8 @@ def generate_module_reference(module: object, module_depth: int = 1) -> str:
         # render submodules (directories first, then files)
         for m in sorted(
             inspect.getmembers(module, inspect.ismodule),
-            key=lambda x: 1 if x[1].__file__.endswith("__init__.py") else 0
+            key=lambda x: 1
+            if ((x[1].__file__ or "").endswith("__init__.py")) else 0
         ):
             output += generate_module_reference(m[1], module_depth + 1)
 

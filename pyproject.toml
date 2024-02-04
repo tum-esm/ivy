@@ -1,18 +1,18 @@
 [project]
 name = "ivy-seed"
-version = "0.1.0"
+version = "1.0.0"
 description = "A Python template for an IoT node automation software supporting over-the air configuration and software updates"
-requires-python = ">=3.10,<3.13"
-authors = [{ name = "Moritz Makowski", email = "moritz@dostuffthatmatters.dev" }]
+requires-python = ">=3.10,<4.0"
+authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]
 dependencies = [
-    "python-dotenv>=1.0.0",
-    "filelock>=3.13.1",
-    "pytest>=7.4.4",
-    "pydantic>=2.5.3",
-    "psutil>=5.9.7",
-    "paho-mqtt>=1.6.1",
-    "tenta>=0.1.4",
-    "typing-extensions>=4.6.3",
+  "python-dotenv>=1.0.0",
+  "filelock>=3.13.1",
+  "pytest>=7.4.4",
+  "pydantic>=2.5.3",
+  "psutil>=5.9.7",
+  "paho-mqtt>=1.6.1",
+  "tenta>=0.1.4",
+  "typing-extensions>=4.6.3",
 ]
 classifiers = [
   "License :: OSI Approved :: MIT License",
@@ -26,17 +26,17 @@ readme = "README.md"
 
 [project.urls]
 repository = "https://github.com/tum-esm/ivy-seed"
-documentation = "https://ivy-seed.netlify.app/"
+documentation = "https://ivy-seed.pages.dev/"
 
 [project.optional-dependencies]
 dev = [
-    "mypy>=1.8.0",
-    "jsonref>=1.1.0",
-    "types-psutil>=5.9.5.20240106",
-    "setuptools>=69.0.3",
-    "pytest-cov>=4.1.0",
-    "types-paho-mqtt>=1.6.0.20240106",
-    "docstring-parser>=0.11",
+  "mypy>=1.8.0",
+  "jsonref>=1.1.0",
+  "types-psutil>=5.9.5.20240106",
+  "setuptools>=69.0.3",
+  "pytest-cov>=4.1.0",
+  "types-paho-mqtt>=1.6.0.20240106",
+  "docstring-parser>=0.11",
 ]
 [tool.pdm]
 distribution = false

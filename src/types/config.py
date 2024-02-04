@@ -12,7 +12,7 @@ class _GeneralConfig(pydantic.BaseModel):
         description=
         "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
-    software_version: Literal["0.1.0"] = pydantic.Field(
+    software_version: Literal["1.0.0"] = pydantic.Field(
         ...,
         description="The version of the software this config file is for",
     )
@@ -174,7 +174,7 @@ class Config(pydantic.BaseModel):
         return ForeignConfig.model_validate_json(self.model_dump_json())
 
 
-class _ForeignGeneralConfig(pydantic.BaseModel):
+class ForeignGeneralConfig(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra="allow")
 
     config_revision: int = pydantic.Field(
@@ -199,7 +199,7 @@ class ForeignConfig(pydantic.BaseModel):
     A rendered API reference can be found in the documentation at TODO."""
 
     model_config = pydantic.ConfigDict(extra="allow")
-    general: _ForeignGeneralConfig = pydantic.Field(...)
+    general: ForeignGeneralConfig = pydantic.Field(...)
 
     @staticmethod
     def load_from_string(c: str) -> ForeignConfig:

@@ -12,7 +12,7 @@ const CONFIG_SCHEMA: any = {
                     "type": "integer"
                 },
                 "software_version": {
-                    "const": "0.1.0",
+                    "const": "1.0.0",
                     "description": "The version of the software this config file is for",
                     "title": "Software Version"
                 },
