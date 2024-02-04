@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import Any, Callable, Optional
+from typing import Any, Literal, Union, Callable, Optional
 import signal
 import multiprocessing
+import multiprocessing.synchronize
+import pydantic
 from .logger import Logger
 import src
 
@@ -14,20 +16,38 @@ class ProcedureManager():
     def __init__(
         self,
         config: src.types.Config,
-        procedure_entrypoint: Callable[[src.types.Config, Logger], None],
+        entrypoint: Union[
+            Callable[[src.types.Config, Logger], None],
+            Callable[[src.types.Config, Logger, multiprocessing.synchronize.Event], None],
+        ],
         procedure_name: str,
+        variant: Literal["procedure", "backend"],
     ) -> None:
         self.config = config
         self.process: Optional[multiprocessing.Process] = None
-        self.procedure_entrypoint = procedure_entrypoint
+
+        self.entrypoint: Union[
+            Callable[[src.types.Config, Logger], None],
+            Callable[[src.types.Config, Logger, multiprocessing.synchronize.Event], None],
+        ]
+        self.variant = variant
+        self.teardown_indicator = multiprocessing.synchronize.Event()
+        if variant == "procedure":
+            self.entrypoint = pydantic.RootModel[Callable[
+                [src.types.Config, Logger],
+                None,
+            ]].model_validate(entrypoint).root
+        else:
+            self.procedure_entrypoint = pydantic.RootModel[Callable[
+                [src.types.Config, Logger, multiprocessing.synchronize.Event],
+                None,
+            ]].model_validate(entrypoint).root
+
         self.procedure_name = procedure_name
         self.logger = Logger(
             config=config, origin=f"{self.procedure_name}-procedure-manager"
         )
-        self.procedure_logger = Logger(
-            config=config, origin=f"{self.procedure_name}"
-        )
-        self.is_tearing_down: bool = False
+        self.procedure_logger = Logger(config=config, origin=f"{self.procedure_name}")
 
     def procedure_is_running(self) -> bool:
         """Returns True if the procedure has been started. Does not check
@@ -43,14 +63,13 @@ class ProcedureManager():
                           wrong usage of the procedure manager.
         """
 
-        if self.is_tearing_down:
-            self.logger.debug("cannot start procedure while in teardown")
-            return
         if self.procedure_is_running():
             raise RuntimeError("procedure is already running")
         self.process = multiprocessing.Process(
             target=self.procedure_entrypoint,
-            args=(self.config, self.procedure_logger),
+            args=((self.config, self.procedure_logger) if
+                  (self.variant == "procedure") else
+                  (self.config, self.procedure_logger, self.teardown_indicator)),
             name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
             daemon=True,
         )
@@ -79,27 +98,34 @@ class ProcedureManager():
             self.process = None
 
     def teardown(self) -> None:
-        """Tears down the procedures and prevents restarting it."""
+        """Tears down the procedures."""
 
-        self.is_tearing_down = True
-        self.logger.info("starting teardown")
+        self.logger.info(f"starting teardown of {self.variant}")
         if self.process is not None:
+            graceful_shutdown_time = (
+                src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN if
+                (self.variant == "procedure") else
+                (self.config.backend.max_drain_time + 120)
+            )
+
             # what to do if process does not tear down gracefully
             def kill_process(*args: Any) -> None:
                 self.logger.error(
-                    "process did not gracefully tear down in {} seconds, killing it forcefully"
-                    .format(
-                        src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN
-                    )
+                    f"process did not gracefully tear down in " +
+                    f"{graceful_shutdown_time} seconds, killing it forcefully"
                 )
                 if self.process is not None:
                     self.process.kill()
 
             # give process some time to tear down gracefully
             # if it does not stop, kill it forcefully
-            self.process.terminate()
             signal.signal(signal.SIGALRM, kill_process)
-            signal.alarm(src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN)
+            signal.alarm(graceful_shutdown_time)
+
+            if self.variant == "procedure":
+                self.process.terminate()
+            else:
+                self.teardown_indicator.set()
             self.process.join()
             signal.alarm(0)
 
