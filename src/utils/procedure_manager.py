@@ -7,6 +7,10 @@ import src
 
 
 class ProcedureManager():
+    """Manages the lifecycle of a procedure. A procedure is a long-running
+    process that is started in a separate process. The procedure manager
+    is responsible for starting, stopping and checking the status of the
+    procedure."""
     def __init__(
         self,
         config: src.types.Config,
@@ -23,12 +27,27 @@ class ProcedureManager():
         self.procedure_logger = Logger(
             config=config, origin=f"{self.procedure_name}"
         )
+        self.is_tearing_down: bool = False
 
     def procedure_is_running(self) -> bool:
+        """Returns True if the procedure has been started. Does not check
+        whether the process is still alive."""
+
         return self.process is not None
 
     def start_procedure(self) -> None:
-        assert not self.procedure_is_running()
+        """Starts the procedure in a separate process.
+        
+        Raises:
+            RuntimeError: If the procedure is already running. This is a
+                          wrong usage of the procedure manager.
+        """
+
+        if self.is_tearing_down:
+            self.logger.debug("cannot start procedure while in teardown")
+            return
+        if self.procedure_is_running():
+            raise RuntimeError("procedure is already running")
         self.process = multiprocessing.Process(
             target=self.procedure_entrypoint,
             args=(self.config, self.procedure_logger),
@@ -42,7 +61,16 @@ class ProcedureManager():
         )
 
     def check_procedure_status(self) -> None:
-        assert self.process is not None
+        """Checks if the procedure is still running. Logs an error if
+        the procedure has died unexpectedly.
+        
+        Raises:
+            RuntimeError: If the procedure has not been started yet. This
+                          is a wrong usage of the procedure manager.
+        """
+
+        if self.process is None:
+            raise RuntimeError("procedure has not been started yet")
 
         if self.process.is_alive():
             self.logger.debug("process is alive")
@@ -51,6 +79,9 @@ class ProcedureManager():
             self.process = None
 
     def teardown(self) -> None:
+        """Tears down the procedures and prevents restarting it."""
+
+        self.is_tearing_down = True
         self.logger.info("starting teardown")
         if self.process is not None:
             # what to do if process does not tear down gracefully

@@ -1,7 +1,9 @@
 """Main loop of the automation"""
 
 import os
+import signal
 import time
+from typing import Any
 import src
 
 
@@ -62,8 +64,14 @@ def run() -> None:
 
     # establish graceful shutdown logic
 
-    # TODO: shut down all procedures gracefully
-    # TODO: prevent new procedures from starting
+    def teardown_handler(*args: Any) -> None:
+        logger.debug("starting teardown of the main loop")
+        for pm in procedure_managers:
+            pm.teardown()
+        logger.debug("finished teardown of the main loop")
+
+    signal.signal(signal.SIGINT, teardown_handler)
+    signal.signal(signal.SIGTERM, teardown_handler)
 
     # start the main loop
 

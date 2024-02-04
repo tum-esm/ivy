@@ -781,6 +781,12 @@ def teardown(
 class ProcedureManager():
 ```
 
+Manages the lifecycle of a procedure. A procedure is a long-running
+
+process that is started in a separate process. The procedure manager
+is responsible for starting, stopping and checking the status of the
+procedure.
+
 **`__init__`**
 
 ```python
@@ -800,6 +806,15 @@ def check_procedure_status(
 ) -> None:
 ```
 
+Checks if the procedure is still running. Logs an error if
+
+the procedure has died unexpectedly.
+
+**Raises:**
+
+ * `RuntimeError`: If the procedure has not been started yet. This
+is a wrong usage of the procedure manager.
+
 **`procedure_is_running`**
 
 ```python
@@ -807,6 +822,10 @@ def procedure_is_running(
     self,
 ) -> bool:
 ```
+
+Returns True if the procedure has been started. Does not check
+
+whether the process is still alive.
 
 **`start_procedure`**
 
@@ -816,6 +835,13 @@ def start_procedure(
 ) -> None:
 ```
 
+Starts the procedure in a separate process.
+
+**Raises:**
+
+ * `RuntimeError`: If the procedure is already running. This is a
+wrong usage of the procedure manager.
+
 **`teardown`**
 
 ```python
@@ -823,6 +849,8 @@ def teardown(
     self,
 ) -> None:
 ```
+
+Tears down the procedures and prevents restarting it.
 
 ### Module `src.utils.state_interface` [#src.utils.state_interface]
 
