@@ -154,7 +154,10 @@ def _render_class(cls: typing.Any) -> str:
 def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
     """Generate the markdown API Reference for a module."""
 
-    output = f"{'#' * module_depth} Module `{module.__name__}`"
+    output = f"{'#' * module_depth} Module `{module.__name__}"
+    if module.__file__.endswith(f"{module.__name__.split('.')[-1]}.py"):
+        output += f".py"
+    output += "`"
     output += f" [#{module.__name__}]\n\n"
     if module.__doc__ is not None:
         output += f"{module.__doc__}\n\n"

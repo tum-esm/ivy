@@ -1,3 +1,13 @@
+# Module `run.py` [#run]
+
+Entrypoint of the automation
+
+1. Load environment variables from `../.env` and `config/.env` (the latter has priority)
+2. Lock the automation with a file lock so that only one instance can run at a time
+3. Run the automation if the lock could be acquired
+
+
+
 # Module `src` [#src]
 
 Package of the sensor system automation software.
@@ -5,7 +15,7 @@ Package of the sensor system automation software.
 Import hierarchy (`a` -> `b` means that `a` cannot import from `b`):
 `constants` -> `types` -> `utils` -> `procedures` -> `main`
 
-## Module `src.constants` [#src.constants]
+## Module `src.constants.py` [#src.constants]
 
 ### Variables [#src.constants.variables]
 
@@ -51,7 +61,7 @@ SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: int
 
 Number of seconds to wait for a procedure process to tear down gracefully before killing it
 
-## Module `src.main` [#src.main]
+## Module `src.main.py` [#src.main]
 
 Main loop of the automation
 
@@ -67,7 +77,7 @@ Run the automation
 
 ## Module `src.backend` [#src.backend]
 
-### Module `src.backend.tenta_backend` [#src.backend.tenta_backend]
+### Module `src.backend.tenta_backend.py` [#src.backend.tenta_backend]
 
 #### Functions [#src.backend.tenta_backend.functions]
 
@@ -80,7 +90,7 @@ def run_tenta_backend(
 ) -> None:
 ```
 
-### Module `src.backend.thingsboard_backend` [#src.backend.thingsboard_backend]
+### Module `src.backend.thingsboard_backend.py` [#src.backend.thingsboard_backend]
 
 #### Functions [#src.backend.thingsboard_backend.functions]
 
@@ -107,7 +117,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     ...
 ```
 
-### Module `src.procedures.dummy_procedure` [#src.procedures.dummy_procedure]
+### Module `src.procedures.dummy_procedure.py` [#src.procedures.dummy_procedure]
 
 #### Functions [#src.procedures.dummy_procedure.functions]
 
@@ -125,7 +135,7 @@ Fetches the weather from a weather API. You can simply remove
 this in your own project and use it as an exaple for your own
 procedures.
 
-### Module `src.procedures.system_checks` [#src.procedures.system_checks]
+### Module `src.procedures.system_checks.py` [#src.procedures.system_checks]
 
 #### Functions [#src.procedures.system_checks.functions]
 
@@ -145,7 +155,7 @@ Logs the system load and last boot time.
 This module contains all type definitions of the codebase and
 may implement loading and dumping functionality like `Config.load`.
 
-### Module `src.types.config` [#src.types.config]
+### Module `src.types.config.py` [#src.types.config]
 
 #### Classes [#src.types.config.classes]
 
@@ -245,7 +255,7 @@ Load the object from a string
 class ForeignGeneralConfig(pydantic.BaseModel):
 ```
 
-### Module `src.types.messages` [#src.types.messages]
+### Module `src.types.messages.py` [#src.types.messages]
 
 #### Classes [#src.types.messages.classes]
 
@@ -279,7 +289,7 @@ class MessageArchiveItem(pydantic.BaseModel):
 class MessageQueueItem(MessageArchiveItem):
 ```
 
-### Module `src.types.state` [#src.types.state]
+### Module `src.types.state.py` [#src.types.state]
 
 #### Classes [#src.types.state.classes]
 
@@ -307,7 +317,7 @@ Some of the functions have been used from https://github.com/tum-esm/utils
 but this library has not been added as a dependency to reduce the number of
 third party libaries this software depends on.
 
-### Module `src.utils.exponential_backoff` [#src.utils.exponential_backoff]
+### Module `src.utils.exponential_backoff.py` [#src.utils.exponential_backoff]
 
 #### Classes [#src.utils.exponential_backoff.classes]
 
@@ -370,7 +380,7 @@ def sleep(
 
 Wait and increase the wait time to the next bucket.
 
-### Module `src.utils.functions` [#src.utils.functions]
+### Module `src.utils.functions.py` [#src.utils.functions]
 
 #### Functions [#src.utils.functions.functions]
 
@@ -518,7 +528,7 @@ def __init__(
 
 A timeout of -1 means that the code waits forever.
 
-### Module `src.utils.logger` [#src.utils.logger]
+### Module `src.utils.logger.py` [#src.utils.logger]
 
 #### Classes [#src.utils.logger.classes]
 
@@ -701,7 +711,64 @@ Writes a WARNING log line.
  * `message`:  The message to log
  * `details`:  Additional details to log, useful for verbose output.
 
-### Module `src.utils.messaging_agent` [#src.utils.messaging_agent]
+### Module `src.utils.mainloop_toggle.py` [#src.utils.mainloop_toggle]
+
+Functions to start and terminate background processes.
+
+#### Variables [#src.utils.mainloop_toggle.variables]
+
+```python
+SCRIPT_PATH: str
+```
+
+Absolute path of the `run.py` file that starts an infinite mainloop
+
+#### Classes [#src.utils.mainloop_toggle.classes]
+
+**`MainloopToggle`**
+
+```python
+class MainloopToggle:
+```
+
+Used to start and stop the mainloop process in the background.
+
+All functionality borrowed from the [`tum-esm-utils` package](https://github.com/tum-esm/utils)
+
+**`get_mainloop_pids`**
+
+```python
+@staticmethod
+def get_mainloop_pids() -> list[int]:
+```
+
+Return the process ID(s) of the mainloop process(es).
+
+Should be used to check if the mainloop process is running.
+
+**`start_mainloop`**
+
+```python
+@staticmethod
+def start_mainloop() -> None:
+```
+
+Start the mainloop process in the background and print
+
+the process ID(s) of the new process(es).
+
+**`stop_mainloop`**
+
+```python
+@staticmethod
+def stop_mainloop() -> None:
+```
+
+Terminate the mainloop process in the background and print
+
+the process ID(s) of the terminated process(es).
+
+### Module `src.utils.messaging_agent.py` [#src.utils.messaging_agent]
 
 #### Classes [#src.utils.messaging_agent.classes]
 
@@ -771,7 +838,7 @@ def teardown(
 ) -> None:
 ```
 
-### Module `src.utils.procedure_manager` [#src.utils.procedure_manager]
+### Module `src.utils.procedure_manager.py` [#src.utils.procedure_manager]
 
 #### Classes [#src.utils.procedure_manager.classes]
 
@@ -852,7 +919,7 @@ def teardown(
 
 Tears down the procedures and prevents restarting it.
 
-### Module `src.utils.state_interface` [#src.utils.state_interface]
+### Module `src.utils.state_interface.py` [#src.utils.state_interface]
 
 #### Variables [#src.utils.state_interface.variables]
 
@@ -902,7 +969,7 @@ with State.update() as state:
     state.system.last_boot_time = datetime.datetime.now()
 ```
 
-### Module `src.utils.updater` [#src.utils.updater]
+### Module `src.utils.updater.py` [#src.utils.updater]
 
 #### Classes [#src.utils.updater.classes]
 
