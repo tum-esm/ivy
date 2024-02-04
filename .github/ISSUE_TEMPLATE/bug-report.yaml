@@ -1,0 +1,25 @@
+name: 🪲 Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["needs triage"]
+assignees:
+  - dostuffthatmatters
+body:
+  - type: input
+    attributes:
+      label: Operating System
+      description: Please note, that the template is only targeted at Unix systems
+  - type: input
+    attributes:
+      label: Template Version
+      placeholder: 1.x.y
+  - type: input
+    attributes:
+      label: Link to your repository
+      placeholder: https://github.com/.../...
+  - type: textarea
+    attributes:
+      label: Describe the Bug
+  - type: markdown
+    attributes:
+      value: "🐝 Thank you for reporting this bug!"
