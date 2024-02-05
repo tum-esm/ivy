@@ -6,9 +6,15 @@ import src
 
 
 def run(config: src.types.Config, logger: src.utils.Logger) -> None:
-    """Fetches the weather from a weather API. You can simply remove
-    this in your own project and use it as an exaple for your own
-    procedures."""
+    """Performs a random walk and sends out the current position.
+    
+    You can use this as an example for your own procedures and
+    remove this in your own project
+    
+    Args:
+        config: The configuration object.
+        logger: The logger object.
+    """
 
     messaging_agent = src.utils.MessagingAgent()
     random.seed(time.time())

@@ -40,12 +40,23 @@ class StateInterface():
     @staticmethod
     @contextlib.contextmanager
     def update() -> Generator[src.types.State, None, None]:
-        """Load the state file and update it within a semaphore. Usage:
+        """Load the state file and update it within a semaphore.
+        
+        This makes sure that only one process can access this section at a time.
+        If you would do 1. load, 2. modify, 3. save in separate calls, you might
+        overwrite the changes by another process.
+        
+        Usage:
         
         ```python
         with State.update() as state:
             state.system.last_boot_time = datetime.datetime.now()
-        ```"""
+        ```
+        
+        Returns:
+            A generator that yields the state object.
+        """
+
         state: src.types.State
 
         try:

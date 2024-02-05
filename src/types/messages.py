@@ -25,18 +25,41 @@ class DataMessageBody(pydantic.BaseModel):
 class LogMessageBody(pydantic.BaseModel):
     variant: Literal["log"] = "log"
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]
-    subject: str
-    body: str
+    subject: str = pydantic.Field(
+        ...,
+        description='The subject of the log message. Try to move specific details' +
+        'to the body because then messages can be grouped by the subject - i.e. ' +
+        '"give me all messages reporting high system load".',
+        examples=["Starting procedure", "System load too high"],
+    )
+    body: str = pydantic.Field(
+        ...,
+        description="The body of the log message",
+        examples=[
+            "Here are some more details on the procedure starting",
+            "The system load is 87%"
+        ],
+    )
 
 
 class ConfigMessageBody(pydantic.BaseModel):
     variant: Literal["config"] = "config"
-    status: Literal["received", "accepted", "rejected", "startup"]
+    status: Literal["received", "accepted", "rejected", "startup"] = pydantic.Field(
+        ...,
+        description='The status of the config. "received" is sent out by the backend ' +
+        'process upon arrival. "accepted" means the config passed the tests and will ' +
+        'be used after the termination that is issues upon acceptance. "rejected" ' +
+        'means the config did either not fulfil the schema or not pass the tests. ' +
+        '"startup" means that a mainloop using this config was started.'
+    )
     config: ForeignConfig
 
 
 class MessageArchiveItem(pydantic.BaseModel):
-    timestamp: float
+    timestamp: float = pydantic.Field(
+        ...,
+        description="Unix timestamp on the system when this message was created",
+    )
     message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
 
 

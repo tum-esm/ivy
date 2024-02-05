@@ -4,9 +4,7 @@ from generate_jsonschema import generate_jsonschema_tsfile
 from generate_apiref import generate_module_reference
 from utils import replace_json_block_in_file, generate_recursive_help
 
-PROJECT_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(PROJECT_DIR)
 import src, cli, run
 
@@ -17,7 +15,7 @@ DOCS_SCHEMA_PATH = os.path.join(PROJECT_DIR, "docs", "components", "schemas")
 
 with open(os.path.join(DOCS_PAGES_PATH, "api-reference", "src.md"), "w") as f:
     f.write(generate_module_reference(run))
-    f.write("\n\n")
+    f.write("\n\n<br/>\n\n")
     f.write(generate_module_reference(src))
 
 # JSON SCHEMA REFERENCES

@@ -14,8 +14,22 @@ FILELOCK_PATH = os.path.join(src.constants.PROJECT_DIR, "data", "logs.lock")
 
 
 def _pad_str_right(
-    text: str, min_width: int, fill_char: Literal["0", " ", "-"] = " "
+    text: str,
+    min_width: int,
+    fill_char: Literal["0", " ", "-"] = " ",
 ) -> str:
+    """Pads a string to the right with a fill character until it reaches
+    the minimum width.
+
+    Args:
+        text:       The text to pad.
+        min_width:  The minimum width of the string.
+        fill_char:  The character to fill the string with.
+    
+    Returns:
+        The padded string.
+    """
+
     if len(text) >= min_width:
         return text
     else:
@@ -58,16 +72,17 @@ class Logger:
             raise Exception("test exception")
     Exception: test exception
     ----------------------------------------
-    ```"""
+    ```
+    """
     def __init__(
         self,
         config: src.types.Config,
         origin: str = "insert-name-here",
     ) -> None:
-        """Initializes the logger.
+        """Initializes a new Logger instance.
 
         Args:
-            config:  The config object
+            config:  The config object.
             origin:  The origin of the log messages, will be displayed
                      in the log lines."""
 
@@ -80,7 +95,11 @@ class Logger:
         self,
         fill_char: Literal["-", "=", ".", "_"] = "=",
     ) -> None:
-        """Writes a horizontal line."""
+        """Writes a horizontal line.
+        
+        Args:
+            fill_char:  The character to fill the line with.
+        """
 
         self._write_log_line("INFO", fill_char * 40)
 
@@ -92,8 +111,9 @@ class Logger:
         """Writes a INFO log line.
         
         Args:
-            message:  The message to log
-            details:  Additional details to log, useful for verbose output."""
+            message:  The message to log.
+            details:  Additional details to log, useful for verbose output.
+        """
 
         self._write_log_line("DEBUG", message, details=[("details", details)])
 
@@ -105,8 +125,9 @@ class Logger:
         """Writes a INFO log line.
         
         Args:
-            message:  The message to log
-            details:  Additional details to log, useful for verbose output."""
+            message:  The message to log.
+            details:  Additional details to log, useful for verbose output.
+        """
 
         self._write_log_line("INFO", message, details=[("details", details)])
 
@@ -118,8 +139,9 @@ class Logger:
         """Writes a WARNING log line.
         
         Args:
-            message:  The message to log
-            details:  Additional details to log, useful for verbose output."""
+            message:  The message to log.
+            details:  Additional details to log, useful for verbose output.
+        """
 
         self._write_log_line("WARNING", message, details=[("details", details)])
 
@@ -127,8 +149,9 @@ class Logger:
         """Writes an error log line.
 
         Args:
-            message:  The message to log
-            details:  Additional details to log, useful for verbose output."""
+            message:  The message to log.
+            details:  Additional details to log, useful for verbose output.
+        """
 
         self._write_log_line("ERROR", message, details=[("details", details)])
 
@@ -145,8 +168,11 @@ class Logger:
         `(label, )ZeroDivisionError: division by zero`
         
         Args:
-            e:      The exception to log
-            label:  A label to prepend to the exception name."""
+            e:       The exception to log.
+            label:   A label to prepend to the exception name.
+            details: Additional details to log, useful for verbose output
+                     like full log of a failed pytest on a new config.
+        """
 
         exception_name = traceback.format_exception_only(type(e), e)[0].strip()
         exception_traceback = "\n".join(
@@ -176,8 +202,18 @@ class Logger:
         subject: str,
         details: list[tuple[str, Optional[str]]] = [],
     ) -> None:
-        """formats the log line string and writes it to
-        `logs/current-logs.log`"""
+        """Formats the log line string and writes it out to the selected
+        output channels.
+
+        The output channels are configured using `config.logging_verbosity`.
+        You can set the level of detail you want to see in the console, the
+        file archive and the MQTT message stream.
+
+        Args:
+            level:    The log level of the message.
+            subject:  The subject of the message.
+            details:  Additional details to log, useful for verbose output.
+        """
 
         now = datetime.datetime.now()
 
@@ -192,14 +228,14 @@ class Logger:
             f"- {_pad_str_right(self.origin, min_width=16)} " +
             f"- {_pad_str_right(level, min_width=9)} " + f"- {subject}\n"
         )
-        filtered_detals = [(k, v) for k, v in details if v is not None]
+        filtered_details = [(k, v) for k, v in details if v is not None]
         body: str = ""
-        for key, value in filtered_detals:
+        for key, value in filtered_details:
             body += (
                 _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
                 f"\n{value}\n"
             )
-        if len(filtered_detals) > 0:
+        if len(filtered_details) > 0:
             body += "-" * 40 + "\n"
 
         # optionally write logs to console

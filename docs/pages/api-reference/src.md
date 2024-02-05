@@ -1,4 +1,4 @@
-# Module `run.py` [#run]
+# `run.py` [#run]
 
 Entrypoint of the automation
 
@@ -8,14 +8,17 @@ Entrypoint of the automation
 
 
 
-# Module `src` [#src]
+
+<br/>
+
+# `src` [#src]
 
 Package of the sensor system automation software.
 
 Import hierarchy (`a` -> `b` means that `a` cannot import from `b`):
 `constants` -> `types` -> `utils` -> `procedures` -> `main`
 
-## Module `src.constants.py` [#src.constants]
+## `src.constants.py` [#src.constants]
 
 ### Variables [#src.constants.variables]
 
@@ -61,9 +64,7 @@ SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: int
 
 Number of seconds to wait for a procedure process to tear down gracefully before killing it
 
-## Module `src.main.py` [#src.main]
-
-Main loop of the automation
+## `src.main.py` [#src.main]
 
 ### Functions [#src.main.functions]
 
@@ -73,51 +74,109 @@ Main loop of the automation
 def run() -> None:
 ```
 
-Run the automation
+Run the automation.
 
-## Module `src.backend` [#src.backend]
+1. Load the configuration
+2. Initialize the logger
+3. Initialize the messaging agent
+4. Initialize the updater
+5. Remove old virtual environments
+6. Initialize the lifecycle managers
+7. Establish graceful shutdown logic (run teardown for every lifecycle manager)
+8. Start the main loop
 
-### Module `src.backend.tenta_backend.py` [#src.backend.tenta_backend]
+Inside the mainloop the following steps are performed until termination:
 
-#### Functions [#src.backend.tenta_backend.functions]
+1. Start each procedure/backend if it is not running
+2. Check the status of each procedure/backend
+3. Perform any pending updates
 
-**`run_tenta_backend`**
+If an exception is raised in the main loop, it is logged and the main loop
+sleeps for an exponentially increasing amount of time before it tries to
+continue.
 
-```python
-def run_tenta_backend(
-    config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
-) -> None:
-```
+## `src.backend` [#src.backend]
 
-### Module `src.backend.thingsboard_backend.py` [#src.backend.thingsboard_backend]
-
-#### Functions [#src.backend.thingsboard_backend.functions]
-
-**`run_thingsboard_backend`**
-
-```python
-def run_thingsboard_backend(
-    config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
-) -> None:
-```
-
-## Module `src.procedures` [#src.procedures]
-
-This modules provides all procedures that the automation software
-should run. They should all be run in parallel processes and each file
-provides a single funtion that runs infinitely. Functions may implement
-graceful teardown steps upon receiving SIGTERM.
+This module provides all backends that the automation software can communicate
+with. Every submodule should provide a single function that runs infinitely.
 
 All of the procedures in this module should have the signature:
 
 ```python
-def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+def run(
+    config: src.types.Config,
+    logger: src.utils.Logger,
+    teardown_indicator: multiprocessing.synchronize.Event,
+) -> None:
     ...
 ```
 
-### Module `src.procedures.dummy_procedure.py` [#src.procedures.dummy_procedure]
+These are managed by a `src.utils.ProcessManager`, but opposed to "procedures", they
+do not receive a SIGTERM signal, but the `teardown_indicator` event is set. This
+gives more freedom on how to handle the shutdown of the backend.
+
+### `src.backend.tenta_backend.py` [#src.backend.tenta_backend]
+
+#### Functions [#src.backend.tenta_backend.functions]
+
+**`run`**
+
+```python
+def run(
+    config: src.types.config.Config,
+    logger: src.utils.logger.Logger,
+    teardown_indicator: multiprocessing.synchronize.Event,
+) -> None:
+```
+
+The main procedure for the Tenta backend.
+
+**Arguments:**
+
+ * `config`: The configuration object.
+ * `logger`: The logger object.
+ * `teardown_indicator`: The event that is set when the procedure should terminate.
+
+### `src.backend.thingsboard_backend.py` [#src.backend.thingsboard_backend]
+
+#### Functions [#src.backend.thingsboard_backend.functions]
+
+**`run`**
+
+```python
+def run(
+    config: src.types.config.Config,
+    logger: src.utils.logger.Logger,
+    teardown_indicator: multiprocessing.synchronize.Event,
+) -> None:
+```
+
+The main procedure for the ThingsBoard backend.
+
+**Arguments:**
+
+ * `config`: The configuration object.
+ * `logger`: The logger object.
+ * `teardown_indicator`: The event that is set when the procedure should terminate.
+
+## `src.procedures` [#src.procedures]
+
+This modules provides all procedures that the automation software
+should run. They should all be run in parallel processes and each file
+provides a single funtion that runs infinitely. Functions may implement
+graceful teardown steps upon receiving SIGTERM/SIGINT.
+
+All of the procedures in this module should have the signature:
+
+```python
+def run(
+    config: src.types.Config,
+    logger: src.utils.Logger,
+) -> None:
+    ...
+```
+
+### `src.procedures.dummy_procedure.py` [#src.procedures.dummy_procedure]
 
 #### Functions [#src.procedures.dummy_procedure.functions]
 
@@ -130,12 +189,17 @@ def run(
 ) -> None:
 ```
 
-Fetches the weather from a weather API. You can simply remove
+Performs a random walk and sends out the current position.
 
-this in your own project and use it as an exaple for your own
-procedures.
+You can use this as an example for your own procedures and
+remove this in your own project
 
-### Module `src.procedures.system_checks.py` [#src.procedures.system_checks]
+**Arguments:**
+
+ * `config`: The configuration object.
+ * `logger`: The logger object.
+
+### `src.procedures.system_checks.py` [#src.procedures.system_checks]
 
 #### Functions [#src.procedures.system_checks.functions]
 
@@ -150,12 +214,17 @@ def run(
 
 Logs the system load and last boot time.
 
-## Module `src.types` [#src.types]
+**Arguments:**
+
+ * `config`: The configuration object.
+ * `logger`: The logger object.
+
+## `src.types` [#src.types]
 
 This module contains all type definitions of the codebase and
 may implement loading and dumping functionality like `Config.load`.
 
-### Module `src.types.config.py` [#src.types.config]
+### `src.types.config.py` [#src.types.config]
 
 #### Classes [#src.types.config.classes]
 
@@ -197,7 +266,11 @@ def load_from_string(
 ) -> src.types.config.Config:
 ```
 
-Load the object from a string
+Load the object from a string.
+
+**Arguments:**
+
+ * `c`: The string to load the object from.
 
 **`load_template`**
 
@@ -216,6 +289,8 @@ def to_foreign_config(
 ) -> src.types.config.ForeignConfig:
 ```
 
+Convert the config to a `src.types.ForeignConfig` object.
+
 **`ForeignConfig`**
 
 ```python
@@ -224,7 +299,9 @@ class ForeignConfig(pydantic.BaseModel):
 
 Schema of a foreign config file for any other version of the software
 
-to update to.
+to update to. It probably has more fields than listed in the schema. This
+schema only includes the fields that are required in any new config to be
+accepted by the updater in this version of the software.
 
 A rendered API reference can be found [in the documentation](/api-reference/configuration).
 
@@ -247,7 +324,11 @@ def load_from_string(
 ) -> src.types.config.ForeignConfig:
 ```
 
-Load the object from a string
+Load the object from a string.
+
+**Arguments:**
+
+ * `c`: The string to load the object from.
 
 **`ForeignGeneralConfig`**
 
@@ -255,7 +336,7 @@ Load the object from a string
 class ForeignGeneralConfig(pydantic.BaseModel):
 ```
 
-### Module `src.types.messages.py` [#src.types.messages]
+### `src.types.messages.py` [#src.types.messages]
 
 #### Classes [#src.types.messages.classes]
 
@@ -289,7 +370,7 @@ class MessageArchiveItem(pydantic.BaseModel):
 class MessageQueueItem(MessageArchiveItem):
 ```
 
-### Module `src.types.state.py` [#src.types.state]
+### `src.types.state.py` [#src.types.state]
 
 #### Classes [#src.types.state.classes]
 
@@ -309,7 +390,7 @@ class SystemState(pydantic.BaseModel):
 
 State values determined in the system checks procedure.
 
-## Module `src.utils` [#src.utils]
+## `src.utils` [#src.utils]
 
 This module contains all utility functionality of the codebase.
 
@@ -317,7 +398,7 @@ Some of the functions have been used from https://github.com/tum-esm/utils
 but this library has not been added as a dependency to reduce the number of
 third party libaries this software depends on.
 
-### Module `src.utils.exponential_backoff.py` [#src.utils.exponential_backoff]
+### `src.utils.exponential_backoff.py` [#src.utils.exponential_backoff]
 
 #### Classes [#src.utils.exponential_backoff.classes]
 
@@ -375,12 +456,19 @@ Reset the waiting period to the first bucket
 ```python
 def sleep(
     self,
-) -> None:
+    max_sleep_time: typing.Optional[float],
+) -> int:
 ```
 
 Wait and increase the wait time to the next bucket.
 
-### Module `src.utils.functions.py` [#src.utils.functions]
+**Arguments:**
+
+ * `max_sleep_time`: The maximum time to sleep. If None, no maximum is set.
+
+**Returns:** The amount of seconds waited.
+
+### `src.utils.functions.py` [#src.utils.functions]
 
 #### Functions [#src.utils.functions.functions]
 
@@ -408,7 +496,7 @@ Hence it returns 00:00:00, 00:00:10, 00:00:20, 00:00:30.
 
 ```python
 def log_level_is_visible(
-    min_visible_log_level: typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION', None],
+    min_log_level: typing.Optional[typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION']],
     log_level: typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION'],
 ) -> bool:
 ```
@@ -417,9 +505,11 @@ Checks if a log level is forwarded to the user.
 
 **Arguments:**
 
- * `min_log_level`:  The minimum log level to forward, if None, no log
+ * `min_log_level`: The minimum log level to forward, if None, no log
 levels are forwarded.
- * `log_level`:      The log level to check
+ * `log_level`:     The log level to check.
+
+**Returns:** Whether `log_level` is at least as important as `min_log_level`
 
 **`run_shell_command`**
 
@@ -431,10 +521,22 @@ def run_shell_command(
 ) -> str:
 ```
 
-runs a shell command and raises a `CommandLineException`
+Runs a shell command and raises a `CommandLineException`
 
 if the return code is not zero, returns the stdout. Uses
 `/bin/bash` by default.
+
+**Arguments:**
+
+ * `command`:           The command to run.
+ * `working_directory`: The working directory for the command.
+ * `executable`:        The shell to use.
+
+**Returns:** The stdout of the command.
+
+**Raises:**
+
+ * `CommandLineException`: If the command fails.
 
 **`string_is_valid_version`**
 
@@ -452,7 +554,7 @@ Check if the version string is valid = should match
 
  * `version_string`: version string to check.
 
-**Returns:** True if the version string is valid, False otherwise.
+**Returns:** Whether the version string is valid.
 
 **`with_automation_lock`**
 
@@ -474,6 +576,12 @@ with with_automation_lock():
     run_tests()
 ```
 
+**Returns:** A context manager that locks the automation.
+
+**Raises:**
+
+ * `TimeoutError`: If the automation is already running.
+
 #### Classes [#src.utils.functions.classes]
 
 **`CommandLineException`**
@@ -484,6 +592,14 @@ class CommandLineException(Exception):
 
 Raised when a shell command fails.
 
+Provides more details than a normal exception:
+
+```python   
+e = CommandLineException("command failed", details="stderr: ...")
+print(e) # command failed
+print(e.details) # stderr: ...
+```
+
 **`__init__`**
 
 ```python
@@ -493,6 +609,13 @@ def __init__(
     details: typing.Optional[str],
 ) -> None:
 ```
+
+Initializes the exception.
+
+**Arguments:**
+
+ * `value`:   The message to log.
+ * `details`: Additional details to log, useful for verbose output.
 
 **`with_filelock`**
 
@@ -528,7 +651,126 @@ def __init__(
 
 A timeout of -1 means that the code waits forever.
 
-### Module `src.utils.logger.py` [#src.utils.logger]
+**Arguments:**
+
+ * `lockfile_path`: The path to the lockfile.
+ * `timeout`:       The time to wait for the lock in seconds.
+
+### `src.utils.lifecycle_manager.py` [#src.utils.lifecycle_manager]
+
+#### Classes [#src.utils.lifecycle_manager.classes]
+
+**`LifecycleManager`**
+
+```python
+class LifecycleManager():
+```
+
+Manages the lifecycle of a procedure or a backend process.
+
+Both procedures and backends run an infinite loop to perform their
+respective tasks. The procedure manager is responsible for starting,
+stopping and checking the status of the procedure.
+
+Each procedure/backend is wrapped in one instance of the lifecycle
+manager.
+
+**`__init__`**
+
+```python
+def __init__(
+    self,
+    config: src.types.config.Config,
+    entrypoint: typing.Union[typing.Callable[[src.types.config.Config, src.utils.logger.Logger], None], typing.Callable[[src.types.config.Config, src.utils.logger.Logger, multiprocessing.synchronize.Event], None]],
+    procedure_name: str,
+    variant: typing.Literal['procedure', 'backend'],
+) -> None:
+```
+
+Initializes a new procedure manager.
+
+**Arguments:**
+
+ * `config`:         The configuration object.
+ * `entrypoint`:     The entrypoint of the procedure or backend.
+ * `procedure_name`: The name of the procedure or backend. Used to name
+the spawned process.
+ * `variant`:        Whether the entrypoint is a procedure or a backend.
+The difference is only in the teardown logic.
+
+**Raises:**
+
+ * `ValueError`: If the given variant does not match the entrypoint
+signature.
+
+**`check_procedure_status`**
+
+```python
+def check_procedure_status(
+    self,
+) -> None:
+```
+
+Checks if the procedure is still running. Logs an error if
+
+the procedure has died unexpectedly.
+
+**Raises:**
+
+ * `RuntimeError`: If the procedure has not been started yet. This
+is a wrong usage of the procedure manager.
+
+**`procedure_is_running`**
+
+```python
+def procedure_is_running(
+    self,
+) -> bool:
+```
+
+Returns True if the procedure has been started. Does not check
+
+whether the process is still alive.
+
+**`start_procedure`**
+
+```python
+def start_procedure(
+    self,
+) -> None:
+```
+
+Starts the procedure in a separate process.
+
+**Raises:**
+
+ * `RuntimeError`: If the procedure is already running. This is a
+wrong usage of the procedure manager.
+
+**`teardown`**
+
+```python
+def teardown(
+    self,
+) -> None:
+```
+
+Tears down the procedures.
+
+For procedures, it sends a SIGTERM to the process. For backends, it
+sets a multiprocessing.Event to signal the backend to shut down. This
+gives the backend processes more freedom to manage a shutdown.
+
+The lifecycle manager waits for the process to shut down gracefully
+for a certain amount of time. If the process does not shut down in
+time, it kills the process forcefully by sending a SIGKILL.
+
+For procedures, the SIGKILL is sent after
+`src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN` seconds. For
+backends, the SIGKILL is sent after `config.backend.max_drain_time + 120`
+seconds.
+
+### `src.utils.logger.py` [#src.utils.logger]
 
 #### Classes [#src.utils.logger.classes]
 
@@ -586,11 +828,11 @@ def __init__(
 ) -> None:
 ```
 
-Initializes the logger.
+Initializes a new Logger instance.
 
 **Arguments:**
 
- * `config`:  The config object
+ * `config`:  The config object.
  * `origin`:  The origin of the log messages, will be displayed
 in the log lines.
 
@@ -605,9 +847,19 @@ def _write_log_line(
 ) -> None:
 ```
 
-formats the log line string and writes it to
+Formats the log line string and writes it out to the selected
 
-`logs/current-logs.log`
+output channels.
+
+The output channels are configured using `config.logging_verbosity`.
+You can set the level of detail you want to see in the console, the
+file archive and the MQTT message stream.
+
+**Arguments:**
+
+ * `level`:    The log level of the message.
+ * `subject`:  The subject of the message.
+ * `details`:  Additional details to log, useful for verbose output.
 
 **`debug`**
 
@@ -623,7 +875,7 @@ Writes a INFO log line.
 
 **Arguments:**
 
- * `message`:  The message to log
+ * `message`:  The message to log.
  * `details`:  Additional details to log, useful for verbose output.
 
 **`error`**
@@ -640,7 +892,7 @@ Writes an error log line.
 
 **Arguments:**
 
- * `message`:  The message to log
+ * `message`:  The message to log.
  * `details`:  Additional details to log, useful for verbose output.
 
 **`exception`**
@@ -663,8 +915,10 @@ The subject will be formatted like this:
 
 **Arguments:**
 
- * `e`:      The exception to log
- * `label`:  A label to prepend to the exception name.
+ * `e`:       The exception to log.
+ * `label`:   A label to prepend to the exception name.
+ * `details`: Additional details to log, useful for verbose output
+like full log of a failed pytest on a new config.
 
 **`horizontal_line`**
 
@@ -676,6 +930,10 @@ def horizontal_line(
 ```
 
 Writes a horizontal line.
+
+**Arguments:**
+
+ * `fill_char`:  The character to fill the line with.
 
 **`info`**
 
@@ -691,7 +949,7 @@ Writes a INFO log line.
 
 **Arguments:**
 
- * `message`:  The message to log
+ * `message`:  The message to log.
  * `details`:  Additional details to log, useful for verbose output.
 
 **`warning`**
@@ -708,10 +966,10 @@ Writes a WARNING log line.
 
 **Arguments:**
 
- * `message`:  The message to log
+ * `message`:  The message to log.
  * `details`:  Additional details to log, useful for verbose output.
 
-### Module `src.utils.mainloop_toggle.py` [#src.utils.mainloop_toggle]
+### `src.utils.mainloop_toggle.py` [#src.utils.mainloop_toggle]
 
 Functions to start and terminate background processes.
 
@@ -742,9 +1000,12 @@ All functionality borrowed from the [`tum-esm-utils` package](https://github.com
 def get_mainloop_pids() -> list[int]:
 ```
 
-Return the process ID(s) of the mainloop process(es).
+Get the process ID(s) of the mainloop process(es).
 
 Should be used to check if the mainloop process is running.
+
+**Returns:** A list of process IDs. Might have more than one element if
+the mainloop process has spawned child process(es).
 
 **`start_mainloop`**
 
@@ -768,7 +1029,27 @@ Terminate the mainloop process in the background and print
 
 the process ID(s) of the terminated process(es).
 
-### Module `src.utils.messaging_agent.py` [#src.utils.messaging_agent]
+### `src.utils.messaging_agent.py` [#src.utils.messaging_agent]
+
+#### Variables [#src.utils.messaging_agent.variables]
+
+```python
+ACTIVE_QUEUE_FILE: str
+```
+
+The absolute path of the SQLite database that stores the active message queue (data/active-message-queue.sqlite3)
+
+```python
+MESSAGE_ARCHIVE_DIR: str
+```
+
+The absolute path of the directory that stores the message archive (data/messages/)
+
+```python
+MESSAGE_ARCHIVE_DIR_LOCK: str
+```
+
+The absolute path of the lock file that is used to lock the message archive directory (data/messages.lock). This is used to make sure that only one process can write to the message archive at a time.
 
 #### Classes [#src.utils.messaging_agent.classes]
 
@@ -786,6 +1067,11 @@ def __init__(
 ) -> None:
 ```
 
+Create a new messaging agent.
+
+Sets up a connection to the SQLite database that stores the active
+message queue. Creates the SQL tables if they don't exist yet.
+
 **`add_message`**
 
 ```python
@@ -795,12 +1081,23 @@ def add_message(
 ) -> None:
 ```
 
+Add a message to the active message queue and the message archive.
+
+Messages are written to the archive right away so they don't get lost
+if the backend process fails to send them out.
+
+**Arguments:**
+
+ * `message_body`: The message body.
+
 **`get_message_archive_file`**
 
 ```python
 @staticmethod
 def get_message_archive_file() -> str:
 ```
+
+Get the file path of the message archive file for the current date.
 
 **`get_n_latest_messages`**
 
@@ -812,6 +1109,17 @@ def get_n_latest_messages(
 ) -> list[src.types.messages.MessageQueueItem]:
 ```
 
+Get the `n` latest messages from the active message queue.
+
+**Arguments:**
+
+ * `n`:                    The number of messages to get.
+ * `excluded_message_ids`: The message IDs to exclude from the result. Can be
+used to exclude messages that are already being processed
+but are still in the active message queue.
+
+**Returns:** A list of messages from the active queue.
+
 **`load_message_archive`**
 
 ```python
@@ -820,6 +1128,14 @@ def load_message_archive(
     date: datetime.date,
 ) -> list[src.types.messages.MessageArchiveItem]:
 ```
+
+Load the message archive for a specific date.
+
+**Arguments:**
+
+ * `date`: The date for which to load the message archive.
+
+**Returns:** A list of messages from the message archive.
 
 **`remove_messages`**
 
@@ -830,84 +1146,11 @@ def remove_messages(
 ) -> None:
 ```
 
-**`teardown`**
+Remove messages from the active message queue.
 
-```python
-def teardown(
-    self,
-) -> None:
-```
+**Arguments:**
 
-### Module `src.utils.procedure_manager.py` [#src.utils.procedure_manager]
-
-#### Classes [#src.utils.procedure_manager.classes]
-
-**`ProcedureManager`**
-
-```python
-class ProcedureManager():
-```
-
-Manages the lifecycle of a procedure. A procedure is a long-running
-
-process that is started in a separate process. The procedure manager
-is responsible for starting, stopping and checking the status of the
-procedure.
-
-**`__init__`**
-
-```python
-def __init__(
-    self,
-    config: src.types.config.Config,
-    procedure_entrypoint: typing.Callable[[src.types.config.Config, src.utils.logger.Logger], None],
-    procedure_name: str,
-) -> None:
-```
-
-**`check_procedure_status`**
-
-```python
-def check_procedure_status(
-    self,
-) -> None:
-```
-
-Checks if the procedure is still running. Logs an error if
-
-the procedure has died unexpectedly.
-
-**Raises:**
-
- * `RuntimeError`: If the procedure has not been started yet. This
-is a wrong usage of the procedure manager.
-
-**`procedure_is_running`**
-
-```python
-def procedure_is_running(
-    self,
-) -> bool:
-```
-
-Returns True if the procedure has been started. Does not check
-
-whether the process is still alive.
-
-**`start_procedure`**
-
-```python
-def start_procedure(
-    self,
-) -> None:
-```
-
-Starts the procedure in a separate process.
-
-**Raises:**
-
- * `RuntimeError`: If the procedure is already running. This is a
-wrong usage of the procedure manager.
+ * `message_ids`: The message IDs to be removed.
 
 **`teardown`**
 
@@ -917,9 +1160,9 @@ def teardown(
 ) -> None:
 ```
 
-Tears down the procedures and prevents restarting it.
+Close the connection to the active message queue database.
 
-### Module `src.utils.state_interface.py` [#src.utils.state_interface]
+### `src.utils.state_interface.py` [#src.utils.state_interface]
 
 #### Variables [#src.utils.state_interface.variables]
 
@@ -962,14 +1205,22 @@ Load the state file from the path `project_dir/data/state.json`
 def update() -> typing.Generator[src.types.state.State, None, None]:
 ```
 
-Load the state file and update it within a semaphore. Usage:
+Load the state file and update it within a semaphore.
+
+This makes sure that only one process can access this section at a time.
+If you would do 1. load, 2. modify, 3. save in separate calls, you might
+overwrite the changes by another process.
+
+Usage:
 
 ```python
 with State.update() as state:
     state.system.last_boot_time = datetime.datetime.now()
 ```
 
-### Module `src.utils.updater.py` [#src.utils.updater]
+**Returns:** A generator that yields the state object.
+
+### `src.utils.updater.py` [#src.utils.updater]
 
 #### Classes [#src.utils.updater.classes]
 
@@ -1016,6 +1267,10 @@ directory. This is currently only implemented for github and
 gitlab for private and public repositories. Feel free to request
 other providers in the issue tracker.
 
+**Arguments:**
+
+ * `version`: The version number of the source code to download.
+
 **`install_dependencies`**
 
 ```python
@@ -1029,6 +1284,10 @@ Create a virtual environment and install the dependencies in
 
 the version directory using poetry.
 
+**Arguments:**
+
+ * `version`: The version number of the source code to download.
+
 **`perform_update`**
 
 ```python
@@ -1040,36 +1299,12 @@ def perform_update(
 
 Perform an update for a received config file.
 
-1. Check whether this config revision has already been processed.
-2. If version is equal to the current version:
-    * Parse the received config file string using
-        `types.Config.load_from_string`
-    * If the received config is equal to the current
-        config, do nothing
-    * Otherwise, dump the received config to the config
-        file path and exit with status code 0
-3. Otherwise:
-    * Download the source code of the new version
-    * Create a virtual environment
-    * Install dependencies
-    * Dump the received config to the config file path
-    * Run the integration pytests
-    * Update the cli pointer
-    * Exit with status code 0
-
-If any of the steps above fails, log the error and return. The
-automation will continue with the current config. If the pytests
-of the software version to be updated make sure, that the software
-runs correctly, it is not possible to update to a new version, that
-does not work.
+See the [documentation](/core-concepts/over-the-air-updates) for a detailed
+explanation of the update process.
 
 **Arguments:**
 
- * `config_file_string`: The content of the config file to be processed.
-This is a string, which will be parsed using
-`types.ForeignConfig.load_from_string`. It should
-be a JSON object with at least the `version` field,
-everything else is optional.
+ * `foreign_config`: The received config.
 
 **`remove_old_venvs`**
 
@@ -1092,6 +1327,10 @@ def run_pytests(
 
 Run all pytests with the mark "version_change" in the version directory.
 
+**Arguments:**
+
+ * `version`: The version number of the source code to download.
+
 **`update_cli_pointer`**
 
 ```python
@@ -1101,5 +1340,9 @@ def update_cli_pointer(
 ) -> None:
 ```
 
-Update the cli pointer to a new version
+Update the cli pointer to a new version.
+
+**Arguments:**
+
+ * `version`: The version number of the source code to download.
 

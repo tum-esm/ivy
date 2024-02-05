@@ -201,12 +201,18 @@ class Config(pydantic.BaseModel):
 
     @staticmethod
     def load_from_string(c: str) -> Config:
-        """Load the object from a string"""
+        """Load the object from a string.
+        
+        Args:
+            c: The string to load the object from.
+        """
 
         return Config.model_validate_json(c)
 
     def to_foreign_config(self) -> ForeignConfig:
-        return ForeignConfig.model_validate_json(self.model_dump_json())
+        """Convert the config to a `src.types.ForeignConfig` object."""
+
+        return ForeignConfig.model_validate(self.model_dump())
 
 
 class ForeignGeneralConfig(pydantic.BaseModel):
@@ -229,7 +235,9 @@ class ForeignGeneralConfig(pydantic.BaseModel):
 
 class ForeignConfig(pydantic.BaseModel):
     """Schema of a foreign config file for any other version of the software
-    to update to.
+    to update to. It probably has more fields than listed in the schema. This
+    schema only includes the fields that are required in any new config to be
+    accepted by the updater in this version of the software.
     
     A rendered API reference can be found [in the documentation](/api-reference/configuration)."""
 
@@ -238,7 +246,11 @@ class ForeignConfig(pydantic.BaseModel):
 
     @staticmethod
     def load_from_string(c: str) -> ForeignConfig:
-        """Load the object from a string"""
+        """Load the object from a string.
+        
+        Args:
+            c: The string to load the object from.
+        """
 
         return ForeignConfig.model_validate_json(c)
 

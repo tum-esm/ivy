@@ -32,10 +32,7 @@ def _get_object_source(obj: typing.Any) -> tuple[str, str]:
 
 def _clean_type_name(type_name: typing.Any) -> str:
     parsed_type_name = str(type_name).replace("NoneType", "None")
-    if (
-        parsed_type_name.startswith("<class '") and
-        parsed_type_name.endswith("'>")
-    ):
+    if (parsed_type_name.startswith("<class '") and parsed_type_name.endswith("'>")):
         parsed_type_name = parsed_type_name[8 :-2]
     return parsed_type_name
 
@@ -65,13 +62,11 @@ def _prettify_docstring(module: typing.Any) -> str:
         docstring_text += "**Arguments:**\n\n"
         docstring_text += "\n".join(params) + "\n\n"
 
-    if (docstring.returns
-        is not None) and (docstring.returns.description is not None):
+    if (docstring.returns is not None) and (docstring.returns.description is not None):
         docstring_text += f"**Returns:** {docstring.returns.description}\n\n"
 
     raises = [
-        f" * `{raises.type_name}`: {raises.description}"
-        for raises in docstring.raises
+        f" * `{raises.type_name}`: {raises.description}" for raises in docstring.raises
         if ((raises.description is not None) and (raises.type_name is not None))
     ]
     if len(raises) > 0:
@@ -141,8 +136,7 @@ def _render_class(cls: typing.Any) -> str:
         if inspect.isfunction(member[1]):
             function = member[1]
             if ((
-                function.__name__.startswith("__") and
-                (function.__name__ != "__init__")
+                function.__name__.startswith("__") and (function.__name__ != "__init__")
             ) or (function.__name__ not in cls.__dict__)):
                 continue
             output += _render_function(function)
@@ -154,7 +148,7 @@ def _render_class(cls: typing.Any) -> str:
 def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
     """Generate the markdown API Reference for a module."""
 
-    output = f"{'#' * module_depth} Module `{module.__name__}"
+    output = f"{'#' * module_depth} `{module.__name__}"
     if module.__file__.endswith(f"{module.__name__.split('.')[-1]}.py"):
         output += f".py"
     output += "`"
@@ -168,15 +162,14 @@ def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
         # render submodules (directories first, then files)
         for m in sorted(
             inspect.getmembers(module, inspect.ismodule),
-            key=lambda x: 1
-            if ((x[1].__file__ or "").endswith("__init__.py")) else 0
+            key=lambda x: 1 if ((x[1].__file__ or "").endswith("__init__.py")) else 0
         ):
             output += generate_module_reference(m[1], module_depth + 1)
 
     else:
         functions = [
-            f[1] for f in inspect.getmembers(module, inspect.isfunction) if
-            (f[1].__module__ == module.__name__) and not f[0].startswith("_")
+            f[1] for f in inspect.getmembers(module, inspect.isfunction)
+            if (f[1].__module__ == module.__name__) and not f[0].startswith("_")
         ]
         if len(functions) > 0:
             output += f"{'#' * (module_depth + 1)} Functions"

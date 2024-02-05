@@ -8,11 +8,15 @@ from .logger import Logger
 import src
 
 
-class ProcedureManager():
-    """Manages the lifecycle of a procedure. A procedure is a long-running
-    process that is started in a separate process. The procedure manager
-    is responsible for starting, stopping and checking the status of the
-    procedure."""
+class LifecycleManager():
+    """Manages the lifecycle of a procedure or a backend process.
+
+    Both procedures and backends run an infinite loop to perform their
+    respective tasks. The procedure manager is responsible for starting,
+    stopping and checking the status of the procedure.
+
+    Each procedure/backend is wrapped in one instance of the lifecycle
+    manager."""
     def __init__(
         self,
         config: src.types.Config,
@@ -23,6 +27,21 @@ class ProcedureManager():
         procedure_name: str,
         variant: Literal["procedure", "backend"],
     ) -> None:
+        """Initializes a new procedure manager.
+
+        Args:
+            config:         The configuration object.
+            entrypoint:     The entrypoint of the procedure or backend.
+            procedure_name: The name of the procedure or backend. Used to name
+                            the spawned process.
+            variant:        Whether the entrypoint is a procedure or a backend.
+                            The difference is only in the teardown logic.
+        
+        Raises:
+            ValueError: If the given variant does not match the entrypoint
+                        signature.
+        """
+
         self.config = config
         self.process: Optional[multiprocessing.Process] = None
 
@@ -32,16 +51,21 @@ class ProcedureManager():
         ]
         self.variant = variant
         self.teardown_indicator = multiprocessing.synchronize.Event()
-        if variant == "procedure":
-            self.entrypoint = pydantic.RootModel[Callable[
-                [src.types.Config, Logger],
-                None,
-            ]].model_validate(entrypoint).root
-        else:
-            self.procedure_entrypoint = pydantic.RootModel[Callable[
-                [src.types.Config, Logger, multiprocessing.synchronize.Event],
-                None,
-            ]].model_validate(entrypoint).root
+        try:
+            if variant == "procedure":
+                self.entrypoint = pydantic.RootModel[Callable[
+                    [src.types.Config, Logger],
+                    None,
+                ]].model_validate(entrypoint).root
+            else:
+                self.procedure_entrypoint = pydantic.RootModel[Callable[
+                    [src.types.Config, Logger, multiprocessing.synchronize.Event],
+                    None,
+                ]].model_validate(entrypoint).root
+        except pydantic.ValidationError as e:
+            raise ValueError(
+                f"Given variant '{variant}' does not match the entrypoint signature"
+            )
 
         self.procedure_name = procedure_name
         self.logger = Logger(
@@ -98,7 +122,20 @@ class ProcedureManager():
             self.process = None
 
     def teardown(self) -> None:
-        """Tears down the procedures."""
+        """Tears down the procedures.
+        
+        For procedures, it sends a SIGTERM to the process. For backends, it
+        sets a multiprocessing.Event to signal the backend to shut down. This
+        gives the backend processes more freedom to manage a shutdown.
+
+        The lifecycle manager waits for the process to shut down gracefully
+        for a certain amount of time. If the process does not shut down in
+        time, it kills the process forcefully by sending a SIGKILL.
+        
+        For procedures, the SIGKILL is sent after
+        `src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN` seconds. For
+        backends, the SIGKILL is sent after `config.backend.max_drain_time + 120`
+        seconds."""
 
         self.logger.info(f"starting teardown of {self.variant}")
         if self.process is not None:

@@ -4,7 +4,7 @@
 
 **Usage: python cli.py info [OPTIONS]**
 
-Information about which CLI version and path is used.
+Information about which CLI version and paths are used.
 
 **Options:**
 

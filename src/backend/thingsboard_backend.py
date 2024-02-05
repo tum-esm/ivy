@@ -14,8 +14,16 @@ def run(
     logger: src.utils.Logger,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
+    """The main procedure for the ThingsBoard backend.
+
+    Args:
+        config: The configuration object.
+        logger: The logger object.
+        teardown_indicator: The event that is set when the procedure should terminate.
+    """
     assert config.backend is not None
     assert config.backend.provider == "thingsboard"
+    messaging_agent = src.utils.MessagingAgent()
 
     def on_config_message(
         c: paho.mqtt.client.Client,
@@ -45,6 +53,8 @@ def run(
                 f"Received config message could not be parsed",
                 details=e.json(indent=4),
             )
+            # cannot send a rejection because we dont know a revision
+            # the rejection still shows up in the logs
 
     try:
         logger.info("Setting up ThingsBoard backend")
@@ -96,7 +106,6 @@ def run(
             )
 
         # active = in the process of sending
-        messaging_agent = src.utils.MessagingAgent()
         active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo,
                                    src.types.MessageQueueItem]] = set()
 

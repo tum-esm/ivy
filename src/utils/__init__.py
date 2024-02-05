@@ -10,7 +10,7 @@ from . import functions, messaging_agent, logger, updater
 from .logger import Logger
 from .updater import Updater
 from .messaging_agent import MessagingAgent
-from .procedure_manager import ProcedureManager
+from .lifecycle_manager import LifecycleManager
 from .state_interface import StateInterface
 from .exponential_backoff import ExponentialBackoff
 from .mainloop_toggle import MainloopToggle
