@@ -226,9 +226,7 @@ may implement loading and dumping functionality like `Config.load`.
 
 ### `src.types.config.py` [#src.types.config]
 
-#### Classes [#src.types.config.classes]
-
-**`Config`**
+#### Class `Config` [#src.types.config.Config.classes]
 
 ```python
 class Config(pydantic.BaseModel):
@@ -291,7 +289,7 @@ def to_foreign_config(
 
 Convert the config to a `src.types.ForeignConfig` object.
 
-**`ForeignConfig`**
+#### Class `ForeignConfig` [#src.types.config.ForeignConfig.classes]
 
 ```python
 class ForeignConfig(pydantic.BaseModel):
@@ -330,7 +328,7 @@ Load the object from a string.
 
  * `c`: The string to load the object from.
 
-**`ForeignGeneralConfig`**
+#### Class `ForeignGeneralConfig` [#src.types.config.ForeignGeneralConfig.classes]
 
 ```python
 class ForeignGeneralConfig(pydantic.BaseModel):
@@ -338,33 +336,31 @@ class ForeignGeneralConfig(pydantic.BaseModel):
 
 ### `src.types.messages.py` [#src.types.messages]
 
-#### Classes [#src.types.messages.classes]
-
-**`ConfigMessageBody`**
+#### Class `ConfigMessageBody` [#src.types.messages.ConfigMessageBody.classes]
 
 ```python
 class ConfigMessageBody(pydantic.BaseModel):
 ```
 
-**`DataMessageBody`**
+#### Class `DataMessageBody` [#src.types.messages.DataMessageBody.classes]
 
 ```python
 class DataMessageBody(pydantic.BaseModel):
 ```
 
-**`LogMessageBody`**
+#### Class `LogMessageBody` [#src.types.messages.LogMessageBody.classes]
 
 ```python
 class LogMessageBody(pydantic.BaseModel):
 ```
 
-**`MessageArchiveItem`**
+#### Class `MessageArchiveItem` [#src.types.messages.MessageArchiveItem.classes]
 
 ```python
 class MessageArchiveItem(pydantic.BaseModel):
 ```
 
-**`MessageQueueItem`**
+#### Class `MessageQueueItem` [#src.types.messages.MessageQueueItem.classes]
 
 ```python
 class MessageQueueItem(MessageArchiveItem):
@@ -372,9 +368,7 @@ class MessageQueueItem(MessageArchiveItem):
 
 ### `src.types.state.py` [#src.types.state]
 
-#### Classes [#src.types.state.classes]
-
-**`State`**
+#### Class `State` [#src.types.state.State.classes]
 
 ```python
 class State(pydantic.BaseModel):
@@ -382,7 +376,7 @@ class State(pydantic.BaseModel):
 
 Central state used to communicate between prodedures and with the mainloop.
 
-**`SystemState`**
+#### Class `SystemState` [#src.types.state.SystemState.classes]
 
 ```python
 class SystemState(pydantic.BaseModel):
@@ -400,9 +394,7 @@ third party libaries this software depends on.
 
 ### `src.utils.exponential_backoff.py` [#src.utils.exponential_backoff]
 
-#### Classes [#src.utils.exponential_backoff.classes]
-
-**`ExponentialBackoff`**
+#### Class `ExponentialBackoff` [#src.utils.exponential_backoff.ExponentialBackoff.classes]
 
 ```python
 class ExponentialBackoff:
@@ -457,7 +449,7 @@ Reset the waiting period to the first bucket
 def sleep(
     self,
     max_sleep_time: typing.Optional[float],
-) -> int:
+) -> float:
 ```
 
 Wait and increase the wait time to the next bucket.
@@ -582,9 +574,7 @@ with with_automation_lock():
 
  * `TimeoutError`: If the automation is already running.
 
-#### Classes [#src.utils.functions.classes]
-
-**`CommandLineException`**
+#### Class `CommandLineException` [#src.utils.functions.CommandLineException.classes]
 
 ```python
 class CommandLineException(Exception):
@@ -617,7 +607,7 @@ Initializes the exception.
  * `value`:   The message to log.
  * `details`: Additional details to log, useful for verbose output.
 
-**`with_filelock`**
+#### Class `with_filelock` [#src.utils.functions.with_filelock.classes]
 
 ```python
 class with_filelock:
@@ -658,9 +648,7 @@ A timeout of -1 means that the code waits forever.
 
 ### `src.utils.lifecycle_manager.py` [#src.utils.lifecycle_manager]
 
-#### Classes [#src.utils.lifecycle_manager.classes]
-
-**`LifecycleManager`**
+#### Class `LifecycleManager` [#src.utils.lifecycle_manager.LifecycleManager.classes]
 
 ```python
 class LifecycleManager():
@@ -772,9 +760,7 @@ seconds.
 
 ### `src.utils.logger.py` [#src.utils.logger]
 
-#### Classes [#src.utils.logger.classes]
-
-**`Logger`**
+#### Class `Logger` [#src.utils.logger.Logger.classes]
 
 ```python
 class Logger:
@@ -981,9 +967,7 @@ SCRIPT_PATH: str
 
 Absolute path of the `run.py` file that starts an infinite mainloop
 
-#### Classes [#src.utils.mainloop_toggle.classes]
-
-**`MainloopToggle`**
+#### Class `MainloopToggle` [#src.utils.mainloop_toggle.MainloopToggle.classes]
 
 ```python
 class MainloopToggle:
@@ -1037,23 +1021,21 @@ the process ID(s) of the terminated process(es).
 ACTIVE_QUEUE_FILE: str
 ```
 
-The absolute path of the SQLite database that stores the active message queue (data/active-message-queue.sqlite3)
+The absolute path of the SQLite database that stores the active message queue (`data/active-message-queue.sqlite3`)
 
 ```python
 MESSAGE_ARCHIVE_DIR: str
 ```
 
-The absolute path of the directory that stores the message archive (data/messages/)
+The absolute path of the directory that stores the message archive (`data/messages/`)
 
 ```python
 MESSAGE_ARCHIVE_DIR_LOCK: str
 ```
 
-The absolute path of the lock file that is used to lock the message archive directory (data/messages.lock). This is used to make sure that only one process can write to the message archive at a time.
+The absolute path of the lock file that is used to lock the message archive directory (`data/messages.lock`). This is used to make sure that only one process can write to the message archive at a time.
 
-#### Classes [#src.utils.messaging_agent.classes]
-
-**`MessagingAgent`**
+#### Class `MessagingAgent` [#src.utils.messaging_agent.MessagingAgent.classes]
 
 ```python
 class MessagingAgent():
@@ -1178,9 +1160,7 @@ STATE_FILE_LOCK: str
 
 Points to `data/state.lock` which is used to ensure that only one thread can access the state at a time.
 
-#### Classes [#src.utils.state_interface.classes]
-
-**`StateInterface`**
+#### Class `StateInterface` [#src.utils.state_interface.StateInterface.classes]
 
 ```python
 class StateInterface():
@@ -1222,9 +1202,7 @@ with State.update() as state:
 
 ### `src.utils.updater.py` [#src.utils.updater]
 
-#### Classes [#src.utils.updater.classes]
-
-**`Updater`**
+#### Class `Updater` [#src.utils.updater.Updater.classes]
 
 ```python
 class Updater:

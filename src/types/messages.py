@@ -4,7 +4,11 @@ from .config import ForeignConfig
 
 
 class DataMessageBody(pydantic.BaseModel):
-    variant: Literal["data"] = "data"
+    variant: Literal["data"] = pydantic.Field(
+        "data",
+        description=
+        "Indicating the variant of the message. All possible message bodies have this field.",
+    )
     data: dict[str, float | int | str] = pydantic.Field(
         ...,
         description="The data to send to the backend",
@@ -23,7 +27,11 @@ class DataMessageBody(pydantic.BaseModel):
 
 
 class LogMessageBody(pydantic.BaseModel):
-    variant: Literal["log"] = "log"
+    variant: Literal["log"] = pydantic.Field(
+        "log",
+        description=
+        "Indicating the variant of the message. All possible message bodies have this field.",
+    )
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]
     subject: str = pydantic.Field(
         ...,
@@ -43,7 +51,11 @@ class LogMessageBody(pydantic.BaseModel):
 
 
 class ConfigMessageBody(pydantic.BaseModel):
-    variant: Literal["config"] = "config"
+    variant: Literal["config"] = pydantic.Field(
+        "config",
+        description=
+        "Indicating the variant of the message. All possible message bodies have this field.",
+    )
     status: Literal["received", "accepted", "rejected", "startup"] = pydantic.Field(
         ...,
         description='The status of the config. "received" is sent out by the backend ' +

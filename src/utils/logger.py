@@ -240,15 +240,13 @@ class Logger:
 
         # optionally write logs to console
         if log_level_is_visible(
-            min_visible_log_level=self.config.logging_verbosity.console_prints,
-            log_level=level
+            min_log_level=self.config.logging_verbosity.console_prints, log_level=level
         ):
             print(log_string + body, end="")
 
         # optionally write logs to archive
         if log_level_is_visible(
-            min_visible_log_level=self.config.logging_verbosity.file_archive,
-            log_level=level
+            min_log_level=self.config.logging_verbosity.file_archive, log_level=level
         ):
             path = os.path.join(LOGS_ARCHIVE_DIR, now.strftime("%Y-%m-%d.log"))
             with self.filelock:
@@ -257,8 +255,7 @@ class Logger:
 
         # optionally send logs via MessagingAgent
         if log_level_is_visible(
-            min_visible_log_level=self.config.logging_verbosity.message_sending,
-            log_level=level
+            min_log_level=self.config.logging_verbosity.message_sending, log_level=level
         ) and (self.config.backend is not None):
             self.messaging_agent.add_message(
                 src.types.LogMessageBody(

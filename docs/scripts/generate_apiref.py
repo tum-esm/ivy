@@ -123,8 +123,11 @@ def _render_function(function: typing.Any) -> str:
     return output
 
 
-def _render_class(cls: typing.Any) -> str:
-    output = f"**`{cls.__name__}`**\n\n```python\n"
+def _render_class(cls: typing.Any, module_depth: int) -> str:
+    output = f"{'#' * (module_depth + 1)} Class `{cls.__name__}`"
+    output += f" [#{cls.__module__}.{cls.__name__}.classes]\n\n"
+
+    output += f"```python\n"
     decorators, definition = _get_object_source(cls)
     if decorators != "":
         output += f"{decorators}\n"
@@ -182,9 +185,7 @@ def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
             if c[1].__module__ == module.__name__ and not c[0].startswith("_")
         ]
         if len(classes) > 0:
-            output += f"{'#' * (module_depth + 1)} Classes"
-            output += f" [#{module.__name__}.classes]\n\n"
             for c in classes:
-                output += _render_class(c)
+                output += _render_class(c, module_depth)
 
     return output

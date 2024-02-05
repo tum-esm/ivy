@@ -9,7 +9,7 @@ import src
 ACTIVE_QUEUE_FILE: Annotated[
     str,
     "The absolute path of the SQLite database that stores the active message queue " +
-    "(data/active-message-queue.sqlite3)",
+    "(`data/active-message-queue.sqlite3`)",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -19,7 +19,7 @@ ACTIVE_QUEUE_FILE: Annotated[
 MESSAGE_ARCHIVE_DIR: Annotated[
     str,
     "The absolute path of the directory that stores the message archive " +
-    "(data/messages/)",
+    "(`data/messages/`)",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -29,7 +29,7 @@ MESSAGE_ARCHIVE_DIR: Annotated[
 MESSAGE_ARCHIVE_DIR_LOCK: Annotated[
     str,
     "The absolute path of the lock file that is used to lock the message archive " +
-    "directory (data/messages.lock). This is used to make sure that only one " +
+    "directory (`data/messages.lock`). This is used to make sure that only one " +
     "process can write to the message archive at a time.",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
