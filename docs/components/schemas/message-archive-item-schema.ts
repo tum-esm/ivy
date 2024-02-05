@@ -13,6 +13,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                         "variant": {
                             "const": "data",
                             "default": "data",
+                            "description": "Indicating the variant of the message. All possible message bodies have this field.",
                             "title": "Variant"
                         },
                         "data": {
@@ -54,6 +55,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                         "variant": {
                             "const": "log",
                             "default": "log",
+                            "description": "Indicating the variant of the message. All possible message bodies have this field.",
                             "title": "Variant"
                         },
                         "level": {
@@ -99,6 +101,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                         "variant": {
                             "const": "config",
                             "default": "config",
+                            "description": "Indicating the variant of the message. All possible message bodies have this field.",
                             "title": "Variant"
                         },
                         "status": {

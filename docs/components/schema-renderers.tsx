@@ -3,15 +3,15 @@ import React from "react";
 const COLORS: {
   [key in number]: string;
 } = {
-  0: "text-[17px]",
-  1: "text-[16px]",
+  0: "text-[16px]",
+  1: "text-[15.5px]",
   2: "text-[15px]",
-  3: "text-[14px]",
-  4: "text-[13px]",
-  5: "text-[12px]",
-  6: "text-[11px]",
-  7: "text-[10px]",
-  8: "text-[9px]",
+  3: "text-[14.5.px]",
+  4: "text-[14px]",
+  5: "text-[13.5px]",
+  6: "text-[13px]",
+  7: "text-[12.5px]",
+  8: "text-[12px]",
 };
 
 const CONTAINER_CLASSES =

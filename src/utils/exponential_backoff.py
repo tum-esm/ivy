@@ -34,7 +34,7 @@ class ExponentialBackoff:
         self.bucket_index = 0  # index of the next wait time bucket
         self.logger = logger
 
-    def sleep(self, max_sleep_time: Optional[float]) -> int:
+    def sleep(self, max_sleep_time: Optional[float] = None) -> float:
         """Wait and increase the wait time to the next bucket.
         
         Args:
@@ -44,7 +44,7 @@ class ExponentialBackoff:
             The amount of seconds waited.
         """
 
-        sleep_seconds = self.buckets[self.bucket_index]
+        sleep_seconds = float(self.buckets[self.bucket_index])
         if max_sleep_time is not None:
             sleep_seconds = min(sleep_seconds, max_sleep_time)
 

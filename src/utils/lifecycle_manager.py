@@ -50,7 +50,7 @@ class LifecycleManager():
             Callable[[src.types.Config, Logger, multiprocessing.synchronize.Event], None],
         ]
         self.variant = variant
-        self.teardown_indicator = multiprocessing.synchronize.Event()
+        self.teardown_indicator = multiprocessing.Event()
         try:
             if variant == "procedure":
                 self.entrypoint = pydantic.RootModel[Callable[
@@ -139,11 +139,14 @@ class LifecycleManager():
 
         self.logger.info(f"starting teardown of {self.variant}")
         if self.process is not None:
-            graceful_shutdown_time = (
-                src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN if
-                (self.variant == "procedure") else
-                (self.config.backend.max_drain_time + 120)
-            )
+            graceful_shutdown_time: int
+            if self.variant == "procedure":
+                graceful_shutdown_time = src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN
+            else:
+                if self.config.backend is not None:
+                    graceful_shutdown_time = self.config.backend.max_drain_time + 120
+                else:
+                    graceful_shutdown_time = 10
 
             # what to do if process does not tear down gracefully
             def kill_process(*args: Any) -> None:
