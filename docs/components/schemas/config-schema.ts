@@ -1,7 +1,7 @@
 /* prettier-ignore */
 const CONFIG_SCHEMA: any = {
     "additionalProperties": false,
-    "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
+    "description": "Schema of the config file for this version of the software.\n\nA rendered API reference can be found in the documentation.",
     "properties": {
         "general": {
             "properties": {
@@ -85,7 +85,7 @@ const CONFIG_SCHEMA: any = {
                 {
                     "properties": {
                         "repository": {
-                            "description": "The repository in which this source code is hosted, i.e. 'orgname/reponame'",
+                            "description": "The repository in which this source code is hosted, i.e. `orgname/reponame`",
                             "pattern": "[a-zA-Z0-9-]+/[a-zA-Z0-9-]+",
                             "title": "Repository",
                             "type": "string"

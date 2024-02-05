@@ -234,7 +234,7 @@ class Config(pydantic.BaseModel):
 
 Schema of the config file for this version of the software.
 
-A rendered API reference can be found [in the documentation](/api-reference/configuration).
+A rendered API reference can be found in the documentation.
 
 **`dump`**
 
@@ -301,7 +301,7 @@ to update to. It probably has more fields than listed in the schema. This
 schema only includes the fields that are required in any new config to be
 accepted by the updater in this version of the software.
 
-A rendered API reference can be found [in the documentation](/api-reference/configuration).
+A rendered API reference can be found in the documentation.
 
 **`dump`**
 

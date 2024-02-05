@@ -59,7 +59,7 @@ class _UpdaterConfig(pydantic.BaseModel):
         ...,
         pattern=r"[a-zA-Z0-9-]+/[a-zA-Z0-9-]+",
         description=
-        "The repository in which this source code is hosted, i.e. 'orgname/reponame'"
+        "The repository in which this source code is hosted, i.e. `orgname/reponame`"
     )
     provider: Literal["github", "gitlab"] = pydantic.Field(
         ..., description="You can suggest more providers in the issue tracker"
@@ -156,7 +156,7 @@ class _SystemChecksConfig(pydantic.BaseModel):
 class Config(pydantic.BaseModel):
     """Schema of the config file for this version of the software.
     
-    A rendered API reference can be found [in the documentation](/api-reference/configuration)."""
+    A rendered API reference can be found in the documentation."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
     general: _GeneralConfig = pydantic.Field(...)
@@ -239,7 +239,7 @@ class ForeignConfig(pydantic.BaseModel):
     schema only includes the fields that are required in any new config to be
     accepted by the updater in this version of the software.
     
-    A rendered API reference can be found [in the documentation](/api-reference/configuration)."""
+    A rendered API reference can be found in the documentation."""
 
     model_config = pydantic.ConfigDict(extra="allow")
     general: ForeignGeneralConfig = pydantic.Field(...)
