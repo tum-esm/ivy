@@ -9,6 +9,8 @@ import src
 from .logger import Logger
 from .messaging_agent import MessagingAgent
 
+# TODO: convert `Version` to a separate type (add a "load_from_string" method)
+
 
 class Updater:
     """Implementation of the update capabilities of the ivy seed: checks
@@ -23,7 +25,8 @@ class Updater:
         """Initialize an Updater instance.
         
         Args:
-            config: The current config."""
+            config: The current config.
+        """
 
         assert Updater.instance is None, "There should only be one Updater instance"
         Updater.instance = self
@@ -35,35 +38,12 @@ class Updater:
     def perform_update(self, foreign_config: src.types.ForeignConfig) -> None:
         """Perform an update for a received config file.
 
-        1. Check whether this config revision has already been processed.
-        2. If version is equal to the current version:
-            * Parse the received config file string using
-                `types.Config.load_from_string`
-            * If the received config is equal to the current
-                config, do nothing
-            * Otherwise, dump the received config to the config
-                file path and exit with status code 0
-        3. Otherwise:
-            * Download the source code of the new version
-            * Create a virtual environment
-            * Install dependencies
-            * Dump the received config to the config file path
-            * Run the integration pytests
-            * Update the cli pointer
-            * Exit with status code 0
-        
-        If any of the steps above fails, log the error and return. The
-        automation will continue with the current config. If the pytests
-        of the software version to be updated make sure, that the software
-        runs correctly, it is not possible to update to a new version, that
-        does not work. 
+        See the [documentation](/core-concepts/over-the-air-updates) for a detailed
+        explanation of the update process.
         
         Args:
-            config_file_string: The content of the config file to be processed.
-                                 This is a string, which will be parsed using
-                                 `types.ForeignConfig.load_from_string`. It should
-                                 be a JSON object with at least the `version` field,
-                                 everything else is optional."""
+            foreign_config: The received config.
+        """
 
         if foreign_config.general.config_revision <= self.config.general.config_revision:
             self.logger.info(
@@ -211,7 +191,11 @@ class Updater:
         """Download the source code of the new version to the version
         directory. This is currently only implemented for github and
         gitlab for private and public repositories. Feel free to request
-        other providers in the issue tracker."""
+        other providers in the issue tracker.
+        
+        Args:
+            version: The version number of the source code to download.
+        """
 
         assert self.config.updater is not None
 
@@ -266,7 +250,11 @@ class Updater:
 
     def install_dependencies(self, version: str) -> None:
         """Create a virtual environment and install the dependencies in
-        the version directory using poetry."""
+        the version directory using poetry.
+        
+        Args:
+            version: The version number of the source code to download.
+        """
 
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
@@ -290,7 +278,11 @@ class Updater:
         )
 
     def run_pytests(self, version: str) -> None:
-        """Run all pytests with the mark "version_change" in the version directory."""
+        """Run all pytests with the mark "version_change" in the version directory.
+        
+        Args:
+            version: The version number of the source code to download.
+        """
 
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
@@ -301,7 +293,11 @@ class Updater:
         )
 
     def update_cli_pointer(self, version: str) -> None:
-        """Update the cli pointer to a new version"""
+        """Update the cli pointer to a new version.
+        
+        Args:
+            version: The version number of the source code to download.
+        """
 
         venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
         code_path = os.path.join(src.constants.IVY_ROOT_DIR, version, "src")

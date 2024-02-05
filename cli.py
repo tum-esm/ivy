@@ -13,7 +13,7 @@ def cli() -> None:
 
 @cli.command(
     name="info",
-    help="Information about which CLI version and path is used.",
+    help="Information about which CLI version and paths are used.",
 )
 def info() -> None:
     click.echo(f"CLI version: {src.constants.VERSION}")
@@ -52,7 +52,7 @@ def stop() -> None:
 
 @cli.command(
     name="restart",
-    help="Stop and start the automation as a background process."
+    help="Stop and start the automation as a background process.",
 )
 def restart() -> None:
     click.echo("Restarting background process")

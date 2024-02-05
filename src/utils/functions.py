@@ -1,6 +1,6 @@
+from typing import Any, Callable, Generator, Literal, Optional, TypeVar, cast
 import datetime
 import functools
-from typing import Any, Callable, Generator, Literal, Optional, TypeVar, cast
 import contextlib
 import os
 import re
@@ -8,29 +8,28 @@ import subprocess
 import filelock
 import src
 
-version_regex = re.compile(src.constants.VERSION_REGEX)
-
 
 def log_level_is_visible(
-    min_visible_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION",
-                                   None],
+    min_log_level: Optional[Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]],
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"],
 ) -> bool:
     """Checks if a log level is forwarded to the user.
 
     Args:
-        min_log_level:  The minimum log level to forward, if None, no log
-                        levels are forwarded.
-        log_level:      The log level to check
+        min_log_level: The minimum log level to forward, if None, no log
+                       levels are forwarded.
+        log_level:     The log level to check.
     
-    Returns: True if `log_level` is at least as important as `min_log_level`"""
+    Returns:
+        Whether `log_level` is at least as important as `min_log_level`
+    """
 
-    if min_visible_log_level is None:
+    if min_log_level is None:
         return False
     else:
         return (
             src.constants.LOGGING_LEVEL_PRIORITIES[log_level]
-            >= src.constants.LOGGING_LEVEL_PRIORITIES[min_visible_log_level]
+            >= src.constants.LOGGING_LEVEL_PRIORITIES[min_log_level]
         )
 
 
@@ -42,9 +41,10 @@ def string_is_valid_version(version_string: str) -> bool:
         version_string: version string to check.
     
     Returns:
-        True if the version string is valid, False otherwise."""
+        Whether the version string is valid.
+    """
 
-    return version_regex.match(version_string) is not None
+    return re.match(src.constants.VERSION_REGEX, version_string) is not None
 
 
 def run_shell_command(
@@ -52,9 +52,21 @@ def run_shell_command(
     working_directory: Optional[str] = None,
     executable: str = "/bin/bash",
 ) -> str:
-    """runs a shell command and raises a `CommandLineException`
+    """Runs a shell command and raises a `CommandLineException`
     if the return code is not zero, returns the stdout. Uses
-    `/bin/bash` by default."""
+    `/bin/bash` by default.
+    
+    Args:
+        command:           The command to run.
+        working_directory: The working directory for the command.
+        executable:        The shell to use.
+    
+    Returns:
+        The stdout of the command.
+    
+    Raises:
+        CommandLineException: If the command fails.
+    """
 
     p = subprocess.run(
         command,
@@ -78,8 +90,24 @@ def run_shell_command(
 
 
 class CommandLineException(Exception):
-    """Raised when a shell command fails."""
+    """Raised when a shell command fails.
+    
+    Provides more details than a normal exception:
+
+    ```python   
+    e = CommandLineException("command failed", details="stderr: ...")
+    print(e) # command failed
+    print(e.details) # stderr: ...
+    ```
+    """
     def __init__(self, value: str, details: Optional[str] = None) -> None:
+        """Initializes the exception.
+
+        Args:
+            value:   The message to log.
+            details: Additional details to log, useful for verbose output.
+        """
+
         self.value = value
         self.details = details
         Exception.__init__(self)
@@ -100,7 +128,14 @@ def with_automation_lock() -> Generator[None, None, None]:
         run_automation()
         # or
         run_tests()
-    ```"""
+    ```
+
+    Returns:
+        A context manager that locks the automation.
+    
+    Raises:
+        TimeoutError: If the automation is already running.
+    """
 
     parent_dir = os.path.dirname(src.constants.PROJECT_DIR)
 
@@ -160,7 +195,14 @@ class with_filelock:
     some_function() # will be executed within a semaphore 
     ```"""
     def __init__(self, lockfile_path: str, timeout: float = -1) -> None:
-        """A timeout of -1 means that the code waits forever."""
+        """A timeout of -1 means that the code waits forever.
+        
+        Args:
+            lockfile_path: The path to the lockfile.
+            timeout:       The time to wait for the lock in seconds.
+        
+        """
+
         self.lockfile_path: str = lockfile_path
         self.timeout: float = timeout
 

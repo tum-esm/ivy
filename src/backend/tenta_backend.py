@@ -13,6 +13,14 @@ def run(
     logger: src.utils.Logger,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
+    """The main procedure for the Tenta backend.
+    
+    Args:
+        config: The configuration object.
+        logger: The logger object.
+        teardown_indicator: The event that is set when the procedure should terminate.
+    """
+
     assert config.backend is not None
     assert config.backend.provider == "tenta"
     messaging_agent = src.utils.MessagingAgent()
@@ -57,36 +65,37 @@ def run(
     exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[120, 900, 3600])
     teardown_receipt_time: Optional[float] = None
 
-    # register a teardown procedure
-
-    def teardown_handler(*args: Any) -> None:
-        if tenta_client is not None:
-            logger.debug("Tearing down the Tenta Client")
-            tenta_client.teardown()
-        logger.debug("Finishing the teardown")
-
-    signal.signal(signal.SIGINT, teardown_handler)
-    signal.signal(signal.SIGTERM, teardown_handler)
-
-    # TODO: add timeout alarms
-
-    def connect(
-    ) -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
-        logger.info("Starting Tenta backend")
-        tenta_client = tenta.TentaClient(
-            mqtt_client_id=config.backend.mqtt_client_id,
-            mqtt_host=config.backend.mqtt_host,
-            mqtt_port=config.backend.mqtt_port,
-            mqtt_identifier=config.backend.mqtt_username,
-            mqtt_password=config.backend.mqtt_password,
-            sensor_identifier=config.general.system_identifier,
-            on_config_message=on_config_message,
-            # possibly add your TLS configuration here
-        )
-        logger.info("Tenta client has been set up")
-        return tenta_client, set()
-
     try:
+
+        # register a teardown procedure
+
+        def teardown_handler(*args: Any) -> None:
+            if tenta_client is not None:
+                logger.debug("Tearing down the Tenta Client")
+                tenta_client.teardown()
+            logger.debug("Finishing the teardown")
+
+        signal.signal(signal.SIGINT, teardown_handler)
+        signal.signal(signal.SIGTERM, teardown_handler)
+
+        # TODO: add timeout alarms
+
+        def connect(
+        ) -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
+            logger.info("Starting Tenta backend")
+            tenta_client = tenta.TentaClient(
+                mqtt_client_id=config.backend.mqtt_client_id,
+                mqtt_host=config.backend.mqtt_host,
+                mqtt_port=config.backend.mqtt_port,
+                mqtt_identifier=config.backend.mqtt_username,
+                mqtt_password=config.backend.mqtt_password,
+                sensor_identifier=config.general.system_identifier,
+                on_config_message=on_config_message,
+                # possibly add your TLS configuration here
+            )
+            logger.info("Tenta client has been set up")
+            return tenta_client, set()
+
         tenta_client, active_messages = connect()
 
         while True:

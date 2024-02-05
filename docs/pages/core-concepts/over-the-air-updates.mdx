@@ -1,3 +1,29 @@
 
 TODO: How do over the air updates work?
 TODO: Local file layout
+
+
+From the old docstring:
+
+1. Check whether this config revision has already been processed.
+2. If version is equal to the current version:
+    * Parse the received config file string using
+        `types.Config.load_from_string`
+    * If the received config is equal to the current
+        config, do nothing
+    * Otherwise, dump the received config to the config
+        file path and exit with status code 0
+3. Otherwise:
+    * Download the source code of the new version
+    * Create a virtual environment
+    * Install dependencies
+    * Dump the received config to the config file path
+    * Run the integration pytests
+    * Update the cli pointer
+    * Exit with status code 0
+
+If any of the steps above fails, log the error and return. The
+automation will continue with the current config. If the pytests
+of the software version to be updated make sure, that the software
+runs correctly, it is not possible to update to a new version, that
+does not work. 

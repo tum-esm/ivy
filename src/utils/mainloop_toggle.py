@@ -16,7 +16,11 @@ SCRIPT_PATH: Annotated[
 
 
 def _get_process_pids(script_path: str) -> list[int]:
-    """Return a list of PIDs that have the given script as their entrypoint"""
+    """Return a list of PIDs that have the given script as their entrypoint.
+    
+    Args:
+        script_path: The absolute path of the python file entrypoint.
+    """
 
     pids: list[int] = []
     for p in psutil.process_iter():
@@ -33,26 +37,6 @@ def _get_process_pids(script_path: str) -> list[int]:
     return pids
 
 
-def _start_background_process(interpreter_path: str, script_path: str) -> int:
-    """Start a new background process with nohup with a given python
-    interpreter and script path. The script paths parent directory
-    will be used as the working directory for the process."""
-
-    existing_pids = _get_process_pids(script_path)
-    assert len(existing_pids) == 0, "process is already running"
-
-    cwd = os.path.dirname(script_path)
-    os.system(f"cd {cwd} && nohup {interpreter_path} {script_path} &")
-    time.sleep(0.5)
-
-    new_pids = _get_process_pids(script_path)
-    assert (
-        len(new_pids) == 1
-    ), f"multiple processes found ({new_pids}), when there should only be one"
-
-    return new_pids[0]
-
-
 def _terminate_process(
     script_path: str,
     termination_timeout: Optional[int] = None,
@@ -61,7 +45,13 @@ def _terminate_process(
     entrypoint. Returns the list of terminated PIDs.
     
     If `termination_timeout` is not None, the processes will be
-    terminated forcefully after the given timeout (in seconds)."""
+    terminated forcefully after the given timeout (in seconds).
+    
+    Args:
+        script_path:         The absolute path of the python file entrypoint.
+        termination_timeout: The timeout in seconds after which the
+                             processes will be terminated forcefully.
+    """
 
     processes_to_terminate: list[psutil.Process] = []
 
@@ -119,7 +109,10 @@ class MainloopToggle:
             click.echo(f"Background processes already exists with PID(s) {current_pids}")
             exit(1)
         else:
-            os.system(f"nohup {sys.executable} {SCRIPT_PATH} &")
+            os.system(
+                f"cd {os.path.dirname(SCRIPT_PATH)} && " +
+                f"nohup {sys.executable} {SCRIPT_PATH} &"
+            )
             time.sleep(0.5)
             new_pids = _get_process_pids(SCRIPT_PATH)
             if len(new_pids) == 0:
@@ -144,8 +137,13 @@ class MainloopToggle:
 
     @staticmethod
     def get_mainloop_pids() -> list[int]:
-        """Return the process ID(s) of the mainloop process(es).
+        """Get the process ID(s) of the mainloop process(es).
         
-        Should be used to check if the mainloop process is running."""
+        Should be used to check if the mainloop process is running.
+        
+        Returns:
+            A list of process IDs. Might have more than one element if
+            the mainloop process has spawned child process(es).
+        """
 
         return _get_process_pids(SCRIPT_PATH)

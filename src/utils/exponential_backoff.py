@@ -27,7 +27,8 @@ class ExponentialBackoff:
 
         Args:
             logger: The logger to use for logging when waiting certain amount of time.
-            buckets: The buckets to use for the exponential backoff."""
+            buckets: The buckets to use for the exponential backoff.
+        """
 
         self.buckets = buckets
         self.bucket_index = 0  # index of the next wait time bucket
@@ -40,7 +41,8 @@ class ExponentialBackoff:
             max_sleep_time: The maximum time to sleep. If None, no maximum is set.
         
         Returns:
-            The amount of seconds waited."""
+            The amount of seconds waited.
+        """
 
         sleep_seconds = self.buckets[self.bucket_index]
         if max_sleep_time is not None:
@@ -54,4 +56,5 @@ class ExponentialBackoff:
 
     def reset(self) -> None:
         """Reset the waiting period to the first bucket"""
+
         self.bucket_index = 0

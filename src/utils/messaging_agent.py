@@ -1,22 +1,37 @@
 import json
-from typing import Union
+from typing import Union, Annotated
 import datetime
 import os
 import sqlite3
 import filelock
 import src
 
-ACTIVE_QUEUE_FILE = os.path.join(
+ACTIVE_QUEUE_FILE: Annotated[
+    str,
+    "The absolute path of the SQLite database that stores the active message queue " +
+    "(data/active-message-queue.sqlite3)",
+] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
     "active-message-queue.sqlite3",
 )
-MESSAGE_ARCHIVE_DIR = os.path.join(
+
+MESSAGE_ARCHIVE_DIR: Annotated[
+    str,
+    "The absolute path of the directory that stores the message archive " +
+    "(data/messages/)",
+] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
     "messages",
 )
-MESSAGE_ARCHIVE_DIR_LOCK = os.path.join(
+
+MESSAGE_ARCHIVE_DIR_LOCK: Annotated[
+    str,
+    "The absolute path of the lock file that is used to lock the message archive " +
+    "directory (data/messages.lock). This is used to make sure that only one " +
+    "process can write to the message archive at a time.",
+] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
     "messages.lock",
@@ -25,6 +40,12 @@ MESSAGE_ARCHIVE_DIR_LOCK = os.path.join(
 
 class MessagingAgent():
     def __init__(self) -> None:
+        """Create a new messaging agent.
+        
+        Sets up a connection to the SQLite database that stores the active
+        message queue. Creates the SQL tables if they don't exist yet.
+        """
+
         self.connection = sqlite3.connect(ACTIVE_QUEUE_FILE, check_same_thread=True)
         self.message_archive_lock = filelock.FileLock(
             MESSAGE_ARCHIVE_DIR_LOCK,
@@ -49,6 +70,14 @@ class MessagingAgent():
             src.types.ConfigMessageBody,
         ],
     ) -> None:
+        """Add a message to the active message queue and the message archive.
+        Messages are written to the archive right away so they don't get lost
+        if the backend process fails to send them out.
+        
+        Args:
+            message_body: The message body.
+        """
+
         timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
         message_body_string = message_body.model_dump_json()
 
@@ -77,6 +106,18 @@ class MessagingAgent():
         n: int,
         excluded_message_ids: set[int] | list[int] = set(),
     ) -> list[src.types.MessageQueueItem]:
+        """Get the `n` latest messages from the active message queue.
+
+        Args:
+            n:                    The number of messages to get.
+            excluded_message_ids: The message IDs to exclude from the result. Can be
+                                  used to exclude messages that are already being processed
+                                  but are still in the active message queue.
+        
+        Returns:
+            A list of messages from the active queue.
+        """
+
         with self.connection:
             mids_placeholder = ",".join(["?"] * len(excluded_message_ids))
             results = list(
@@ -100,6 +141,12 @@ class MessagingAgent():
         ]
 
     def remove_messages(self, message_ids: set[int] | list[int]) -> None:
+        """Remove messages from the active message queue.
+
+        Args:
+            message_ids: The message IDs to be removed.
+        """
+
         with self.connection:
             mids_placeholder = ",".join(["?"] * len(message_ids))
             self.connection.execute(
@@ -112,16 +159,29 @@ class MessagingAgent():
 
     @staticmethod
     def get_message_archive_file() -> str:
+        """Get the file path of the message archive file for the current date."""
+
         return os.path.join(
             MESSAGE_ARCHIVE_DIR,
             datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.csv")
         )
 
     def teardown(self) -> None:
+        """Close the connection to the active message queue database."""
+
         self.connection.close()
 
     @staticmethod
     def load_message_archive(date: datetime.date) -> list[src.types.MessageArchiveItem]:
+        """Load the message archive for a specific date.
+
+        Args:
+            date: The date for which to load the message archive.
+        
+        Returns:
+            A list of messages from the message archive.
+        """
+
         path = os.path.join(MESSAGE_ARCHIVE_DIR, date.strftime("%Y-%m-%d.csv"))
         results: list[src.types.MessageArchiveItem] = []
         if os.path.isfile(path):

@@ -13,11 +13,11 @@ const CONFIG_SCHEMA: any = {
                 },
                 "software_version": {
                     "const": "1.0.0",
-                    "description": "The version of the software this config file is for",
+                    "description": "The version of the software this config file is for.",
                     "title": "Software Version"
                 },
                 "system_identifier": {
-                    "description": "The identifier of this system",
+                    "description": "The identifier of this system. If possible, it is convenient to use the hostname of the system.",
                     "maxLength": 512,
                     "minLength": 1,
                     "title": "System Identifier",
@@ -100,6 +100,7 @@ const CONFIG_SCHEMA: any = {
                             "type": "string"
                         },
                         "provider_host": {
+                            "description": "The host of the code provider.",
                             "examples": [
                                 "github.com",
                                 "gitlab.com",
@@ -155,6 +156,7 @@ const CONFIG_SCHEMA: any = {
                 {
                     "properties": {
                         "provider": {
+                            "description": "The provider to use for the backend. The template ships with these two providers but is easily extendable to support other backends.",
                             "enum": [
                                 "tenta",
                                 "thingsboard"
@@ -163,39 +165,52 @@ const CONFIG_SCHEMA: any = {
                             "type": "string"
                         },
                         "mqtt_host": {
+                            "description": "The host to use for the MQTT connection",
                             "maxLength": 512,
                             "minLength": 1,
                             "title": "Mqtt Host",
                             "type": "string"
                         },
                         "mqtt_port": {
+                            "description": "The port to use for the MQTT connection",
                             "maximum": 65535,
                             "minimum": 1,
                             "title": "Mqtt Port",
                             "type": "integer"
                         },
                         "mqtt_client_id": {
+                            "description": "The client ID to use for the MQTT connection. Not necessarily the same as the username.",
                             "maxLength": 512,
                             "minLength": 1,
                             "title": "Mqtt Client Id",
                             "type": "string"
                         },
                         "mqtt_username": {
+                            "description": "The username to use for the MQTT connection.",
                             "maxLength": 512,
                             "minLength": 1,
                             "title": "Mqtt Username",
                             "type": "string"
                         },
                         "mqtt_password": {
+                            "description": "The password to use for the MQTT connection.",
                             "maxLength": 512,
                             "minLength": 1,
                             "title": "Mqtt Password",
                             "type": "string"
                         },
                         "max_parallel_messages": {
+                            "description": "How many messages that are not published yet should be passed to the backend at once",
                             "maximum": 10000,
                             "minimum": 1,
                             "title": "Max Parallel Messages",
+                            "type": "integer"
+                        },
+                        "max_drain_time": {
+                            "description": "When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages.",
+                            "maximum": 7200,
+                            "minimum": 10,
+                            "title": "Max Drain Time",
                             "type": "integer"
                         }
                     },
@@ -206,7 +221,8 @@ const CONFIG_SCHEMA: any = {
                         "mqtt_client_id",
                         "mqtt_username",
                         "mqtt_password",
-                        "max_parallel_messages"
+                        "max_parallel_messages",
+                        "max_drain_time"
                     ],
                     "title": "_BackendConfig",
                     "type": "object"

@@ -2,6 +2,7 @@
 const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
     "properties": {
         "timestamp": {
+            "description": "Unix timestamp on the system when this message was created",
             "title": "Timestamp",
             "type": "number"
         },
@@ -67,10 +68,20 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "type": "string"
                         },
                         "subject": {
+                            "description": "The subject of the log message. Try to move specific detailsto the body because then messages can be grouped by the subject - i.e. \"give me all messages reporting high system load\".",
+                            "examples": [
+                                "Starting procedure",
+                                "System load too high"
+                            ],
                             "title": "Subject",
                             "type": "string"
                         },
                         "body": {
+                            "description": "The body of the log message",
+                            "examples": [
+                                "Here are some more details on the procedure starting",
+                                "The system load is 87%"
+                            ],
                             "title": "Body",
                             "type": "string"
                         }
@@ -91,6 +102,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "title": "Variant"
                         },
                         "status": {
+                            "description": "The status of the config. \"received\" is sent out by the backend process upon arrival. \"accepted\" means the config passed the tests and will be used after the termination that is issues upon acceptance. \"rejected\" means the config did either not fulfil the schema or not pass the tests. \"startup\" means that a mainloop using this config was started.",
                             "enum": [
                                 "received",
                                 "accepted",
@@ -102,7 +114,7 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                         },
                         "config": {
                             "additionalProperties": true,
-                            "description": "Schema of a foreign config file for any other version of the software\nto update to.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
+                            "description": "Schema of a foreign config file for any other version of the software\nto update to. It probably has more fields than listed in the schema. This\nschema only includes the fields that are required in any new config to be\naccepted by the updater in this version of the software.\n\nA rendered API reference can be found [in the documentation](/api-reference/configuration).",
                             "properties": {
                                 "general": {
                                     "additionalProperties": true,

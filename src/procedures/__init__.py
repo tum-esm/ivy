@@ -6,7 +6,10 @@ graceful teardown steps upon receiving SIGTERM/SIGINT.
 All of the procedures in this module should have the signature:
 
 ```python
-def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+def run(
+    config: src.types.Config,
+    logger: src.utils.Logger,
+) -> None:
     ...
 ```"""
 

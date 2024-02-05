@@ -7,7 +7,12 @@ import src
 
 
 def run(config: src.types.Config, logger: src.utils.Logger) -> None:
-    """Logs the system load and last boot time."""
+    """Logs the system load and last boot time.
+    
+    Args:
+        config: The configuration object.
+        logger: The logger object.
+    """
 
     messaging_agent = src.utils.MessagingAgent()
 
