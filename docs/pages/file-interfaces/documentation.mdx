@@ -35,7 +35,7 @@ The interfaces of your codebase and the schema of the files interacting with it 
 
 The interfaces should not change between patch versions (e.g. `1.0.0` to `1.0.1` or `0.1.5` to `0.1.6`), that is why there should be one documentation per minor version (e.g. `0.1`, `0.2`, `1.0`, `1.1` ...). This template includes a GitHub Action that will checkout a branch named `docs-vX.Y` for every tag you push to GitHub. When you push the tags `v0.1.0`, then `v0.1.1`, then `v0.1.2` and so on, the action will keep the respective `docs-v0.1` branch up to date.
 
-The main branch can be deployed as the nightly documentation version (i.e. the latest code on main, not necessarily released). And each branch can now be deployed as a separate documentation version. On [Netlify](https://www.netlify.com/), these are called "Branch Deploys" and if your main branch deploys to https://ivy.netlify.app/, then the `docs-v1.0` branch deploys to https://v1-0--ivy.netlify.app/. On [Cloudflare Pages](https://pages.cloudflare.com/), these are called "Preview Deployments" and if your main branch deploys to https://ivy.pages.dev/, then the `docs-v1.0` branch deploys to https://docs-v1-0.ivy.pages.dev/.
+The main branch can be deployed as the nightly documentation version (i.e. the latest code on main, not necessarily released). And each branch can now be deployed as a separate documentation version. On [Netlify](https://www.netlify.com/), these are called "Branch Deploys" and if your main branch deploys to https://ivy-docs.netlify.app/, then the `docs-v1.0` branch deploys to https://v1-0--ivy-docs.netlify.app/. On [Cloudflare Pages](https://pages.cloudflare.com/), these are called "Preview Deployments" and if your main branch deploys to https://ivy-docs.pages.dev/, then the `docs-v1.0` branch deploys to https://docs-v1-0.ivy-docs.pages.dev/.
 
 You can add a list of versions to navigate to in the `docs/pages/_meta.json` file: 
 
@@ -51,7 +51,7 @@ You can add a list of versions to navigate to in the `docs/pages/_meta.json` fil
             },
             "v1.0": {
                 "title": "v1.0",
-                "href": "https://docs-v1-0.ivy.pages.dev/"
+                "href": "https://docs-v1-0.ivy-docs.pages.dev/"
             }
         }
     }
@@ -60,6 +60,6 @@ You can add a list of versions to navigate to in the `docs/pages/_meta.json` fil
 
 <Callout type="info" emoji="💡">
 
-I don't want to automate this `_meta.json` file generation to give the developer control over it. You can still automate it for your setup. URL's (`/v1.0`, `/v1.1`) instead of different subdomains (`docs-v1-0.ivy.pages.dev`) would also lead to a more complex setup that the one described above. The documenation framework we are using, [Nextra](https://nextra.site/), is actually [working on versioning support right now](https://github.com/shuding/nextra/issues/1421), so we might just have to wait a bit for a more integrated solution.
+I don't want to automate this `_meta.json` file generation to give the developer control over it. You can still automate it for your setup. URL's (`/v1.0`, `/v1.1`) instead of different subdomains (`docs-v1-0.ivy-docs.pages.dev`) would also lead to a more complex setup that the one described above. The documenation framework we are using, [Nextra](https://nextra.site/), is actually [working on versioning support right now](https://github.com/shuding/nextra/issues/1421), so we might just have to wait a bit for a more integrated solution.
 
 </Callout>

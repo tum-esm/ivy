@@ -27,7 +27,7 @@ readme = "README.md"
 
 [project.urls]
 repository = "https://github.com/tum-esm/ivy"
-documentation = "https://ivy.pages.dev/"
+documentation = "https://ivy-docs.pages.dev/"
 
 [project.optional-dependencies]
 dev = [
