@@ -1,5 +1,5 @@
 [project]
-name = "ivy-seed"
+name = "ivy"
 version = "1.0.0"
 description = "A Python template for an IoT node automation software supporting over-the air configuration and software updates"
 requires-python = ">=3.10,<4.0"
@@ -26,8 +26,8 @@ license = { text = "MIT" }
 readme = "README.md"
 
 [project.urls]
-repository = "https://github.com/tum-esm/ivy-seed"
-documentation = "https://ivy-seed.pages.dev/"
+repository = "https://github.com/tum-esm/ivy"
+documentation = "https://ivy.pages.dev/"
 
 [project.optional-dependencies]
 dev = [

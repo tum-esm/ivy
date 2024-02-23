@@ -14,7 +14,7 @@ export default {
         />
       </svg>
       <div className="flex-shrink-0 text-base md:text-xl whitespace-nowrap font-regular">
-        <span className="font-semibold">Ivy Seed</span>
+        <span className="font-semibold">Ivy</span>
         <span className="hidden lg:inline">
           {" "}
           | Professorship of Environmental Sensing and Modeling
@@ -23,7 +23,7 @@ export default {
     </div>
   ),
   project: {
-    link: "https://github.com/tum-esm/ivy-seed",
+    link: "https://github.com/tum-esm/ivy",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -46,18 +46,18 @@ export default {
       </svg>
     ),
   },
-  docsRepositoryBase: "https://github.com/tum-esm/ivy-seed/blob/main/docs",
+  docsRepositoryBase: "https://github.com/tum-esm/ivy/blob/main/docs",
   //primaryHue: 43,
   navigation: true,
   useNextSeoProps() {
     return {
-      titleTemplate: "%s – Ivy Seed",
+      titleTemplate: "%s – Ivy",
     };
   },
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta property="og:title" content="Ivy Seed" />
+      <meta property="og:title" content="Ivy" />
       <meta
         property="og:description"
         content="A Python template for a sensor automation software that can be configured and updated via MQTT"
@@ -94,7 +94,7 @@ export default {
   },
   banner: {
     key: "v1.0.0",
-    text: "🪴 The Ivy Seed 1.0.0 has been released",
+    text: "🪴 The Ivy template 1.0.0 has been released",
   },
   toc: {
     float: true,

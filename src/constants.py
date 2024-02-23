@@ -16,7 +16,7 @@ VERSION: Annotated[
     "The current version of the project",
 ] = "1.0.0"
 
-NAME: Annotated[str, "The name of the project"] = "ivy-seed"
+NAME: Annotated[str, "The name of the project"] = "ivy"
 
 IVY_ROOT_DIR: Annotated[
     str,

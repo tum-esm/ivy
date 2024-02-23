@@ -1208,12 +1208,12 @@ with State.update() as state:
 class Updater:
 ```
 
-Implementation of the update capabilities of the ivy seed: checks
+Implementation of the update capabilities of ivy: checks whether
 
-whether a new config is in a valid format, downloads new source code,
-creates virtual environments, installs dependencies, runs pytests,
-removes old virtual environments, and updates the cli pointer to the
-currently used version of the automation software.
+a new config is in a valid format, downloads new source code, creates
+virtual environments, installs dependencies, runs pytests, removes
+old virtual environments, and updates the cli pointer to the currently
+used version of the automation software.
 
 **`__init__`**
 
