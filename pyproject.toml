@@ -1,7 +1,7 @@
 [project]
 name = "ivy"
 version = "1.0.0"
-description = "A Python template for an IoT node automation software supporting over-the air configuration and software updates"
+description = "A Python boilerplate for an IoT node data acqusition system supporting remote configuration and software updates"
 requires-python = ">=3.10,<4.0"
 authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]
 dependencies = [
