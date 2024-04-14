@@ -33,6 +33,7 @@ def log_level_is_visible(
         )
 
 
+# TODO: use `tum-esm-utils` for that
 def string_is_valid_version(version_string: str) -> bool:
     """Check if the version string is valid = should match
     `src.constants.VERSION_REGEX`
@@ -47,6 +48,7 @@ def string_is_valid_version(version_string: str) -> bool:
     return re.match(src.constants.VERSION_REGEX, version_string) is not None
 
 
+# TODO: use `tum-esm-utils` for that
 def run_shell_command(
     command: str,
     working_directory: Optional[str] = None,
@@ -89,6 +91,7 @@ def run_shell_command(
     return stdout
 
 
+# TODO: use `tum-esm-utils` for that
 class CommandLineException(Exception):
     """Raised when a shell command fails.
     
@@ -154,6 +157,7 @@ def with_automation_lock() -> Generator[None, None, None]:
         raise TimeoutError("automation is already running")
 
 
+# TODO: move to `tum-esm-utils` for that
 def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float:
     """Calculates the time until the next measurement should be taken. If the seconds
     between datapoints is 10 and the current time is 12:00:03, the next measurement
@@ -179,6 +183,7 @@ def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float:
 F = TypeVar("F", bound=Callable[..., Any])
 
 
+# TODO: use `tum-esm-utils` for that
 class with_filelock:
     """FileLock = Mark, that a file is being used and other programs
     should not interfere. A file "*.lock" will be created and the
