@@ -1,99 +1,18 @@
 """Functions to start and terminate background processes."""
 
 from __future__ import annotations
-from typing import Annotated, Optional
+from typing import Annotated
 import os
 import sys
 import time
 import click
-import psutil
 import src
+import tum_esm_utils
 
 SCRIPT_PATH: Annotated[
     str,
     "Absolute path of the `run.py` file that starts an infinite mainloop",
 ] = os.path.join(src.constants.PROJECT_DIR, "run.py")
-
-
-# TODO: use `tum-esm-utils` for that
-def _get_process_pids(script_path: str) -> list[int]:
-    """Return a list of PIDs that have the given script as their entrypoint.
-    
-    Args:
-        script_path: The absolute path of the python file entrypoint.
-    """
-
-    pids: list[int] = []
-    for p in psutil.process_iter():
-        try:
-            if p.cmdline()[1] == script_path:
-                pids.append(p.pid)
-        except (
-            psutil.AccessDenied,
-            psutil.ZombieProcess,
-            psutil.NoSuchProcess,
-            IndexError,
-        ):
-            pass
-    return pids
-
-
-# TODO: use `tum-esm-utils` for that
-def _terminate_process(
-    script_path: str,
-    termination_timeout: Optional[int] = None,
-) -> list[int]:
-    """Terminate all processes that have the given script as their
-    entrypoint. Returns the list of terminated PIDs.
-    
-    If `termination_timeout` is not None, the processes will be
-    terminated forcefully after the given timeout (in seconds).
-    
-    Args:
-        script_path:         The absolute path of the python file entrypoint.
-        termination_timeout: The timeout in seconds after which the
-                             processes will be terminated forcefully.
-    """
-
-    processes_to_terminate: list[psutil.Process] = []
-
-    # terminate the processes gracefully
-    for p in psutil.process_iter():
-        try:
-            if p.cmdline()[1] == script_path:
-                processes_to_terminate.append(p)
-                p.terminate()
-        except (
-            psutil.AccessDenied,
-            psutil.ZombieProcess,
-            psutil.NoSuchProcess,
-            IndexError,
-        ):
-            pass
-
-    # kill the processes using SIGKILL after a timeout
-    if termination_timeout is not None:
-        t1 = time.time()
-        while True:
-            try:
-                if (time.time() - t1) > termination_timeout:
-                    for p in processes_to_terminate:
-                        if p.is_running():
-                            p.kill()
-                if any([p.is_running() for p in processes_to_terminate]):
-                    time.sleep(1)
-                else:
-                    # all processes have gracefully terminated
-                    break
-            except (
-                psutil.AccessDenied,
-                psutil.ZombieProcess,
-                psutil.NoSuchProcess,
-                IndexError,
-            ):
-                pass
-
-    return [p.pid for p in processes_to_terminate]
 
 
 class MainloopToggle:
@@ -106,7 +25,7 @@ class MainloopToggle:
         """Start the mainloop process in the background and print
         the process ID(s) of the new process(es)."""
 
-        current_pids = _get_process_pids(SCRIPT_PATH)
+        current_pids = tum_esm_utils.processes.get_process_pids(SCRIPT_PATH)
         if len(current_pids) > 0:
             click.echo(f"Background processes already exists with PID(s) {current_pids}")
             exit(1)
@@ -116,7 +35,7 @@ class MainloopToggle:
                 f"nohup {sys.executable} {SCRIPT_PATH} &"
             )
             time.sleep(0.5)
-            new_pids = _get_process_pids(SCRIPT_PATH)
+            new_pids = tum_esm_utils.processes.get_process_pids(SCRIPT_PATH)
             if len(new_pids) == 0:
                 click.echo(f"Could not start background process")
                 exit(1)
@@ -128,7 +47,7 @@ class MainloopToggle:
         """Terminate the mainloop process in the background and print
         the process ID(s) of the terminated process(es)."""
 
-        termination_pids = _terminate_process(SCRIPT_PATH)
+        termination_pids = tum_esm_utils.processes.terminate_process(SCRIPT_PATH)
         if len(termination_pids) == 0:
             click.echo("No active process to be terminated")
         else:
@@ -148,4 +67,4 @@ class MainloopToggle:
             the mainloop process has spawned child process(es).
         """
 
-        return _get_process_pids(SCRIPT_PATH)
+        return tum_esm_utils.processes.get_process_pids(SCRIPT_PATH)

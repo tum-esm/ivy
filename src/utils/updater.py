@@ -5,6 +5,7 @@ import os
 import sys
 import shutil
 import pydantic
+import tum_esm_utils
 import src
 from .logger import Logger
 from .messaging_agent import MessagingAgent
@@ -215,7 +216,7 @@ class Updater:
                 header: str = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28" '
                 if self.config.updater.access_token is not None:
                     header += f'--header "Authorization: Bearer {self.config.updater.access_token}"'
-                src.utils.functions.run_shell_command(
+                tum_esm_utils.shell.run_shell_command(
                     f'curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/v{version} --output {tarball_name}',
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
@@ -224,7 +225,7 @@ class Updater:
                 if self.config.updater.access_token is not None:
                     auth_param = f"?private_token={self.config.updater.access_token}"
                 repository_name = self.config.updater.repository.split("/")[-1]
-                src.utils.functions.run_shell_command(
+                tum_esm_utils.shell.run_shell_command(
                     f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/v{version}/{repository_name}-v{version}.tar.gz{auth_param} --output {dst_tar}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
@@ -233,7 +234,7 @@ class Updater:
                     f"Source code provider {self.config.updater.provider} not implemented"
                 )
 
-            name_of_directory_in_tarball = src.utils.functions.run_shell_command(
+            name_of_directory_in_tarball = tum_esm_utils.shell.run_shell_command(
                 f"tar -tf {tarball_name} | head -1",
                 working_directory=src.constants.IVY_ROOT_DIR,
             ).strip(" \n/").replace("\n", " ")
@@ -243,7 +244,7 @@ class Updater:
                     f"tarball {name_of_directory_in_tarball.split(' ')}"
                 )
 
-            src.utils.functions.run_shell_command(
+            tum_esm_utils.shell.run_shell_command(
                 f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version}",
                 working_directory=src.constants.IVY_ROOT_DIR,
             )
@@ -266,13 +267,13 @@ class Updater:
             shutil.rmtree(venv_path)
 
         self.logger.debug(f"Creating virtual environment at {venv_path}")
-        src.utils.functions.run_shell_command(
+        tum_esm_utils.shell.run_shell_command(
             f"python{sys.version_info.major}.{sys.version_info.minor} -m venv .venv",
             working_directory=version_dir,
         )
 
         self.logger.debug(f"Installing dependencies using poetry")
-        src.utils.functions.run_shell_command(
+        tum_esm_utils.shell.run_shell_command(
             f"source .venv/bin/activate && poetry install --no-root",
             working_directory=version_dir,
         )
@@ -287,7 +288,7 @@ class Updater:
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
-        src.utils.functions.run_shell_command(
+        tum_esm_utils.shell.run_shell_command(
             f'.venv/bin/python -m pytest -m "version_change" tests/',
             working_directory=version_dir,
         )

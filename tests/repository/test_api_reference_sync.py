@@ -1,11 +1,12 @@
 import sys
 import pytest
+import tum_esm_utils
 import src
 
 
 def get_checksum() -> str:
     # credits to https://stackoverflow.com/a/545413/8255842
-    return src.utils.functions.run_shell_command(
+    return tum_esm_utils.shell.run_shell_command(
         "find docs/pages docs/components -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum",
         working_directory=src.constants.PROJECT_DIR,
     )
@@ -14,7 +15,7 @@ def get_checksum() -> str:
 @pytest.mark.ci
 def test_api_reference_state() -> None:
     checksum_before = get_checksum()
-    src.utils.functions.run_shell_command(
+    tum_esm_utils.shell.run_shell_command(
         f"{sys.executable} docs/scripts/sync.py",
         working_directory=src.constants.PROJECT_DIR,
     )

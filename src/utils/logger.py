@@ -4,9 +4,10 @@ import os
 import traceback
 import filelock
 import datetime
+import tum_esm_utils
 
 import src
-from .functions import CommandLineException, log_level_is_visible
+from .functions import log_level_is_visible
 from .messaging_agent import MessagingAgent
 
 LOGS_ARCHIVE_DIR = os.path.join(src.constants.PROJECT_DIR, "data", "logs")
@@ -179,7 +180,8 @@ class Logger:
             traceback.format_exception(type(e), e, e.__traceback__)
         ).strip()
         exception_details = None
-        if isinstance(e, CommandLineException) and (e.details is not None):
+        if isinstance(e, tum_esm_utils.shell.CommandLineException
+                     ) and (e.details is not None):
             exception_details = e.details.strip()
 
         if label is None:
