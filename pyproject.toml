@@ -16,13 +16,13 @@ dependencies = [
   "click>=8.1.7",
 ]
 classifiers = [
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: GNU General Public License (GPL)",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
-license = { text = "MIT" }
+license = { text = "GPL-3.0" }
 readme = "README.md"
 
 [project.urls]
