@@ -41,9 +41,7 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
     # remove one messages
     mids = [message.identifier for message in agent.get_n_latest_messages(3)]
     agent.remove_messages([mids[1]])
-    new_mids = [
-        message.identifier for message in agent.get_n_latest_messages(3)
-    ]
+    new_mids = [message.identifier for message in agent.get_n_latest_messages(3)]
     assert len(new_mids) == 2
     assert mids[1] not in new_mids
 
@@ -59,9 +57,7 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
 def test_all_message_types(restore_production_files: None, ) -> None:
     config = src.types.Config.load_template().to_foreign_config()
     agent = MessagingAgent()
-    assert len(
-        agent.get_n_latest_messages(20)
-    ) == 0, "message queue is not empty"
+    assert len(agent.get_n_latest_messages(20)) == 0, "message queue is not empty"
 
     # add data message
     agent.add_message(DataMessageBody(data={"test": "test"}))
@@ -69,29 +65,19 @@ def test_all_message_types(restore_production_files: None, ) -> None:
     assert len(agent.get_n_latest_messages(20)) == 1, "message was not added"
 
     # add log messages
-    for i, level in enumerate([
-        "DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"
-    ]):
-        agent.add_message(
-            LogMessageBody(level=level, subject="test", body="test")
-        )
+    for i, level in enumerate(["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]):
+        agent.add_message(LogMessageBody(level=level, subject="test", body="test"))
         time.sleep(0.01)
-        assert len(
-            agent.get_n_latest_messages(20)
-        ) == i + 2, "message was not added"
+        assert len(agent.get_n_latest_messages(20)) == i + 2, "message was not added"
 
     # add config messages
     for i, status in enumerate(["received", "accepted", "rejected", "startup"]):
         agent.add_message(ConfigMessageBody(status=status, config=config))
         time.sleep(0.01)
-        assert len(
-            agent.get_n_latest_messages(20)
-        ) == i + 7, "message was not added"
+        assert len(agent.get_n_latest_messages(20)) == i + 7, "message was not added"
 
     # check message queue
-    mids = set([
-        message.identifier for message in agent.get_n_latest_messages(20)
-    ])
+    mids = set([message.identifier for message in agent.get_n_latest_messages(20)])
     assert len(mids) == 10, "message queue is not correct"
 
     # check filtering by message id
@@ -127,17 +113,16 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     config1 = src.types.Config.load_template().to_foreign_config()
     config2 = config1.model_copy()
-    config2.version = "0.0.0"
+    config2.general.software_version = "0.0.0"
 
-    message_bodies: list[
-        DataMessageBody | LogMessageBody | ConfigMessageBody] = [
-            DataMessageBody(data={"test": "test"}),
-            LogMessageBody(level="INFO", subject="test", body="test"),
-            ConfigMessageBody(status="received", config=config1),
-            DataMessageBody(data={"test2": "test2"}),
-            LogMessageBody(level="INFO", subject="test2", body="test2"),
-            ConfigMessageBody(status="rejected", config=config2),
-        ]
+    message_bodies: list[DataMessageBody | LogMessageBody | ConfigMessageBody] = [
+        DataMessageBody(data={"test": "test"}),
+        LogMessageBody(level="INFO", subject="test", body="test"),
+        ConfigMessageBody(status="received", config=config1),
+        DataMessageBody(data={"test2": "test2"}),
+        LogMessageBody(level="INFO", subject="test2", body="test2"),
+        ConfigMessageBody(status="rejected", config=config2),
+    ]
 
     # add messages
     for message_body in message_bodies:
@@ -153,8 +138,6 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     # check message archive integrity
     timestamps = [message.timestamp for message in archive_messages]
-    assert timestamps == list(
-        sorted(timestamps)
-    ), "messages are not sorted by timestamp"
+    assert timestamps == list(sorted(timestamps)), "messages are not sorted by timestamp"
     for i in range(len(message_bodies)):
         assert message_bodies[i] == archive_messages[i].message_body

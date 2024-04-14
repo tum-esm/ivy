@@ -31,7 +31,7 @@ def log_level_is_visible(
         )
 
 
-# TODO: use `tum-esm-utils` for that
+# TODO: create "Version class"
 def string_is_valid_version(version_string: str) -> bool:
     """Check if the version string is valid = should match
     `src.constants.VERSION_REGEX`

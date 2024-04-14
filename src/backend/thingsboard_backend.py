@@ -58,6 +58,9 @@ def run(
 
     try:
         logger.info("Setting up ThingsBoard backend")
+
+        # TODO: add timeout alarms
+
         client = paho.mqtt.client.Client(
             client_id=config.backend.mqtt_client_id,
             protocol=4,
