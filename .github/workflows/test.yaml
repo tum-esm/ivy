@@ -29,5 +29,4 @@ jobs:
         run: pip install ".[dev]"
 
       - name: Run pytests
-        run: |
-          pytest --verbose -m "ci" --cov=src tests/
+        run: pytest --verbose -m "ci" --cov=src tests/
