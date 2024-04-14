@@ -15,6 +15,7 @@ SCRIPT_PATH: Annotated[
 ] = os.path.join(src.constants.PROJECT_DIR, "run.py")
 
 
+# TODO: use `tum-esm-utils` for that
 def _get_process_pids(script_path: str) -> list[int]:
     """Return a list of PIDs that have the given script as their entrypoint.
     
@@ -37,6 +38,7 @@ def _get_process_pids(script_path: str) -> list[int]:
     return pids
 
 
+# TODO: use `tum-esm-utils` for that
 def _terminate_process(
     script_path: str,
     termination_timeout: Optional[int] = None,

@@ -225,7 +225,7 @@ class Updater:
                     auth_param = f"?private_token={self.config.updater.access_token}"
                 repository_name = self.config.updater.repository.split("/")[-1]
                 src.utils.functions.run_shell_command(
-                    f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/example-tag/{repository_name}-v{version}.tar.gz{auth_param} --output {dst_tar}",
+                    f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/v{version}/{repository_name}-v{version}.tar.gz{auth_param} --output {dst_tar}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             else:
