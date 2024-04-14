@@ -4,7 +4,7 @@ from typing import Annotated, Generator
 import os
 import pydantic
 import src
-from .functions import with_filelock
+import tum_esm_utils
 
 STATE_FILE: Annotated[
     str, "Points to `data/state.json` where the state is communicated with all threads"
@@ -25,7 +25,7 @@ STATE_FILE_LOCK: Annotated[
 
 
 class StateInterface():
-    @with_filelock(STATE_FILE_LOCK, timeout=6)
+    @tum_esm_utils.decorators.with_filelock(STATE_FILE_LOCK, timeout=6)
     @staticmethod
     def load() -> src.types.State:
         """Load the state file from the path `project_dir/data/state.json`"""
@@ -36,7 +36,7 @@ class StateInterface():
         except (FileNotFoundError, pydantic.ValidationError):
             return src.types.State()
 
-    @with_filelock(STATE_FILE_LOCK, timeout=6)
+    @tum_esm_utils.decorators.with_filelock(STATE_FILE_LOCK, timeout=6)
     @staticmethod
     @contextlib.contextmanager
     def update() -> Generator[src.types.State, None, None]:
