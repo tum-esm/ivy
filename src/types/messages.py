@@ -4,6 +4,8 @@ from .config import ForeignConfig
 
 
 class DataMessageBody(pydantic.BaseModel):
+    """The body of a data message, defined by `body.variant == "data"`."""
+
     variant: Literal["data"] = pydantic.Field(
         "data",
         description=
@@ -27,6 +29,8 @@ class DataMessageBody(pydantic.BaseModel):
 
 
 class LogMessageBody(pydantic.BaseModel):
+    """The body of a log message, defined by `body.variant == "log"`."""
+
     variant: Literal["log"] = pydantic.Field(
         "log",
         description=
@@ -51,6 +55,8 @@ class LogMessageBody(pydantic.BaseModel):
 
 
 class ConfigMessageBody(pydantic.BaseModel):
+    """The body of a config message, defined by `body.variant == "config"`."""
+
     variant: Literal["config"] = pydantic.Field(
         "config",
         description=

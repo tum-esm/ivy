@@ -342,17 +342,23 @@ class ForeignGeneralConfig(pydantic.BaseModel):
 class ConfigMessageBody(pydantic.BaseModel):
 ```
 
+The body of a config message, defined by `body.variant == "config"`.
+
 #### Class `DataMessageBody` [#src.types.messages.DataMessageBody.classes]
 
 ```python
 class DataMessageBody(pydantic.BaseModel):
 ```
 
+The body of a data message, defined by `body.variant == "data"`.
+
 #### Class `LogMessageBody` [#src.types.messages.LogMessageBody.classes]
 
 ```python
 class LogMessageBody(pydantic.BaseModel):
 ```
+
+The body of a log message, defined by `body.variant == "log"`.
 
 #### Class `MessageArchiveItem` [#src.types.messages.MessageArchiveItem.classes]
 
@@ -503,33 +509,6 @@ levels are forwarded.
 
 **Returns:** Whether `log_level` is at least as important as `min_log_level`
 
-**`run_shell_command`**
-
-```python
-def run_shell_command(
-    command: str,
-    working_directory: typing.Optional[str],
-    executable: str,
-) -> str:
-```
-
-Runs a shell command and raises a `CommandLineException`
-
-if the return code is not zero, returns the stdout. Uses
-`/bin/bash` by default.
-
-**Arguments:**
-
- * `command`:           The command to run.
- * `working_directory`: The working directory for the command.
- * `executable`:        The shell to use.
-
-**Returns:** The stdout of the command.
-
-**Raises:**
-
- * `CommandLineException`: If the command fails.
-
 **`string_is_valid_version`**
 
 ```python
@@ -573,78 +552,6 @@ with with_automation_lock():
 **Raises:**
 
  * `TimeoutError`: If the automation is already running.
-
-#### Class `CommandLineException` [#src.utils.functions.CommandLineException.classes]
-
-```python
-class CommandLineException(Exception):
-```
-
-Raised when a shell command fails.
-
-Provides more details than a normal exception:
-
-```python   
-e = CommandLineException("command failed", details="stderr: ...")
-print(e) # command failed
-print(e.details) # stderr: ...
-```
-
-**`__init__`**
-
-```python
-def __init__(
-    self,
-    value: str,
-    details: typing.Optional[str],
-) -> None:
-```
-
-Initializes the exception.
-
-**Arguments:**
-
- * `value`:   The message to log.
- * `details`: Additional details to log, useful for verbose output.
-
-#### Class `with_filelock` [#src.utils.functions.with_filelock.classes]
-
-```python
-class with_filelock:
-```
-
-FileLock = Mark, that a file is being used and other programs
-
-should not interfere. A file "*.lock" will be created and the
-content of this file will make the wrapped function possibly
-wait until other programs are done using it.
-
-See https://en.wikipedia.org/wiki/Semaphore_(programming). Usage:
-
-```python
-@with_filelock(lockfile_path="path/to/lockfile.lock", timeout=10)
-def some_function():
-    pass
-    
-some_function() # will be executed within a semaphore 
-```
-
-**`__init__`**
-
-```python
-def __init__(
-    self,
-    lockfile_path: str,
-    timeout: float,
-) -> None:
-```
-
-A timeout of -1 means that the code waits forever.
-
-**Arguments:**
-
- * `lockfile_path`: The path to the lockfile.
- * `timeout`:       The time to wait for the lock in seconds.
 
 ### `src.utils.lifecycle_manager.py` [#src.utils.lifecycle_manager]
 
@@ -1169,7 +1076,7 @@ class StateInterface():
 **`load`**
 
 ```python
-@with_filelock(STATE_FILE_LOCK, timeout=6)
+@tum_esm_utils.decorators.with_filelock(STATE_FILE_LOCK, timeout=6)
 @staticmethod
 def load() -> src.types.state.State:
 ```
@@ -1179,7 +1086,7 @@ Load the state file from the path `project_dir/data/state.json`
 **`update`**
 
 ```python
-@with_filelock(STATE_FILE_LOCK, timeout=6)
+@tum_esm_utils.decorators.with_filelock(STATE_FILE_LOCK, timeout=6)
 @staticmethod
 @contextlib.contextmanager
 def update() -> typing.Generator[src.types.state.State, None, None]:

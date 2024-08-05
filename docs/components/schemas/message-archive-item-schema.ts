@@ -9,12 +9,17 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
         "message_body": {
             "anyOf": [
                 {
+                    "description": "The body of a data message, defined by `body.variant == \"data\"`.",
                     "properties": {
                         "variant": {
                             "const": "data",
                             "default": "data",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "title": "Variant"
+                            "enum": [
+                                "data"
+                            ],
+                            "title": "Variant",
+                            "type": "string"
                         },
                         "data": {
                             "additionalProperties": {
@@ -51,12 +56,17 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                     "type": "object"
                 },
                 {
+                    "description": "The body of a log message, defined by `body.variant == \"log\"`.",
                     "properties": {
                         "variant": {
                             "const": "log",
                             "default": "log",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "title": "Variant"
+                            "enum": [
+                                "log"
+                            ],
+                            "title": "Variant",
+                            "type": "string"
                         },
                         "level": {
                             "enum": [
@@ -97,12 +107,17 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                     "type": "object"
                 },
                 {
+                    "description": "The body of a config message, defined by `body.variant == \"config\"`.",
                     "properties": {
                         "variant": {
                             "const": "config",
                             "default": "config",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "title": "Variant"
+                            "enum": [
+                                "config"
+                            ],
+                            "title": "Variant",
+                            "type": "string"
                         },
                         "status": {
                             "description": "The status of the config. \"received\" is sent out by the backend process upon arrival. \"accepted\" means the config passed the tests and will be used after the termination that is issues upon acceptance. \"rejected\" means the config did either not fulfil the schema or not pass the tests. \"startup\" means that a mainloop using this config was started.",

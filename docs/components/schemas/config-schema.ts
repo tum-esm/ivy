@@ -14,7 +14,11 @@ const CONFIG_SCHEMA: any = {
                 "software_version": {
                     "const": "1.0.0",
                     "description": "The version of the software this config file is for.",
-                    "title": "Software Version"
+                    "enum": [
+                        "1.0.0"
+                    ],
+                    "title": "Software Version",
+                    "type": "string"
                 },
                 "system_identifier": {
                     "description": "The identifier of this system. If possible, it is convenient to use the hostname of the system.",

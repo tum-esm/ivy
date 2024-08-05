@@ -22,7 +22,7 @@ NAME: Annotated[str, "The name of the project"] = "ivy"
 
 IVY_ROOT_DIR: Annotated[
     str,
-    f"The root directory of the project on a production system = `~/Documents/{NAME}`",
+    "The root directory of the project on a production system = `~/Documents/{NAME}`",
 ] = os.path.join(os.path.expanduser('~'), "Documents", NAME)
 
 LOGGING_LEVEL_PRIORITIES: Annotated[
