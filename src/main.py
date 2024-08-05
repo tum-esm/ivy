@@ -62,7 +62,9 @@ def run() -> None:
             procedure_name="system-checks",
             variant="procedure",
         ),
+        # CUSTOM: Add your own procedures here
     ]
+    
     if config.backend is not None:
         if config.backend.provider == "tenta":
             lifecycle_managers.append(
@@ -82,6 +84,8 @@ def run() -> None:
                     variant="backend",
                 )
             )
+        
+        # CUSTOM: Add your own backends here
 
     # establish graceful shutdown logic
 

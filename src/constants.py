@@ -1,6 +1,8 @@
 import os
 from typing import Literal, Annotated
 
+# TODO: use a class for version numbers (with classes `as_version` and `as_v_tag`) and comparison operator
+
 VERSION_REGEX: Annotated[
     str,
     "Valid version name examples `1.2.3`, `4.5.6-alpha.78`, `7.8.9-beta.10`, `11.12.13-rc.14`"
@@ -20,7 +22,7 @@ NAME: Annotated[str, "The name of the project"] = "ivy"
 
 IVY_ROOT_DIR: Annotated[
     str,
-    "The root directory of the project on a production system = `~/Documents/{NAME}`",
+    f"The root directory of the project on a production system = `~/Documents/{NAME}`",
 ] = os.path.join(os.path.expanduser('~'), "Documents", NAME)
 
 LOGGING_LEVEL_PRIORITIES: Annotated[
