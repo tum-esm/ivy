@@ -10,17 +10,14 @@
     "type": "separator"
   },
   "api-reference": "⚙️  API Reference",
+  "faq": "❓  FAQ",
   "Versions": {
-    "title": "Versions",
+    "title": "Version 1.0",
     "type": "menu",
     "items": {
-      "nightly": {
-        "title": "Nightly (v1.0)",
-        "href": "/"
-      },
-      "v1.0": {
-        "title": "v1.0",
-        "href": "https://docs-v1-0.ivy-docs.pages.dev/"
+      "latest": {
+        "title": "Latest",
+        "href": "https://ivy-docs.pages.dev/"
       }
     }
   }
