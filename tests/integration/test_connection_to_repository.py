@@ -4,7 +4,7 @@ import src
 
 
 @pytest.mark.integration
-def test_repository_connection() -> None:
+def test_connection_to_repository() -> None:
     config = src.types.Config.load()
     if config.updater is None:
         return
