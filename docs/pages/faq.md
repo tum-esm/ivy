@@ -71,3 +71,7 @@ The easiest way to achieve this is by checking out a branch for each old version
 ```
 
 Normally, you should only have to do this if you keep an old version of your DAS in production (only migrate part of your systems from a `1.X` to a `2.X`).
+
+## Why is this template only compatible with `python>=3.10`?
+
+Because the Python3.10 release added many new ways of type hinting. We will not increase this minimum Python version in the near future though.
