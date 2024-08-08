@@ -67,24 +67,22 @@ def run(
     teardown_receipt_time: Optional[float] = None
 
     try:
-
-        # register a teardown procedure
+        logger.info("Setting up Tenta backend")
+        logger.debug("Registering the teardown procedure")
 
         def teardown_handler(*args: Any) -> None:
             if tenta_client is not None:
-                logger.debug("Tearing down the Tenta Client")
+                logger.debug("Tearing down the Tenta client")
                 tenta_client.teardown()
             logger.debug("Finishing the teardown")
 
         signal.signal(signal.SIGINT, teardown_handler)
         signal.signal(signal.SIGTERM, teardown_handler)
 
-        # TODO: add timeout alarms
-
         def connect(
         ) -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
             assert config.backend is not None
-            logger.info("Starting Tenta backend")
+            logger.info("Connecting to Tenta backend")
             tenta_client = tenta.TentaClient(
                 mqtt_client_id=config.backend.mqtt_client_id,
                 mqtt_host=config.backend.mqtt_host,
@@ -95,7 +93,7 @@ def run(
                 on_config_message=on_config_message,
                 # possibly add your TLS configuration here
             )
-            logger.info("Tenta client has been set up")
+            logger.info("Tenta connection has been set up")
             return tenta_client, set()
 
         tenta_client, active_messages = connect()
@@ -114,8 +112,10 @@ def run(
                     if (
                         time.time() - teardown_receipt_time
                     ) > config.backend.max_drain_time:
-                        logger.debug("Max. drain time reached")
-                        exit(0)
+                        logger.debug(
+                            "Max. drain time reached, stopping the Tenta backend"
+                        )
+                        return
 
                 if not tenta_client.client.is_connected():
                     raise ConnectionError("MQTT client is not connected")
@@ -177,10 +177,6 @@ def run(
                         if mqtt_message_id is not None:
                             active_messages.add((mqtt_message_id, message))
 
-                if (teardown_receipt_time is not None) and (len(active_messages) == 0):
-                    logger.debug("Send out all messages, exiting the procedure")
-                    exit(0)
-
                 # determine which messages have been published
                 published_message_identifiers: set[int] = set()
                 for mqtt_message_id, message in active_messages:
@@ -197,22 +193,29 @@ def run(
                         active_messages
                     )
                 )
+
+                # exit the procedure if teardown has been issued and all messages have been sent
+                if (teardown_receipt_time is not None) and (len(active_messages) == 0):
+                    logger.debug("Send out all messages, exiting the procedure")
+                    return
+
+                # sleep 5 seconds between message bursts
                 time.sleep(5)
 
             except ConnectionError:
                 logger.error("The Tenta backend is not connected")
-                logger.debug("Tearing down the Tenta Client")
-                tenta_client.teardown()
+                teardown_handler()
                 if teardown_receipt_time is not None:
+                    # the backoff procedure should not prevent remaining messages from being sent
                     logger.debug(
-                        "Sleeping only 10 seconds because a teardown has been issued"
+                        "Sleeping only 5 seconds because a teardown has been issued"
                     )
-                    time.sleep(10)
+                    time.sleep(5)
                 else:
                     sleep_seconds = exponential_backoff.sleep()
                     if sleep_seconds == exponential_backoff.buckets[-1]:
                         logger.debug("Fully tearing down the procedure")
-                        exit(0)
+                logger.debug("Reconnecting the Tenta backend")
                 tenta_client, active_messages = connect()
 
     except Exception as e:
