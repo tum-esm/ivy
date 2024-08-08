@@ -1,3 +1,4 @@
+import signal
 from typing import Any, Optional
 import json
 import multiprocessing.synchronize
@@ -25,8 +26,10 @@ def run(
     assert config.backend.provider == "thingsboard"
     messaging_agent = src.utils.MessagingAgent()
 
+    # parse incoming config messages
+
     def on_config_message(
-        c: paho.mqtt.client.Client,
+        client: paho.mqtt.client.Client,
         userdata: Any,
         message: paho.mqtt.client.MQTTMessage,
     ) -> None:
@@ -56,122 +59,189 @@ def run(
             # cannot send a rejection because we dont know a revision
             # the rejection still shows up in the logs
 
+    # active = in the process of sending
+    active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo,
+                               src.types.MessageQueueItem]] = set()
+    thingsboard_client: Optional[paho.mqtt.client.Client] = None
+    exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[120, 900, 3600])
+    teardown_receipt_time: Optional[float] = None
+
     try:
         logger.info("Setting up ThingsBoard backend")
+        logger.debug("Registering the teardown procedure")
+
+        def teardown_handler(*args: Any) -> None:
+            if thingsboard_client is not None:
+                logger.debug("Tearing down the ThingsBoard client")
+                thingsboard_client.loop_stop()
+                thingsboard_client.disconnect()
+            logger.debug("Finishing the teardown")
+
+        signal.signal(signal.SIGINT, teardown_handler)
+        signal.signal(signal.SIGTERM, teardown_handler)
+
+        def connect(
+        ) -> tuple[paho.mqtt.client.Client, set[tuple[int, src.types.MessageQueueItem]]]:
+            assert config.backend is not None
+            logger.info("Connecting to ThingsBoard backend")
+            thingsboard_client = paho.mqtt.client.Client(
+                client_id=config.backend.mqtt_client_id,
+                protocol=4,
+            )
+            thingsboard_client.username_pw_set(
+                username=config.backend.mqtt_username,
+                password=config.backend.mqtt_password,
+            )
+            thingsboard_client.tls_set(
+                ca_certs=os.path.join(
+                    src.constants.PROJECT_DIR,
+                    "config",
+                    "thingsboard-cloud-ca-root.pem",
+                ),
+                cert_reqs=ssl.CERT_REQUIRED,
+                tls_version=ssl.PROTOCOL_TLSv1_2,
+                # possibly add your own TLS configuration here
+            )
+            thingsboard_client.tls_insecure_set(False)
+            thingsboard_client.on_message = on_config_message
+            thingsboard_client.connect(
+                host=config.backend.mqtt_host,
+                port=config.backend.mqtt_port,
+                keepalive=120,
+            )
+            thingsboard_client.subscribe(topic="v1/devices/me/attributes")
+            thingsboard_client.loop_start()
+            thingsboard_client.publish(
+                f"v1/devices/me/attributes/request/{int(time.time()*1000)}",
+                json.dumps({"sharedKeys": "configuration"})
+            )
+            logger.info("ThingsBoard connection has been set up")
+            return thingsboard_client, set()
 
         # TODO: add timeout alarms
 
-        client = paho.mqtt.client.Client(
-            client_id=config.backend.mqtt_client_id,
-            protocol=4,
-        )
-        client.username_pw_set(
-            username=config.backend.mqtt_username,
-            password=config.backend.mqtt_password,
-        )
-        client.tls_set(
-            ca_certs=os.path.join(
-                src.constants.PROJECT_DIR,
-                "config",
-                "thingsboard-cloud-ca-root.pem",
-            ),
-            cert_reqs=ssl.CERT_REQUIRED,
-            tls_version=ssl.PROTOCOL_TLSv1_2,
-            # possibly add your own TLS configuration here
-        )
-        client.tls_insecure_set(False)
-        client.on_message = on_config_message
+        thingsboard_client, active_messages = connect()
 
-        logger.info("Connecting to ThingsBoard")
-        client.connect(
-            host=config.backend.mqtt_host,
-            port=config.backend.mqtt_port,
-            keepalive=120,
-        )
-        client.subscribe(topic="v1/devices/me/attributes")
-        client.loop_start()
-        client.publish(
-            f"v1/devices/me/attributes/request/{int(time.time()*1000)}",
-            json.dumps({"sharedKeys": "configuration"})
-        )
-        time.sleep(0.5)
+        # worst case is 8 seconds per messages (which is already very very slow)
+        MAX_LOOP_TIME = config.backend.max_parallel_messages * 8 + 5
 
-        assert client.is_connected()
-        logger.info("Thingsboard client is connected")
-
-        def send_telemetry(
+        def send_data(
             timestamp: float,
             data: dict[str, Any],
         ) -> paho.mqtt.client.MQTTMessageInfo:
-            return client.publish(
+            return thingsboard_client.publish(
                 "v1/devices/me/telemetry",
                 json.dumps({"ts": int(timestamp * 1000), "values": data}),
             )
 
-        # active = in the process of sending
-        active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo,
-                                   src.types.MessageQueueItem]] = set()
-
         while True:
-            # send new messages
-            assert client.is_connected(), "The Thingsboard client is not connected"
 
-            open_message_slots = config.backend.max_parallel_messages - len(
-                active_messages
-            )
-            if open_message_slots > 0:
-                new_messages = messaging_agent.get_n_latest_messages(
-                    open_message_slots,
-                    excluded_message_ids={m[1].identifier
-                                          for m in active_messages},
+            try:
+                if teardown_receipt_time is None:
+                    if teardown_indicator.is_set():
+                        logger.debug("Received a teardown indicator")
+                        logger.debug(
+                            f"Waiting max. {config.backend.max_drain_time} " +
+                            "seconds to send remaining messages"
+                        )
+                        teardown_receipt_time = time.time()
+                else:
+                    if (
+                        time.time() - teardown_receipt_time
+                    ) > config.backend.max_drain_time:
+                        logger.debug(
+                            "Max. drain time reached, stopping the Tenta backend"
+                        )
+                        return
+
+                if not thingsboard_client.is_connected():
+                    raise ConnectionError("MQTT client is not connected")
+                else:
+                    exponential_backoff.reset()
+
+                # send new messages
+                open_message_slots = config.backend.max_parallel_messages - len(
+                    active_messages
                 )
-                for message in new_messages:
-                    message_info: Optional[paho.mqtt.client.MQTTMessageInfo] = None
-                    if message.message_body.variant == "data":
-                        message_info = send_telemetry(
-                            message.timestamp, message.message_body.data
-                        )
-                    if message.message_body.variant == "log":
-                        message_info = send_telemetry(
-                            message.timestamp,
-                            {
-                                "logging": {
-                                    "level": message.message_body.level,
-                                    "subject": message.message_body.subject,
-                                    "body": message.message_body.body,
-                                }
-                            },
-                        )
-                    if message.message_body.variant == "config":
-                        message_info = send_telemetry(
-                            message.timestamp,
-                            {
-                                "configuration": {
-                                    "status": message.message_body.status,
-                                    "config": message.message_body.model_dump(),
-                                }
-                            },
-                        )
-                    if message_info is not None:
-                        active_messages.add((message_info, message))
+                if open_message_slots > 0:
+                    new_messages = messaging_agent.get_n_latest_messages(
+                        open_message_slots,
+                        excluded_message_ids={m[1].identifier
+                                              for m in active_messages},
+                    )
+                    for message in new_messages:
+                        message_info: Optional[paho.mqtt.client.MQTTMessageInfo] = None
+                        if message.message_body.variant == "data":
+                            message_info = send_data(
+                                message.timestamp, message.message_body.data
+                            )
+                        if message.message_body.variant == "log":
+                            message_info = send_data(
+                                message.timestamp,
+                                {
+                                    "logging": {
+                                        "level": message.message_body.level,
+                                        "subject": message.message_body.subject,
+                                        "body": message.message_body.body,
+                                    }
+                                },
+                            )
+                        if message.message_body.variant == "config":
+                            message_info = send_data(
+                                message.timestamp,
+                                {
+                                    "configuration": {
+                                        "status": message.message_body.status,
+                                        "config": message.message_body.model_dump(),
+                                    }
+                                },
+                            )
+                        if message_info is not None:
+                            active_messages.add((message_info, message))
 
-            # determine which messages have been published
-            published_message_identifiers: set[int] = set()
-            for message_info, message in active_messages:
-                if message_info.is_published():
-                    published_message_identifiers.add(message.identifier)
+                # determine which messages have been published
+                published_message_identifiers: set[int] = set()
+                for message_info, message in active_messages:
+                    if message_info.is_published():
+                        published_message_identifiers.add(message.identifier)
 
-            # remove published messages from local message queue database
-            messaging_agent.remove_messages(published_message_identifiers)
+                # remove published messages from local message queue database
+                messaging_agent.remove_messages(published_message_identifiers)
 
-            # remove published messages from the active set
-            active_messages = set(
-                filter(
-                    lambda m: m[1].identifier not in published_message_identifiers,
-                    active_messages,
+                # remove published messages from the active set
+                active_messages = set(
+                    filter(
+                        lambda m: m[1].identifier not in published_message_identifiers,
+                        active_messages,
+                    )
                 )
-            )
-            time.sleep(5)
+
+                # exit the procedure if teardown has been issued and all messages have been sent
+                if (teardown_receipt_time is not None) and (len(active_messages) == 0):
+                    logger.debug("Send out all messages, exiting the procedure")
+                    return
+
+                # sleep 5 seconds between message bursts
+                time.sleep(5)
+
+            except ConnectionError:
+                logger.error("The ThingsBoard backend is not connected")
+
+                teardown_handler()
+
+                if teardown_receipt_time is not None:
+                    # the backoff procedure should not prevent remaining messages from being sent
+                    logger.debug(
+                        "Sleeping only 5 seconds because a teardown has been issued"
+                    )
+                    time.sleep(5)
+                else:
+                    sleep_seconds = exponential_backoff.sleep()
+                    if sleep_seconds == exponential_backoff.buckets[-1]:
+                        logger.debug("Fully tearing down the procedure")
+                        return
+
+                thingsboard_client, active_messages = connect()
 
     except Exception as e:
         logger.exception(e, "The Thingsboard backend encountered an exception")
