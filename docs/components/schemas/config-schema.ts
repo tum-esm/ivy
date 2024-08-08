@@ -12,12 +12,9 @@ const CONFIG_SCHEMA: any = {
                     "type": "integer"
                 },
                 "software_version": {
-                    "const": "1.0.0",
                     "description": "The version of the software this config file is for.",
-                    "enum": [
-                        "1.0.0"
-                    ],
-                    "title": "Software Version",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
+                    "title": "Version",
                     "type": "string"
                 },
                 "system_identifier": {

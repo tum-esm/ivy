@@ -23,19 +23,13 @@ Import hierarchy (`a` -> `b` means that `a` cannot import from `b`):
 ### Variables [#src.constants.variables]
 
 ```python
-VERSION_REGEX: str
-```
-
-Valid version name examples `1.2.3`, `4.5.6-alpha.78`, `7.8.9-beta.10`, `11.12.13-rc.14`
-
-```python
 PROJECT_DIR: str
 ```
 
 The root directory of the project (the parent of `src/`)
 
 ```python
-VERSION: typing.Literal['1.0.0']
+VERSION: tum_esm_utils.validators.Version
 ```
 
 The current version of the project
@@ -508,24 +502,6 @@ levels are forwarded.
  * `log_level`:     The log level to check.
 
 **Returns:** Whether `log_level` is at least as important as `min_log_level`
-
-**`string_is_valid_version`**
-
-```python
-def string_is_valid_version(
-    version_string: str,
-) -> bool:
-```
-
-Check if the version string is valid = should match
-
-`src.constants.VERSION_REGEX`
-
-**Arguments:**
-
- * `version_string`: version string to check.
-
-**Returns:** Whether the version string is valid.
 
 **`with_automation_lock`**
 
@@ -1142,7 +1118,7 @@ Initialize an Updater instance.
 ```python
 def download_source_code(
     self,
-    version: str,
+    version: tum_esm_utils.validators.Version,
 ) -> None:
 ```
 
@@ -1161,7 +1137,7 @@ other providers in the issue tracker.
 ```python
 def install_dependencies(
     self,
-    version: str,
+    version: tum_esm_utils.validators.Version,
 ) -> None:
 ```
 
@@ -1206,7 +1182,7 @@ Remove all old virtual environments, that are not currently in use.
 ```python
 def run_pytests(
     self,
-    version: str,
+    version: tum_esm_utils.validators.Version,
 ) -> None:
 ```
 
@@ -1221,7 +1197,7 @@ Run all pytests with the mark "version_change" in the version directory.
 ```python
 def update_cli_pointer(
     self,
-    version: str,
+    version: tum_esm_utils.validators.Version,
 ) -> None:
 ```
 
