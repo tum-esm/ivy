@@ -3,6 +3,8 @@ import os
 import time
 import pytest
 import itertools
+
+import tum_esm_utils
 import src
 from ..fixtures import restore_production_files
 from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
@@ -113,7 +115,7 @@ def test_message_archive_integrity(restore_production_files: None) -> None:
 
     config1 = src.types.Config.load_template().to_foreign_config()
     config2 = config1.model_copy()
-    config2.general.software_version = "0.0.0"
+    config2.general.software_version = tum_esm_utils.validators.Version("0.0.0")
 
     message_bodies: list[DataMessageBody | LogMessageBody | ConfigMessageBody] = [
         DataMessageBody(data={"test": "test"}),
