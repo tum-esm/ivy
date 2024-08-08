@@ -5,15 +5,15 @@ description = "A Python boilerplate for an IoT node data acqusition system suppo
 requires-python = ">=3.10,<4.0"
 authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]
 dependencies = [
-  "python-dotenv>=1.0.1",
-  "filelock>=3.13.4",          # TODO: upgrade
-  "pytest>=8.1.1",             # TODO: upgrade
-  "psutil>=5.9.8",             # TODO: upgrade
-  "typing-extensions>=4.11.0",
-  "click>=8.1.7",              # TODO: can we simply do argparse?
-  "tenta>=0.1.5",
-  "tum-esm-utils>=2.2.0",
-  "pydantic>=2.8.2",
+    "click>=8.1.7",              # TODO: can we simply do argparse?
+    "filelock>=3.15.4",
+    "pydantic>=2.8.2",
+    "pytest>=8.3.2",
+    "python-dotenv>=1.0.1",
+    "psutil>=6.0.0",
+    "tenta>=0.1.5",
+    "tum-esm-utils>=2.2.0",
+    "typing-extensions>=4.12.2",
 ]
 classifiers = [
   "License :: OSI Approved :: GNU General Public License (GPL)",
