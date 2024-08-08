@@ -81,13 +81,13 @@ def run(
         signal.signal(signal.SIGINT, teardown_handler)
         signal.signal(signal.SIGTERM, teardown_handler)
 
-        def connect(
-        ) -> tuple[paho.mqtt.client.Client, set[tuple[int, src.types.MessageQueueItem]]]:
+        def connect() -> tuple[paho.mqtt.client.Client, set[tuple[
+            paho.mqtt.client.MQTTMessageInfo, src.types.MessageQueueItem]]]:
             assert config.backend is not None
             logger.info("Connecting to ThingsBoard backend")
             thingsboard_client = paho.mqtt.client.Client(
+                callback_api_version=paho.mqtt.client.CallbackAPIVersion.VERSION2,
                 client_id=config.backend.mqtt_client_id,
-                protocol=4,
             )
             thingsboard_client.username_pw_set(
                 username=config.backend.mqtt_username,
@@ -136,6 +136,7 @@ def run(
             timestamp: float,
             data: dict[str, Any],
         ) -> paho.mqtt.client.MQTTMessageInfo:
+            assert thingsboard_client is not None
             return thingsboard_client.publish(
                 "v1/devices/me/telemetry",
                 json.dumps({"ts": int(timestamp * 1000), "values": data}),
