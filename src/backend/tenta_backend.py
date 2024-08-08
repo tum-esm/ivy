@@ -96,9 +96,21 @@ def run(
             logger.info("Tenta connection has been set up")
             return tenta_client, set()
 
+        tum_esm_utils.timing.set_alarm(
+            20, "Could not connect to Tenta backend within 20 seconds"
+        )
         tenta_client, active_messages = connect()
+        tum_esm_utils.timing.clear_alarm()
+
+        # worst case is 8 seconds per messages (which is already very very slow)
+        MAX_LOOP_TIME = config.backend.max_parallel_messages * 8 + 5
+        tum_esm_utils.timing.set_alarm(
+            MAX_LOOP_TIME,
+            f"The Tenta backend did not finish one loop within {MAX_LOOP_TIME} seconds"
+        )
 
         while True:
+            signal.alarm(MAX_LOOP_TIME)
             try:
                 if teardown_receipt_time is None:
                     if teardown_indicator.is_set():
@@ -204,7 +216,13 @@ def run(
 
             except ConnectionError:
                 logger.error("The Tenta backend is not connected")
+
+                tum_esm_utils.timing.set_alarm(
+                    20, "Could not tear down Tenta backend within 20 seconds"
+                )
                 teardown_handler()
+                tum_esm_utils.timing.clear_alarm()
+
                 if teardown_receipt_time is not None:
                     # the backoff procedure should not prevent remaining messages from being sent
                     logger.debug(
@@ -215,8 +233,13 @@ def run(
                     sleep_seconds = exponential_backoff.sleep()
                     if sleep_seconds == exponential_backoff.buckets[-1]:
                         logger.debug("Fully tearing down the procedure")
-                logger.debug("Reconnecting the Tenta backend")
+                        return
+
+                tum_esm_utils.timing.set_alarm(
+                    20, "Could not reconnect to Tenta backend within 20 seconds"
+                )
                 tenta_client, active_messages = connect()
+                tum_esm_utils.timing.clear_alarm()
 
     except Exception as e:
         logger.exception(e, "The Tenta backend encountered an exception")
