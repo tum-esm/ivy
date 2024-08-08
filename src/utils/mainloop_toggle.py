@@ -5,7 +5,6 @@ from typing import Annotated
 import os
 import sys
 import time
-import click
 import src
 import tum_esm_utils
 
@@ -27,7 +26,7 @@ class MainloopToggle:
 
         current_pids = tum_esm_utils.processes.get_process_pids(SCRIPT_PATH)
         if len(current_pids) > 0:
-            click.echo(f"Background processes already exists with PID(s) {current_pids}")
+            print(f"Background processes already exists with PID(s) {current_pids}")
             exit(1)
         else:
             os.system(
@@ -37,10 +36,10 @@ class MainloopToggle:
             time.sleep(0.5)
             new_pids = tum_esm_utils.processes.get_process_pids(SCRIPT_PATH)
             if len(new_pids) == 0:
-                click.echo(f"Could not start background process")
+                print(f"Could not start background process")
                 exit(1)
             else:
-                click.echo(f"Started background process with PID(s) {new_pids}")
+                print(f"Started background process with PID(s) {new_pids}")
 
     @staticmethod
     def stop_mainloop() -> None:
@@ -49,9 +48,9 @@ class MainloopToggle:
 
         termination_pids = tum_esm_utils.processes.terminate_process(SCRIPT_PATH)
         if len(termination_pids) == 0:
-            click.echo("No active process to be terminated")
+            print("No active process to be terminated")
         else:
-            click.echo(
+            print(
                 f"Terminated {len(termination_pids)} automation background " +
                 f"processe(s) with PID(s) {termination_pids}"
             )
