@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.2"
-content_hash = "sha256:bb70f31793e82ac4b1bb43757662259deda2354bb42b9d1b5b38220c6680cf6a"
+content_hash = "sha256:7ea4b58f7e376ed6fef302d8fadfdfa88c3e1db57c0c68e83f789e03dbb36ab5"
 
 [[package]]
 name = "annotated-types"
@@ -616,17 +616,6 @@ dependencies = [
 files = [
     {file = "tum_esm_utils-2.2.0-py3-none-any.whl", hash = "sha256:55c95a879e7e1ee63200e44604ec440fb13b39270bd6fe887fe161c2a5850496"},
     {file = "tum_esm_utils-2.2.0.tar.gz", hash = "sha256:acf14f25b5a46cd34558a4f027c4e63d85814a5f63bce3400d6748517d1d5f83"},
-]
-
-[[package]]
-name = "types-paho-mqtt"
-version = "1.6.0.20240321"
-requires_python = ">=3.8"
-summary = "Typing stubs for paho-mqtt"
-groups = ["dev"]
-files = [
-    {file = "types-paho-mqtt-1.6.0.20240321.tar.gz", hash = "sha256:694eec160340f2a2b151237dcc3f107a63e1c4e5b8f9fcda0ba392049af9cbec"},
-    {file = "types_paho_mqtt-1.6.0.20240321-py3-none-any.whl", hash = "sha256:cd275c14f39363c2a0f8286ead9a46962e5421ebd477547b892ae016699f5a4a"},
 ]
 
 [[package]]
