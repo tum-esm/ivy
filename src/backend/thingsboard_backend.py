@@ -7,6 +7,7 @@ import ssl
 import time
 import paho.mqtt.client
 import pydantic
+import tum_esm_utils
 import src
 
 
@@ -118,12 +119,18 @@ def run(
             logger.info("ThingsBoard connection has been set up")
             return thingsboard_client, set()
 
-        # TODO: add timeout alarms
-
+        tum_esm_utils.timing.set_alarm(
+            20, "Could not connect to ThingsBoard backend within 20 seconds"
+        )
         thingsboard_client, active_messages = connect()
+        tum_esm_utils.timing.clear_alarm()
 
         # worst case is 8 seconds per messages (which is already very very slow)
         MAX_LOOP_TIME = config.backend.max_parallel_messages * 8 + 5
+        tum_esm_utils.timing.set_alarm(
+            MAX_LOOP_TIME,
+            f"The ThingsBoard backend did not finish one loop within {MAX_LOOP_TIME} seconds"
+        )
 
         def send_data(
             timestamp: float,
@@ -135,7 +142,7 @@ def run(
             )
 
         while True:
-
+            signal.alarm(MAX_LOOP_TIME)
             try:
                 if teardown_receipt_time is None:
                     if teardown_indicator.is_set():
@@ -227,7 +234,11 @@ def run(
             except ConnectionError:
                 logger.error("The ThingsBoard backend is not connected")
 
+                tum_esm_utils.timing.set_alarm(
+                    20, "Could not tear down ThingsBoard backend within 20 seconds"
+                )
                 teardown_handler()
+                tum_esm_utils.timing.clear_alarm()
 
                 if teardown_receipt_time is not None:
                     # the backoff procedure should not prevent remaining messages from being sent
@@ -241,7 +252,11 @@ def run(
                         logger.debug("Fully tearing down the procedure")
                         return
 
+                tum_esm_utils.timing.set_alarm(
+                    20, "Could not reconnect to ThingsBoard backend within 20 seconds"
+                )
                 thingsboard_client, active_messages = connect()
+                tum_esm_utils.timing.clear_alarm()
 
     except Exception as e:
         logger.exception(e, "The Thingsboard backend encountered an exception")
