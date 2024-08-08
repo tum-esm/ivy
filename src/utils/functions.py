@@ -2,8 +2,9 @@ from typing import Any, Generator, Literal, Optional
 import datetime
 import contextlib
 import os
-import re
 import filelock
+import pydantic
+import tum_esm_utils
 import src
 
 
@@ -31,21 +32,6 @@ def log_level_is_visible(
         )
 
 
-# TODO: create "Version class"
-def string_is_valid_version(version_string: str) -> bool:
-    """Check if the version string is valid = should match
-    `src.constants.VERSION_REGEX`
-    
-    Args:
-        version_string: version string to check.
-    
-    Returns:
-        Whether the version string is valid.
-    """
-
-    return re.match(src.constants.VERSION_REGEX, version_string) is not None
-
-
 @contextlib.contextmanager
 def with_automation_lock() -> Generator[None, None, None]:
     """This function will lock the automation with a file lock so that
@@ -68,12 +54,16 @@ def with_automation_lock() -> Generator[None, None, None]:
     """
 
     parent_dir = os.path.dirname(src.constants.PROJECT_DIR)
+    lock_path: str
 
-    lock_path = os.path.join(
-        parent_dir if src.utils.functions.string_is_valid_version(
-            os.path.basename(src.constants.PROJECT_DIR)
-        ) else src.constants.PROJECT_DIR, "run.lock"
-    )
+    # if the current project dir (parent of cli.py) is a valid version name, then the lock file
+    # is put into the parent directory, otherwise it is put into the project directory
+    try:
+        tum_esm_utils.validators.Version(os.path.basename(src.constants.PROJECT_DIR))
+        lock_path = os.path.join(parent_dir, "run.lock")
+    except pydantic.ValidationError:
+        lock_path = os.path.join(src.constants.PROJECT_DIR, "run.lock")
+
     automation_lock = filelock.FileLock(lock_path, timeout=0)
 
     try:

@@ -1,5 +1,7 @@
 import os
+import pydantic
 import pytest
+import tum_esm_utils
 import src
 
 # credits to https://hellocoding.de/blog/coding-language/python/tomllib-toml-lesen#fallback-fr-alte-versionen-von-python3
@@ -20,10 +22,15 @@ def test_pyproject_toml() -> None:
             data["project"]["name"] == src.constants.NAME
         ), "NAME in pyproject.toml should be the same as in src/constants.py"
         assert (
-            data["project"]["version"] == src.constants.VERSION
+            tum_esm_utils.validators.Version(data["project"]["version"]
+                                            ) == src.constants.VERSION
         ), "VERSION in pyproject.toml should be the same as in src/constants.py"
-        assert (
-            not src.utils.functions.string_is_valid_version(src.constants.NAME)
-        ), "NAME should not be a valid version"
+
+        try:
+            tum_esm_utils.validators.Version(src.constants.NAME)
+            raise ValueError("should not be a valid version")
+        except pydantic.ValidationError:
+            pass
+
     except KeyError:
         raise KeyError(f"could not read {path}")

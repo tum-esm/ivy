@@ -5,6 +5,7 @@ import time
 import json
 import pydantic
 import tenta
+import tum_esm_utils
 import src
 
 
@@ -52,7 +53,7 @@ def run(
                         # using a dummy version here simplifies the rest of the codebase
                         general=src.types.config.ForeignGeneralConfig(
                             config_revision=message.revision,
-                            software_version="0.0.0",
+                            software_version=tum_esm_utils.validators.Version("0.0.0"),
                         ),
                     ),
                 )

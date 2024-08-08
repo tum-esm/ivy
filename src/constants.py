@@ -1,12 +1,6 @@
 import os
+import tum_esm_utils
 from typing import Literal, Annotated
-
-# TODO: use a class for version numbers (with classes `as_version` and `as_v_tag`) and comparison operator
-
-VERSION_REGEX: Annotated[
-    str,
-    "Valid version name examples `1.2.3`, `4.5.6-alpha.78`, `7.8.9-beta.10`, `11.12.13-rc.14`"
-] = r"^\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?$"
 
 PROJECT_DIR: Annotated[
     str,
@@ -14,9 +8,9 @@ PROJECT_DIR: Annotated[
 ] = os.path.dirname(os.path.dirname(__file__))
 
 VERSION: Annotated[
-    Literal["1.0.0"],
+    tum_esm_utils.validators.Version,
     "The current version of the project",
-] = "1.0.0"
+] = tum_esm_utils.validators.Version("1.0.0")
 
 NAME: Annotated[str, "The name of the project"] = "ivy"
 

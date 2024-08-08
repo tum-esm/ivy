@@ -10,8 +10,6 @@ import src
 from .logger import Logger
 from .messaging_agent import MessagingAgent
 
-# TODO: convert `Version` to a separate type (add a "load_from_string" method)
-
 
 class Updater:
     """Implementation of the update capabilities of ivy: checks whether
@@ -188,7 +186,7 @@ class Updater:
             )
             exit(0)
 
-    def download_source_code(self, version: str) -> None:
+    def download_source_code(self, version: tum_esm_utils.validators.Version) -> None:
         """Download the source code of the new version to the version
         directory. This is currently only implemented for github and
         gitlab for private and public repositories. Feel free to request
@@ -200,7 +198,7 @@ class Updater:
 
         assert self.config.updater is not None
 
-        dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if os.path.isfile(dst_dir):
             raise FileExistsError(f"There should not be a file at {dst_dir}")
         if os.path.isdir(dst_dir):
@@ -209,7 +207,7 @@ class Updater:
 
         if not os.path.isdir(dst_dir):
             repository_name = self.config.updater.repository.split("/")[-1]
-            tarball_name = f"{self.config.updater.repository}-v{version}.tar.gz"
+            tarball_name = f"{self.config.updater.repository}-{version.as_tag()}.tar.gz"
             dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
 
             if self.config.updater.provider == "github":
@@ -217,7 +215,7 @@ class Updater:
                 if self.config.updater.access_token is not None:
                     header += f'--header "Authorization: Bearer {self.config.updater.access_token}"'
                 tum_esm_utils.shell.run_shell_command(
-                    f'curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/v{version} --output {tarball_name}',
+                    f'curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}',
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             elif self.config.updater.provider == "gitlab":
@@ -226,7 +224,7 @@ class Updater:
                     auth_param = f"?private_token={self.config.updater.access_token}"
                 repository_name = self.config.updater.repository.split("/")[-1]
                 tum_esm_utils.shell.run_shell_command(
-                    f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/v{version}/{repository_name}-v{version}.tar.gz{auth_param} --output {dst_tar}",
+                    f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             else:
@@ -245,11 +243,11 @@ class Updater:
                 )
 
             tum_esm_utils.shell.run_shell_command(
-                f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version}",
+                f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version.as_identifier()}",
                 working_directory=src.constants.IVY_ROOT_DIR,
             )
 
-    def install_dependencies(self, version: str) -> None:
+    def install_dependencies(self, version: tum_esm_utils.validators.Version) -> None:
         """Create a virtual environment and install the dependencies in
         the version directory using poetry.
         
@@ -257,7 +255,7 @@ class Updater:
             version: The version number of the source code to download.
         """
 
-        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
 
@@ -278,14 +276,14 @@ class Updater:
             working_directory=version_dir,
         )
 
-    def run_pytests(self, version: str) -> None:
+    def run_pytests(self, version: tum_esm_utils.validators.Version) -> None:
         """Run all pytests with the mark "version_change" in the version directory.
         
         Args:
             version: The version number of the source code to download.
         """
 
-        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version)
+        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
         tum_esm_utils.shell.run_shell_command(
@@ -293,15 +291,19 @@ class Updater:
             working_directory=version_dir,
         )
 
-    def update_cli_pointer(self, version: str) -> None:
+    def update_cli_pointer(self, version: tum_esm_utils.validators.Version) -> None:
         """Update the cli pointer to a new version.
         
         Args:
             version: The version number of the source code to download.
         """
 
-        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
-        code_path = os.path.join(src.constants.IVY_ROOT_DIR, version, "src")
+        venv_path = os.path.join(
+            src.constants.IVY_ROOT_DIR, version.as_identifier(), ".venv"
+        )
+        code_path = os.path.join(
+            src.constants.IVY_ROOT_DIR, version.as_identifier(), "src"
+        )
         with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
             f.writelines([
                 "#!/bin/bash",
@@ -316,21 +318,22 @@ class Updater:
         self.logger.info("Removing all unused .venvs")
 
         venvs_to_be_removed: list[str] = []
-        for version in os.listdir(src.constants.IVY_ROOT_DIR):
-            if version == self.config.general.software_version:
+        for subdir in os.listdir(src.constants.IVY_ROOT_DIR):
+            try:
+                tum_esm_utils.validators.Version(subdir)
+            except pydantic.ValidationError:
                 continue
-            venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version, ".venv")
-            if (
-                src.utils.functions.string_is_valid_version(version) and
-                os.path.isdir(venv_path)
-            ):
+            if subdir == self.config.general.software_version.as_identifier():
+                continue
+            venv_path = os.path.join(src.constants.IVY_ROOT_DIR, subdir, ".venv")
+            if os.path.isdir(venv_path):
                 venvs_to_be_removed.append(venv_path)
 
         self.logger.debug(
             f"found {len(venvs_to_be_removed)} old .venvs to be removed",
             details=f"paths = {json.dumps(venvs_to_be_removed, indent=4)}",
         )
-        for p in venvs_to_be_removed:
-            shutil.rmtree(p)
+        for v in venvs_to_be_removed:
+            shutil.rmtree(v)
 
         self.logger.debug(f"successfully removed all old .venvs")
