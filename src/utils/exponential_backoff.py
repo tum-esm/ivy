@@ -1,3 +1,4 @@
+import math
 import time
 from typing import Optional
 from .logger import Logger
@@ -48,9 +49,24 @@ class ExponentialBackoff:
         if max_sleep_time is not None:
             sleep_seconds = min(sleep_seconds, max_sleep_time)
 
-        self.logger.info(f"waiting for {sleep_seconds/60} minute(s)")
-        time.sleep(sleep_seconds)
-        # TODO: log progress steps
+        minutes = math.floor(sleep_seconds / 60)
+        seconds = sleep_seconds % 60
+
+        message = "waiting for"
+        if minutes > 0:
+            message += f" {minutes} minute(s)"
+            if seconds > 0:
+                message += f" and"
+        if seconds > 0:
+            message += f" {round(seconds, 2)} second(s)"
+        self.logger.info(message)
+
+        time.sleep(seconds)
+        for i in range(1, minutes, 1):
+            time.sleep(60)
+            self.logger.info(f"{minutes-i} minute(s) remaining")
+        time.sleep(60)
+
         self.bucket_index = min(self.bucket_index + 1, len(self.buckets) - 1)
         return sleep_seconds
 
