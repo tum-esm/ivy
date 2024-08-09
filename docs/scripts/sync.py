@@ -40,7 +40,7 @@ replace_json_block_in_file(
 )
 replace_json_block_in_file(
     os.path.join(PROJECT_DIR, "config", "config.template.json"),
-    os.path.join(DOCS_PAGES_PATH, "file-interfaces", "configuration.mdx"),
+    os.path.join(DOCS_PAGES_PATH, "interfaces", "configuration.mdx"),
     json_block_index=0,
 )
 
@@ -56,7 +56,6 @@ with open(os.path.join(PROJECT_DIR, "README.md")) as _f:
     readme = _f.read().strip(" \t\n")
 
 with open(os.path.join(DOCS_PAGES_PATH, "index.mdx"), "w") as _f:
-    _f.write("---\ntitle: Introduction\n---\n\n")
     _f.write(readme.replace("🌱 ", "") + "\n\n##")
     _f.write("##".join(xs[1 :]))
 
