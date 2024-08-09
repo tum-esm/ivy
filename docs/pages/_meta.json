@@ -1,11 +1,12 @@
 {
   "index": "🌱  Introduction",
+  "overview": "⛰️  Overview",
   "--- 1": {
     "type": "separator"
   },
-  "core-concepts": "🕯️  Core Concepts",
-  "file-interfaces": "💾  File Interfaces",
-  "iot-backends": "🦑  IoT Backends",
+  "concepts": "🕯️  Core Concepts",
+  "interfaces": "💾  Interfaces",
+  "backends": "🦑  IoT Backends",
   "--- 2": {
     "type": "separator"
   },
