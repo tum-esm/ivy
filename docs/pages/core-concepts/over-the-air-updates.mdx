@@ -1,7 +1,15 @@
 
-TODO: How do over the air updates work?
-TODO: Local file layout
+## Over-The-Air updates
 
+Ivy runs using a `config.json` file. This config can be changed remotely. A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies and remove old dependencies after a successful change.
+
+TODO: Mention config types and foreign config types
+TODO: Mention local file layout
+TODO: Mention the steps below
+
+If any of the steps above fail, Ivy will log why the config change failed and continue running the current config. The test suite should ensure that an upgrade will only happen when the local device is able to run Ivy with that new config file.
+
+---
 
 From the old docstring:
 
@@ -21,9 +29,3 @@ From the old docstring:
     * Run the integration pytests
     * Update the cli pointer
     * Exit with status code 0
-
-If any of the steps above fails, log the error and return. The
-automation will continue with the current config. If the pytests
-of the software version to be updated make sure, that the software
-runs correctly, it is not possible to update to a new version, that
-does not work. 
