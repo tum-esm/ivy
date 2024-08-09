@@ -1,0 +1,48 @@
+import { Callout } from "nextra/components";
+
+## File System Layout
+
+You do not have to use Ivy with the software update feature! Hence you could just keep it inside a single `x.y.z` folder and `git pull` your changes.
+
+### Local Directory layout
+
+```
+📂 ~/Documents
++--- 📂 ivy
+     +--- 📂 1.0.0
+     |    +--- 📂 data
+     |    +--- 📂 .venv
+     |    +--- 📂 config
+     |    |    +--- 📄 config.json
+     |    +--- 📄 pyproject.toml
+     |    +--- 📄 cli.py
+     +--- 📂 1.0.1
+     |    +--- 📂 data
+     |    +--- 📂 .venv
+     |    +--- 📂 config
+     |    |    +--- 📄 config.json
+     |    +--- 📄 pyproject.toml
+     |    +--- 📄 cli.py
+     +--- 📄 ivy-cli.sh
+```
+
+You can switch the name `ivy` to your DAS name in `src/constants.py` (the `NAME` constant), which will be used for all the paths described here.
+
+The file `ivy-cli.sh` will point to the currently active version of the DAS. You have to write it once when setting up the node, but after that, the update procedure will switch this pointer when a new version was accepted. It looks like this:
+
+```bash
+#!/bin/bash
+set -o errexit
+
+~/Documents/ivy/x.y.z/.venv/bin/python ~/Documents/ivy/x.y.z/cli.py $*
+```
+
+### Starting/Stopping Ivy Automatically
+
+To make sure, the automation starts up every time it is not running, add a crontab that starts it every minute:
+
+```crontab
+* * * * * ~/Documents/ivy/ivy-cli.sh start
+```
+
+The `ivy-cli.sh start` command doesn't do anything when any automation version is already running. Check out the `ivy-cli.sh --help` menu. Feel free to any DAS specific commands to your CLI, which will be automatically included in this help menu and [the documentation](/api-reference/cli).
