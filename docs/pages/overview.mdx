@@ -1,0 +1,54 @@
+
+# Overview
+
+The Ivy template provides a the key components that we think, almost every Data-Aquisition-System (DAS) requires. It is a template that runs as is. You can base any DAS you have to develop on Ivy and start using a very powerful and thought-out baseline.
+
+
+You can base any DAS you have to develop on Ivy and start using a very powerful and thought-out baseline. You own the codebase and can strip away everything you don't use and add everything you need for your application.
+
+As an example, [Pyra](https://github.com/tum-esm/pyra) is a DAS we built a few years ago. It does not connect to a backend and is not using Over-the-Air (OTA) updates. However the rest complies with the Ivy template and we could have saved a ton of time - and a full codebase rewrite - by using Ivy as a baseline.
+
+## Setup, Configuration & the CLI
+
+Ivy/your DAS is set up at `~/Documents/ivy/x.y.z/`. The full layout of the file system is described [here](/concepts/system-layout). It is configured using a JSON configuration file at `~/Documents/ivy/x.y.z/config.json`. Read more about the configuration object [here](/interfaces/configuration).
+
+The CLI (`~/Documents/ivy/x.y.z/cli.py`) is used to start and stop the automation as a background process. Check out the `ivy-cli.sh --help` menu. Feel free to any DAS specific commands to your CLI, which will be automatically included in this help menu and [the API reference](/api-reference/cli).
+
+## Procedures & Failure Handling
+
+TODO
+
+Read more about procedures and how to write your own [here](/concepts/procedures).<br/>
+The usage of the `ExponentialBackoff` class is documented [here](/api-reference/src#srcutilsexponential_backoffexponentialbackoffclasses).
+
+## Sharing State Between Components
+
+The state is the internal mechanism of communicating between procedures and with the mainloop. I.e. procedure A can periodically write some of its results into the state and all other procedures can access it and act accordingly. For example, one procedure is catching signals from a UPS about low battery state and write that into the state. Other procedures can react to that by skipping energy-intensive tasks.
+
+Read more about how to access the shared state from your code [here](/interfaces/state).
+
+## Backend Connectors and Messaging
+
+An Ivy-based network is made up of many (remote) computers running autonomously - e.g. performing measurements, controlling actors, etc. - and a central backend connects these devices. A backend is a central service to collect data (measurements and logs) and configure field-devices. Ivy comes with connectors for [Tenta](https://tenta.onrender.com) and [ThingsBoard](https://thingsboard.io). However, Ivy can work with any backend that is capable if storing tabular data and providing some endpoints to read and write this data.
+
+In Ivy, "Messages" are data structures sent to the backend. These messages can be sent from any part of the codebase - same as logs - and will be stored locally right away so the sending code section can continue working fast. This "message sending" is done with the `MessagingAgent` and is described [here](/interfaces/messages).
+
+The backend (if configured - you can also skip it) will send out these messages to the backend. The local timestamp of all messages is saved so in case of a network outage, the backend sends all messages once the computer is online again. They are also stored locally as a backup.
+
+Read more about Backends and how to set up [Tenta](https://tenta.onrender.com) and [ThingsBoard](https://thingsboard.io) for Ivy [here](/backends/general).
+
+## Over-the-Air (OTA) Updates
+
+The `config.json` file described above can be changed remotely. The backend can publish new configurations to its devices and Ivy will make sure that this new configuration will run on the local device.
+
+A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies and remove old dependencies after a successful change.
+
+Read more about OTA updates [here](/concepts/over-the-air-updates).
+
+## How to Use This Template
+
+Create your own repository by using Ivy as a "template" on GitHub. Make yourself familiar with the documentation and the codebase. Once you roughly know how Ivy works, you can write your own procedures, extend the shared state, add your own backend connectors, extend the test suite, and so on.
+
+Ivy is made to be owned so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link the central ivy documentation (https://tum-esm-ivy.netlify.app/).
+
+We are happy to include your additions to the Ivy template - and of course list you as a contributor.
