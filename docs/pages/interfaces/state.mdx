@@ -1,0 +1,26 @@
+import { Callout } from "nextra/components";
+
+
+# State
+
+The state is stored at `data/state.json`. The exact schema of this file is defined by `src.types.State` and documented [in the API Reference section](/api-reference/internal-communication).
+
+You can simply use the `StateInterface` to interact with it from the codebase:
+
+```python
+import src
+
+# read the state
+state = src.utils.StateInterface.load()
+
+# update the state
+with src.utils.StateInterface.update() as state:
+    state.system.last_boot_time = last_boot_time
+    state.system.last_5_min_load = load_last_5_min
+```
+
+<Callout type="info">
+
+The `with ... as state:` construct makes sure, that the code inside is protected by a semaphore, i.e. no other code can access the state while you are updating it.
+
+</Callout>
