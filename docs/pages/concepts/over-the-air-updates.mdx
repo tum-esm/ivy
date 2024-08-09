@@ -1,10 +1,10 @@
 import { Callout } from "nextra/components";
 
-## Over-the-Air Updates
+# Over-the-Air Updates
 
-Ivy runs using a `config.json` file. This config can be changed remotely. A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies and remove old dependencies after a successful change.
+The [previous section](/concepts/file-system-layout) describes where each version's source code is stored on the local device.
 
-### "Config" vs. "Foreign Config"
+## "Config" vs. "Foreign Config"
 
 There is two types of configurations schemas:
 
@@ -13,7 +13,7 @@ There is two types of configurations schemas:
 
 This means, you can change almost the entire structure of your config when developing a new DAS version - you only have to keep the fields `general.config_revision` and `general.software_version`.
 
-### Update Steps
+## Update Steps
 
 Whenever a new config comes, the updater executes the following steps:
 
@@ -41,5 +41,19 @@ If any of the steps above fail, Ivy will log why the config change failed and co
 <Callout type="info">
 
 The updater stops the automation when a new config has been accepted. Using the cron daemon as described [here](/core-concepts/file-system-layout#startingstopping-ivy-automatically) will start up the automation with the new config/version.
+
+</Callout>
+
+## How to Supply the Source Code
+
+The source code has to be hosted in a Git repository (can be public or private). We currently support GitLab and GitHub.
+
+The config object has a field `updater` (see [API reference](/api-reference/configuration)), which defines from where the updater will pull new source code. If the version you want to run on is `1.2.3`, please tag a commit with `v1.2.3` (with a `v` prefix) in your repository - you do not have to create a GitHub/GitLab release, just tag the commit.
+
+There is a test case at `tests/integration/test_connection_to_repository.py`, that tests, whether the connection to the configured repository works.
+
+<Callout type="info">
+
+We are happy to include other code hosting platforms in the template!
 
 </Callout>
