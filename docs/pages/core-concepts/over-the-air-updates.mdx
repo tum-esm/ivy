@@ -1,31 +1,85 @@
+import { Callout } from "nextra/components";
 
-## Over-The-Air updates
+## Over-The-Air Updates
 
 Ivy runs using a `config.json` file. This config can be changed remotely. A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies and remove old dependencies after a successful change.
 
-TODO: Mention config types and foreign config types
-TODO: Mention local file layout
-TODO: Mention the steps below
+### "Config" vs. "Foreign Config"
 
-If any of the steps above fail, Ivy will log why the config change failed and continue running the current config. The test suite should ensure that an upgrade will only happen when the local device is able to run Ivy with that new config file.
+There is two types of configurations schemas:
 
----
+1. Config - the schema that the current version of your DAS requires to run: [see API reference](/api-reference/configuration#configjson)
+2. Foreign Config - the schema that is required by any configuration that the current DAS version should upgrade to.
 
-From the old docstring:
+This means, you can change almost the entire structure of your config when developing a new DAS version - you only have to keep the fields `general.config_revision` and `general.software_version`.
+
+### Local Directory layout
+
+```
+📂 ~/Documents
++--- 📂 ivy
+     +--- 📂 1.0.0
+     |    +--- 📂 data
+     |    +--- 📂 .venv
+     |    +--- 📂 config
+     |    |    +--- 📄 config.json
+     |    +--- 📄 pyproject.toml
+     |    +--- 📄 cli.py
+     +--- 📂 1.0.1
+     |    +--- 📂 data
+     |    +--- 📂 .venv
+     |    +--- 📂 config
+     |    |    +--- 📄 config.json
+     |    +--- 📄 pyproject.toml
+     |    +--- 📄 cli.py
+     +--- 📄 ivy-cli.sh
+```
+
+The file `ivy-cli.sh` will point to the currently active version of the DAS. You have to write it once when setting up the node, but after that, the update procedure will switch this pointer when a new version was accepted. It looks like this:
+
+```bash
+#!/bin/bash
+set -o errexit
+
+~/Documents/ivy/x.y.z/.venv/bin/python ~/Documents/ivy/x.y.z/cli.py $*
+```
+
+You can switch the name `ivy` to your DAS name in `src/constants.py` (the `NAME` constant).
+
+### Update Steps
+
+Whenever a new config comes, the updater executes the following steps:
 
 1. Check whether this config revision has already been processed.
 2. If version is equal to the current version:
-    * Parse the received config file string using
-        `types.Config.load_from_string`
-    * If the received config is equal to the current
-        config, do nothing
-    * Otherwise, dump the received config to the config
-        file path and exit with status code 0
-3. Otherwise:
-    * Download the source code of the new version
-    * Create a virtual environment
-    * Install dependencies
-    * Dump the received config to the config file path
-    * Run the integration pytests
-    * Update the cli pointer
-    * Exit with status code 0
+   - Parse the received config file string using `types.Config.load_from_string`
+   - If the received config is equal to the current config:
+     - do nothing
+   - Otherwise:
+     - dump the received config to the config file path
+     - exit with status code 0
+3. If version is **not** equal to the current version:
+   - Download the source code of the new version
+   - Create a new virtual environment (in the new version's subdirectory)
+   - Install dependencies using `pdm sync`
+   - Dump the received config to the config file path
+   - Run the pytests for the pytest marker `integration`
+   - Update the cli pointer
+   - Exit with status code 0
+
+Hence, when it is a _reconfiguration_, the new config will be accepted if it passes the config validation. When it is a _version change_, it will only be accepted if all pytests with the pytest mark `integration` pass on the local device. Feel free to add more tests in `tests/integration/`.
+
+If any of the steps above fail, Ivy will log why the config change failed and continue running the current config. The test suite should ensure that an upgrade will only happen when the local device is able to run Ivy with that new config file.
+
+<Callout type="info">
+The updater stops the automation when a new config has been accepted. To make sure, the automation starts up every time it is not running, add a crontab that starts it every minute:
+
+```crontab
+* * * * * ~/Documents/ivy/ivy-cli.sh start
+```
+
+One could avoid stopping it with a reconfiguration, but since it has to then tear down and build up every procedure anyways, it is more elegant to stop it and let it restart using the cron daemon.
+
+The `cli.sh start` command doesn't do anything when any automation version is already running.
+
+</Callout>
