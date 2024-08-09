@@ -12,7 +12,7 @@ Additionally, the `MessagingAgent` is protocol-independent - it uses its own log
 
 Read about Semantic Versioning [here](https://semver.org/).
 
-## How does the versioning of the Ivy Template work?
+## How does the versioning of the Ivy Template repository work?
 
 All versions 1.X will have the same architecture as version 1.0. Meaning, you can upgrade your own DAS-repository to non-breaking versions. Versions 1.X and following can add new backends, fix bugs and improve performance, expand the documentation, and so on - but they will not break your existing DAS-repository because the internal APIs will remain the same.
 
@@ -40,37 +40,6 @@ _The indicator of "readiness" is our personal judgement._
 - Ready to use: [Kuzzle](https://kuzzle.io/), [OpenRemote](https://github.com/openremote/openremote)
 - Cloud Provider Options: [Azure IoT Hub](https://azure.microsoft.com/en-gb/products/iot-hub)
 - Abandoned: [ThingSpeak](https://thingspeak.com/), [Zeus IoT](https://github.com/zmops/zeus-iot), AWS, GCP and IBM have abandoned their IoT platforms.
-
-## How can I host versioned documentation?
-
-It might be that you have a version `0.1` of your DAS and a version `0.2` of the DAS and you want to have a hosted documentation for both of these. Like `v0-1.yourdas.youruniversity.edu` and `v0-2.yourdas.youruniversity.edu`.
-
-The easiest way to achieve this is by checking out a branch for each old version and then deploying a new site for each of those branches. After that, you can link each of these sites in a dropdown menu in the navigation bar using the file `docs/pages/_meta.json`:
-
-```json
-{
-  "Versions": {
-    "title": "Versions",
-    "type": "menu",
-    "items": {
-      "latest": {
-        "title": "Latest",
-        "href": "https://ivy-docs.pages.dev/"
-      },
-      "v0.2": {
-        "title": "v0.2",
-        "href": "https://docs-v0-2.ivy-docs.pages.dev/"
-      },
-      "v0.1": {
-        "title": "v0.1",
-        "href": "https://docs-v0-1.ivy-docs.pages.dev/"
-      }
-    }
-  }
-}
-```
-
-Normally, you should only have to do this if you keep an old version of your DAS in production (only migrate part of your systems from a `1.X` to a `2.X`).
 
 ## Why is this template only compatible with `python>=3.10`?
 
