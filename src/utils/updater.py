@@ -270,6 +270,7 @@ class Updater:
             working_directory=version_dir,
         )
 
+        # TODO: use PDM
         self.logger.debug(f"Installing dependencies using poetry")
         tum_esm_utils.shell.run_shell_command(
             f"source .venv/bin/activate && poetry install --no-root",
@@ -309,8 +310,9 @@ class Updater:
                 "#!/bin/bash",
                 "set -o errexit",
                 "",
-                f"{venv_path}/bin/python {code_path}/cli/main.py $*",
+                f"{venv_path}/bin/python {code_path}/cli.py $*",
             ])
+        os.chmod(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
 
     def remove_old_venvs(self) -> None:
         """Remove all old virtual environments, that are not currently in use."""
