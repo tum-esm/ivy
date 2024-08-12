@@ -1,15 +1,13 @@
 # 🌱 Ivy
 
-TODO: link supported python versions (>= 3.10)
-TODO: possibly link codeclimate analysis
-
-<img alt="GitHub License" src="https://img.shields.io/github/license/tum-esm/ivy?style=flat&label=License&labelColor=%230f172a&color=%23fef08a" className="inline p-0 m-px mt-6"/> <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/tum-esm/ivy?sort=semver&style=flat&label=Latest%20Template%20Version&color=%23fef08a&cacheSeconds=60&labelColor=%230f172a" className="inline p-0 m-px mt-6"/>
+<img alt="Supported Python Versions" src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Ftum-esm%2Futils%2Fmain%2Fpyproject.toml&label=Supported%20Python%20Version&labelColor=0f172a&color=f43f5e" className="inline p-0 m-px mt-6"/>
+<img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/tum-esm/utils?sort=semver&style=flat&label=Latest%20Template%20Version&color=f43f5e&cacheSeconds=60&labelColor=0f172a" className="inline p-0 m-px mt-6"/><br/>
+<img alt="GitHub License" src="https://img.shields.io/github/license/tum-esm/utils?style=flat&label=License&labelColor=0f172a&color=4ade80" className="inline p-0 m-px mt-6"/>
+<img alt="Documentation Status" src="https://img.shields.io/website?url=https%3A%2F%2Ftum-esm-utils.netlify.app%2F&up_message=online&up_color=4ade80&down_message=unavailable&down_color=f87171&label=Documentation&labelColor=0f172a" className="inline p-0 m-px mt-6"/>
 
 A Python boilerplate for an IoT node data acqusition system (DAS) supporting remote configuration and software updates. An Ivy-based network is made up of many (remote) computers running autonomously - e.g. performing measurements, controlling actors, etc. - and a central backend connects these devices.
 
 The idea of Ivy is that you can start building your own DAS based on Ivy instead of starting from scratch. You have full control over the codebase but do not have to rewrite all the logic that every autonomous DAS has to implement. In addition, Ivy provides you with a well-tested and proven way of upgrading your sensor nodes remotely.
-
-TODO: link documentation
 
 **Related Projects:**
 
