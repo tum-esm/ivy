@@ -270,10 +270,9 @@ class Updater:
             working_directory=version_dir,
         )
 
-        # TODO: use PDM
-        self.logger.debug(f"Installing dependencies using poetry")
+        self.logger.debug(f"Installing dependencies using PDM")
         tum_esm_utils.shell.run_shell_command(
-            f"source .venv/bin/activate && poetry install --no-root",
+            f"source .venv/bin/activate && pdm sync --no-self",
             working_directory=version_dir,
         )
 
