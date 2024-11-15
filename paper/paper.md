@@ -42,17 +42,17 @@ bibliography: paper.bib
 
 # Summary
 
-Distributed sensor networks monitor environmental conditions at remote locations. Each sensor node produces various time series data streams and system logs and sends this data to a central backend. A "sensor node" is an autonomous system collecting data from one or multiple sensors connected to it. This autonomous operation is performed 24/7 by a Data Acquisition System (DAS).
+Distributed sensor networks monitor environmental conditions at remote locations. Each sensor node produces various time series data streams and system logs and sends this data to a central backend. A "sensor node" is an autonomous system collecting data from one or multiple sensors connected to it, operated 24/7 by a Data Acquisition System (DAS).
 
 Starting in 2022, we deployed a network of 20 autonomously operating GHG (greenhouse gas) sensor nodes as part of the ICOS Cities PAUL Project (Pilot Applications In Urban Landscapes) [@paul]. Visiting each sensor site on every configuration change or software update is not feasible when operating 20 or even more sensor nodes. To overcome this, we developed a DAS that supports remote configuration and software updates [@hermes;@moritzthesis]. The sensor side of Hermes is a Python-based DAS that runs on a Raspberry Pi and operates various actuators and sensors to achieve continuous GHG measurements. The ability of the DAS to update itself remotely has enabled the frequent improvement of the sensor software after deployment [^1].
 
 [^1]: See https://github.com/tum-esm/hermes/releases
 
-Since the software architecture of a DAS is independent of a specific sensor network application, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy combines our experiences in building and operating multiple sensor networks [@Dietrich2021;@hermes;@Aigner2023]. Ivy is designed to be owned and customized: One can switch to another documentation system, add another backend, or remove unused parts of the boilerplate. \autoref{fig:architecture1} shows the system architecture of a sensor network using an autonomous DAS like Ivy.
+Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy combines our experiences in building and operating multiple sensor networks [@Dietrich2021;@hermes;@Aigner2023] since 2015. Ivy is designed to be owned and customized: One can switch to another documentation system, add another backend, or remove unused parts of the boilerplate.
 
 ![The main components of a sensor network. Each sensor node is operated by a DAS like Ivy.\label{fig:architecture1}](figures/architecture-1.png)
 
-Multiple sensor networks built and operated by our research group could have been deployed significantly quicker and in better shape if they had been built on top of Ivy instead of starting from scratch [@Dietrich2021;@hermes;@Aigner2023] because Ivy would have already provided a stable architecture of the DAS.
+\autoref{fig:architecture1} shows the system architecture of a sensor network using an autonomous DAS like Ivy. Multiple sensor networks built and operated by our research group could have been deployed significantly quicker and in better shape if they had been built on top of Ivy instead of starting from scratch [@Dietrich2021;@hermes;@Aigner2023] because Ivy would have already provided a stable architecture of the DAS.
 
 This paper presents Ivy version 1.0, which has been build to the best of our knowledge about how a reliable and extendable DAS architecture can look like. We aim to continuously improve and extend the Ivy boilerplate based on the feedback from the community resulting from this publication.
 
