@@ -87,11 +87,11 @@ def run(
             logger.info("Connecting to ThingsBoard backend")
             thingsboard_client = paho.mqtt.client.Client(
                 callback_api_version=paho.mqtt.client.CallbackAPIVersion.VERSION2,
-                client_id=config.backend.mqtt_client_id,
+                client_id=config.backend.mqtt_connection.client_id,
             )
             thingsboard_client.username_pw_set(
-                username=config.backend.mqtt_username,
-                password=config.backend.mqtt_password,
+                username=config.backend.mqtt_connection.username,
+                password=config.backend.mqtt_connection.password,
             )
             thingsboard_client.tls_set(
                 ca_certs=os.path.join(
@@ -106,8 +106,8 @@ def run(
             thingsboard_client.tls_insecure_set(False)
             thingsboard_client.on_message = on_config_message
             thingsboard_client.connect(
-                host=config.backend.mqtt_host,
-                port=config.backend.mqtt_port,
+                host=config.backend.mqtt_connection.host,
+                port=config.backend.mqtt_connection.port,
                 keepalive=120,
             )
             thingsboard_client.subscribe(topic="v1/devices/me/attributes")

@@ -85,39 +85,47 @@ class _UpdaterConfig(pydantic.BaseModel):
     )
 
 
-class _BackendConfig(pydantic.BaseModel):
-    provider: Literal["tenta", "thingsboard"] = pydantic.Field(
-        ...,
-        description=
-        "The provider to use for the backend. The template ships with these two providers but is easily extendable to support other backends."
-    )
-    mqtt_host: str = pydantic.Field(
+class MQTTBrokerConfig(pydantic.BaseModel):
+    host: str = pydantic.Field(
         ...,
         min_length=1,
         max_length=512,
         description="The host to use for the MQTT connection"
     )
-    mqtt_port: int = pydantic.Field(
+    port: int = pydantic.Field(
         ..., ge=1, le=65535, description="The port to use for the MQTT connection"
     )
-    mqtt_client_id: str = pydantic.Field(
+    client_id: str = pydantic.Field(
         ...,
         min_length=1,
         max_length=512,
         description=
         "The client ID to use for the MQTT connection. Not necessarily the same as the username."
     )
-    mqtt_username: str = pydantic.Field(
+    username: str = pydantic.Field(
         ...,
         min_length=1,
         max_length=512,
         description="The username to use for the MQTT connection."
     )
-    mqtt_password: str = pydantic.Field(
+    password: str = pydantic.Field(
         ...,
         min_length=1,
         max_length=512,
         description="The password to use for the MQTT connection."
+    )
+
+
+class _BackendConfig(pydantic.BaseModel):
+    provider: Literal["tenta", "thingsboard"] = pydantic.Field(
+        ...,
+        description=
+        "The provider to use for the backend. The template ships with these two providers but is easily extendable to support other backends."
+    )
+    mqtt_connection: MQTTBrokerConfig = pydantic.Field(
+        ...,
+        description=
+        "The MQTT broker to use for the backend. In future versions, one could add support for other protocols like `https_connection` or `lorawan_connection`."
     )
     max_parallel_messages: int = pydantic.Field(
         ...,
