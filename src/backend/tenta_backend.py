@@ -84,11 +84,11 @@ def run(
             assert config.backend is not None
             logger.info("Connecting to Tenta backend")
             tenta_client = tenta.TentaClient(
-                mqtt_client_id=config.backend.mqtt_client_id,
-                mqtt_host=config.backend.mqtt_host,
-                mqtt_port=config.backend.mqtt_port,
-                mqtt_identifier=config.backend.mqtt_username,
-                mqtt_password=config.backend.mqtt_password,
+                mqtt_client_id=config.backend.mqtt_connection.client_id,
+                mqtt_host=config.backend.mqtt_connection.host,
+                mqtt_port=config.backend.mqtt_connection.port,
+                mqtt_identifier=config.backend.mqtt_connection.username,
+                mqtt_password=config.backend.mqtt_connection.password,
                 sensor_identifier=config.general.system_identifier,
                 on_config_message=on_config_message,
                 # possibly add your TLS configuration here
