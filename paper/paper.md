@@ -86,7 +86,7 @@ As depicted in \autoref{fig:architecture2}: Firstly, Ivy will download new softw
 
 A strong focus was set on avoiding deadlocks in the system. If the system crashes for any reason during an update, it can start up again regularly without data loss. The only moment in time where a crash could render the system non-functional is during switching the pointer from the currently running version to the new version. As of October 2024, we have never experienced this deadlock on any of the 20 systems.
 
-Ivy comes with connectors for two backends out of the box – Thingsboard [@thingsboard] and Tenta [@tenta] – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility boosts the reusability of the boilerplate. Having the option to easily switch backends prevents vendor lock-in.
+Ivy comes with connectors for two backends out of the box – Thingsboard [@thingsboard] and Tenta [@tenta] – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility boosts the reusability of the boilerplate. Having the option to easily switch backends prevents vendor lock-in. Possible future backends are the FROST Server [@frost-server], more general-purpose backends like Strapi [@strapi] or Kuzzle [@kuzzle], any backend implementing the OGC SensorThings API [@ogcsensorthingsapi], or any other custom backend.
 
 ## Evolution of the Runtime Model
 
