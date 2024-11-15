@@ -48,7 +48,7 @@ Starting in 2022, we deployed a network of 20 autonomously operating GHG (greenh
 
 Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy combines our experiences in building and operating multiple sensor networks [@Dietrich2021;@hermes;@Aigner2023] since 2015. Ivy is designed to be owned and customized: One can switch to another documentation system, add another backend, or remove unused parts of the boilerplate.
 
-![The main components of a sensor network. Each sensor node is operated by a DAS like Ivy.\label{fig:architecture1}](figures/architecture-1.png) { width=80% }
+![The main components of a sensor network. Each sensor node is operated by a DAS like Ivy.\label{fig:architecture1}](figures/architecture-1.png){ width=85% }
 
 \autoref{fig:architecture1} shows the system architecture of a sensor network using an autonomous DAS like Ivy. Multiple sensor networks built and operated by our research group could have been deployed significantly quicker and in better shape if they had been built on top of Ivy instead of starting from scratch [@Dietrich2021;@hermes;@Aigner2023] because Ivy would have already provided a stable architecture of the DAS.
 
