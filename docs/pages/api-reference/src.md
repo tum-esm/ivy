@@ -328,6 +328,12 @@ Load the object from a string.
 class ForeignGeneralConfig(pydantic.BaseModel):
 ```
 
+#### Class `MQTTBrokerConfig` [#src.types.config.MQTTBrokerConfig.classes]
+
+```python
+class MQTTBrokerConfig(pydantic.BaseModel):
+```
+
 ### `src.types.messages.py` [#src.types.messages]
 
 #### Class `ConfigMessageBody` [#src.types.messages.ConfigMessageBody.classes]
@@ -391,74 +397,6 @@ This module contains all utility functionality of the codebase.
 Some of the functions have been used from https://github.com/tum-esm/utils
 but this library has not been added as a dependency to reduce the number of
 third party libaries this software depends on.
-
-### `src.utils.exponential_backoff.py` [#src.utils.exponential_backoff]
-
-#### Class `ExponentialBackoff` [#src.utils.exponential_backoff.ExponentialBackoff.classes]
-
-```python
-class ExponentialBackoff:
-```
-
-Exponential backoff e.g. when errors occur. First try again in 1 minute,
-
-then 4 minutes, then 15 minutes, etc.. Usage:
-
-```python
-import src
-exponential_backoff = src.utils.ExponentialBackoff(logger)
-while True:
-    try:
-        # do something
-        exponential_backoff.reset()
-    except Exception as e:
-        logger.exception(e)
-        exponential_backoff.sleep()
-```
-
-**`__init__`**
-
-```python
-def __init__(
-    self,
-    logger: src.utils.logger.Logger,
-    buckets: list[int],
-) -> None:
-```
-
-Create a new exponential backoff object.
-
-**Arguments:**
-
- * `logger`: The logger to use for logging when waiting certain amount of time.
- * `buckets`: The buckets to use for the exponential backoff.
-
-**`reset`**
-
-```python
-def reset(
-    self,
-) -> None:
-```
-
-Reset the waiting period to the first bucket
-
-**`sleep`**
-
-```python
-def sleep(
-    self,
-    max_sleep_time: typing.Optional[float],
-) -> float:
-```
-
-Wait and increase the wait time to the next bucket.
-
-**Arguments:**
-
- * `max_sleep_time`: The maximum time to sleep. If None, no maximum is set.
-
-**Returns:** The amount of seconds waited.
 
 ### `src.utils.functions.py` [#src.utils.functions]
 

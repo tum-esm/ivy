@@ -48,11 +48,13 @@ An exact schema reference of the config object is defined [in the API Reference 
   },
   "backend": {
     "provider": "tenta",
-    "mqtt_host": "...",
-    "mqtt_port": 1883,
-    "mqtt_client_id": "...",
-    "mqtt_username": "...",
-    "mqtt_password": "...",
+    "mqtt_connection": {
+      "host": "...",
+      "port": 1883,
+      "client_id": "...",
+      "username": "...",
+      "password": "..."
+    },
     "max_parallel_messages": 50,
     "max_drain_time": 300
   },

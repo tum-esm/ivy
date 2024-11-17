@@ -12,7 +12,7 @@ const CONFIG_SCHEMA: any = {
                     "type": "integer"
                 },
                 "software_version": {
-                    "description": "The version of the software this config file is for.",
+                    "description": "A version string in the format of MAJOR.MINOR.PATCH[-(alpha|beta|rc).N]",
                     "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
                     "title": "Version",
                     "type": "string"
@@ -165,40 +165,53 @@ const CONFIG_SCHEMA: any = {
                             "title": "Provider",
                             "type": "string"
                         },
-                        "mqtt_host": {
-                            "description": "The host to use for the MQTT connection",
-                            "maxLength": 512,
-                            "minLength": 1,
-                            "title": "Mqtt Host",
-                            "type": "string"
-                        },
-                        "mqtt_port": {
-                            "description": "The port to use for the MQTT connection",
-                            "maximum": 65535,
-                            "minimum": 1,
-                            "title": "Mqtt Port",
-                            "type": "integer"
-                        },
-                        "mqtt_client_id": {
-                            "description": "The client ID to use for the MQTT connection. Not necessarily the same as the username.",
-                            "maxLength": 512,
-                            "minLength": 1,
-                            "title": "Mqtt Client Id",
-                            "type": "string"
-                        },
-                        "mqtt_username": {
-                            "description": "The username to use for the MQTT connection.",
-                            "maxLength": 512,
-                            "minLength": 1,
-                            "title": "Mqtt Username",
-                            "type": "string"
-                        },
-                        "mqtt_password": {
-                            "description": "The password to use for the MQTT connection.",
-                            "maxLength": 512,
-                            "minLength": 1,
-                            "title": "Mqtt Password",
-                            "type": "string"
+                        "mqtt_connection": {
+                            "properties": {
+                                "host": {
+                                    "description": "The host to use for the MQTT connection",
+                                    "maxLength": 512,
+                                    "minLength": 1,
+                                    "title": "Host",
+                                    "type": "string"
+                                },
+                                "port": {
+                                    "description": "The port to use for the MQTT connection",
+                                    "maximum": 65535,
+                                    "minimum": 1,
+                                    "title": "Port",
+                                    "type": "integer"
+                                },
+                                "client_id": {
+                                    "description": "The client ID to use for the MQTT connection. Not necessarily the same as the username.",
+                                    "maxLength": 512,
+                                    "minLength": 1,
+                                    "title": "Client Id",
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "description": "The username to use for the MQTT connection.",
+                                    "maxLength": 512,
+                                    "minLength": 1,
+                                    "title": "Username",
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "description": "The password to use for the MQTT connection.",
+                                    "maxLength": 512,
+                                    "minLength": 1,
+                                    "title": "Password",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "host",
+                                "port",
+                                "client_id",
+                                "username",
+                                "password"
+                            ],
+                            "title": "MQTTBrokerConfig",
+                            "type": "object"
                         },
                         "max_parallel_messages": {
                             "description": "How many messages that are not published yet should be passed to the backend at once",
@@ -217,11 +230,7 @@ const CONFIG_SCHEMA: any = {
                     },
                     "required": [
                         "provider",
-                        "mqtt_host",
-                        "mqtt_port",
-                        "mqtt_client_id",
-                        "mqtt_username",
-                        "mqtt_password",
+                        "mqtt_connection",
                         "max_parallel_messages",
                         "max_drain_time"
                     ],
@@ -249,8 +258,7 @@ const CONFIG_SCHEMA: any = {
                 "seconds_between_datapoints"
             ],
             "title": "_DummyProcedureConfig",
-            "type": "object",
-            "description": "Settings for the dummy procedure."
+            "type": "object"
         },
         "system_checks": {
             "properties": {
@@ -266,8 +274,7 @@ const CONFIG_SCHEMA: any = {
                 "seconds_between_checks"
             ],
             "title": "_SystemChecksConfig",
-            "type": "object",
-            "description": "Settings for the system checks procedure."
+            "type": "object"
         }
     },
     "required": [
