@@ -2,10 +2,10 @@ name: "test"
 on:
   push:
     branches:
-      - main
+      - notactive
   pull_request:
     branches:
-      - main
+      - notactive
 
 jobs:
   test:
