@@ -15,7 +15,12 @@ class _GeneralConfig(pydantic.BaseModel):
     )
     software_version: tum_esm_utils.validators.Version = pydantic.Field(
         ...,
-        description="The version of the software this config file is for.",
+        description=
+        "The version of the software this config file is for. The updater only works if this is set.",
+        examples=[
+            "0.1.0",
+            "0.2.0",
+        ]
     )
     system_identifier: str = pydantic.Field(
         ...,
@@ -238,8 +243,8 @@ class ForeignGeneralConfig(pydantic.BaseModel):
         description=
         "The version of the software this config file is for. The updater only works if this is set.",
         examples=[
-            tum_esm_utils.validators.Version("0.1.0"),
-            tum_esm_utils.validators.Version("0.2.0"),
+            "0.1.0",
+            "0.2.0",
         ]
     )
 

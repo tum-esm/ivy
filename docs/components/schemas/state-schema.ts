@@ -3,7 +3,7 @@ const STATE_SCHEMA: any = {
     "description": "Central state used to communicate between prodedures and with the mainloop.",
     "properties": {
         "system": {
-            "description": "The state of the system",
+            "description": "State values determined in the system checks procedure.",
             "properties": {
                 "last_boot_time": {
                     "anyOf": [
@@ -43,11 +43,7 @@ const STATE_SCHEMA: any = {
                 }
             },
             "title": "SystemState",
-            "type": "object",
-            "default": {
-                "last_boot_time": null,
-                "last_5_min_load": null
-            }
+            "type": "object"
         },
         "pending_configs": {
             "default": [],
@@ -66,14 +62,10 @@ const STATE_SCHEMA: any = {
                                 "type": "integer"
                             },
                             "software_version": {
-                                "description": "The version of the software this config file is for. The updater only works if this is set.",
+                                "description": "A version string in the format of MAJOR.MINOR.PATCH[-(alpha|beta|rc).N]",
                                 "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
                                 "title": "Version",
-                                "type": "string",
-                                "examples": [
-                                    "0.1.0",
-                                    "0.2.0"
-                                ]
+                                "type": "string"
                             }
                         },
                         "required": [

@@ -144,14 +144,10 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                                             "type": "integer"
                                         },
                                         "software_version": {
-                                            "description": "The version of the software this config file is for. The updater only works if this is set.",
+                                            "description": "A version string in the format of MAJOR.MINOR.PATCH[-(alpha|beta|rc).N]",
                                             "pattern": "^\\d+\\.\\d+\\.\\d+(-(alpha|beta|rc)\\.\\d+)?$",
                                             "title": "Version",
-                                            "type": "string",
-                                            "examples": [
-                                                "0.1.0",
-                                                "0.2.0"
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
