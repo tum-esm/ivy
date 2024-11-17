@@ -2,6 +2,8 @@ from typing import Any
 import os
 import signal
 import time
+
+import tum_esm_utils
 import src
 
 
@@ -64,7 +66,7 @@ def run() -> None:
         ),
         # CUSTOM: Add your own procedures here
     ]
-    
+
     if config.backend is not None:
         if config.backend.provider == "tenta":
             lifecycle_managers.append(
@@ -84,7 +86,7 @@ def run() -> None:
                     variant="backend",
                 )
             )
-        
+
         # CUSTOM: Add your own backends here
 
     # establish graceful shutdown logic
@@ -100,7 +102,9 @@ def run() -> None:
 
     # start the main loop
 
-    exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[60, 240, 900])
+    exponential_backoff = tum_esm_utils.timing.ExponentialBackoff(
+        log_info=logger.info, buckets=[60, 240, 900]
+    )
     while True:
         try:
             for lm in lifecycle_managers:

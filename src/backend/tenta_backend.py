@@ -63,7 +63,9 @@ def run(
     # the first element of the tuple is the mqtt message id
     active_messages: set[tuple[int, src.types.MessageQueueItem]] = set()
     tenta_client: Optional[tenta.TentaClient] = None
-    exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[120, 900, 3600])
+    exponential_backoff = tum_esm_utils.timing.ExponentialBackoff(
+        log_info=logger.info, buckets=[120, 900, 3600]
+    )
     teardown_receipt_time: Optional[float] = None
 
     try:
