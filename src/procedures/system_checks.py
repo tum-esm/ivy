@@ -3,6 +3,7 @@ import datetime
 import signal
 import time
 import psutil
+import tum_esm_utils
 import src
 
 
@@ -26,7 +27,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
 
     # start procedure loop
 
-    exponential_backoff = src.utils.ExponentialBackoff(logger)
+    exponential_backoff = tum_esm_utils.timing.ExponentialBackoff(log_info=logger.info)
     while True:
         try:
             t = src.utils.functions.get_time_to_next_datapoint(

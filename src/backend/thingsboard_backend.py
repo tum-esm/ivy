@@ -64,7 +64,9 @@ def run(
     active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo,
                                src.types.MessageQueueItem]] = set()
     thingsboard_client: Optional[paho.mqtt.client.Client] = None
-    exponential_backoff = src.utils.ExponentialBackoff(logger, buckets=[120, 900, 3600])
+    exponential_backoff = tum_esm_utils.timing.ExponentialBackoff(
+        log_info=logger.info, buckets=[120, 900, 3600]
+    )
     teardown_receipt_time: Optional[float] = None
 
     try:
