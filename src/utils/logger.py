@@ -217,7 +217,7 @@ class Logger:
             details:  Additional details to log, useful for verbose output.
         """
 
-        now = datetime.datetime.now(datetime.UTC)
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         # Credits to https://stackoverflow.com/a/35058476/8255842"""
         utc_offset = round((-time.timezone) / 3600, 3)
