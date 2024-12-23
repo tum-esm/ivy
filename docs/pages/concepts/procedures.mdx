@@ -1,10 +1,44 @@
-
 # Procedures
 
 ## What are procedures?
 
-TODO
+A procedure should run in an infinite loop to perform some function of the system - e.g. sampling from a sensor, controlling an actuator, making some decision based on the result of other procedures, etc.
+
+The function of the mainloop is to make sure that all procedures run at all times - starting them on program start, restarting them if they crash, sending a graceful teardown notice before the program is shut down.
+
+All procedures are located inside `src/procedures/` . You can use `src/procedures/dummy_procedure.py` as an example of how to write a procedure.
 
 ## How to define a procedure?
 
-TODO
+1. Create a new file in `src/procedures/new_procedure.py`:
+
+```python
+import src
+
+def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+    """..."""
+
+    messaging_agent = src.utils.MessagingAgent()
+    ...
+```
+
+2. Inside `src/main.py`, add a `LifecycleManager` for the new procedure to the list of lifecycle managers:
+
+```python
+lifecycle_managers: list[src.utils.LifecycleManager] = [
+    # existing lifecycle managers
+    ...
+    src.utils.LifecycleManager(
+        config=config,
+        entrypoint=src.procedures.new_procedure.run,
+        procedure_name="new-procedure",
+        variant="procedure",
+    ),
+]
+```
+
+3. Look at the `src/procedures/dummy_procedure.py` for an example of how a procedure can look like.
+
+## Exponential Backoff
+
+The usage of the `ExponentialBackoff` class is documented [here](/api-reference/src#srcutilsexponential_backoffexponentialbackoffclasses).
