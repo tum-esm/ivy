@@ -108,12 +108,23 @@ class Updater:
             self.logger.info(
                 f"Received config has different version ({foreign_config.general.software_version})"
             )
+            updater_config = self.config.updater
+            if updater_config is None:
+                self.logger.error(
+                    "Received config has different version but no updater config is present"
+                )
+                self.messaging_agent.add_message(
+                    src.types.ConfigMessageBody(status="rejected", config=foreign_config)
+                )
+                return
 
             # Download source code
 
             self.logger.debug(f"Downloading new source code")
             try:
-                Updater.download_source_code(self.config, foreign_config.general.software_version)
+                Updater.download_source_code(
+                    updater_config, foreign_config.general.software_version
+                )
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
@@ -186,7 +197,7 @@ class Updater:
 
     @staticmethod
     def download_source_code(
-        config: src.types.Config,
+        updater_config: src.types.UpdaterConfig,
         version: tum_esm_utils.validators.Version,
     ) -> None:
         """Download the source code of the new version to the version
@@ -198,40 +209,38 @@ class Updater:
             version: The version of the source code to download.
         """
 
-        assert config.updater is not None, "Updater has to be configured"
-
         dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if os.path.isfile(dst_dir):
             raise FileExistsError(f"There should not be a file at {dst_dir}")
         if os.path.isdir(dst_dir):
-            if config.updater.source_conflict_strategy == "overwrite":
+            if updater_config.source_conflict_strategy == "overwrite":
                 shutil.rmtree(dst_dir)
 
         if not os.path.isdir(dst_dir):
-            repository_name = config.updater.repository.split("/")[-1]
-            tarball_name = f"{config.updater.repository}-{version.as_tag()}.tar.gz"
+            repository_name = updater_config.repository.split("/")[-1]
+            tarball_name = f"{updater_config.repository}-{version.as_tag()}.tar.gz"
             dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
 
-            if config.updater.provider == "github":
+            if updater_config.provider == "github":
                 header: str = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28" '
-                if config.updater.access_token is not None:
-                    header += f'--header "Authorization: Bearer {config.updater.access_token}"'
+                if updater_config.access_token is not None:
+                    header += f'--header "Authorization: Bearer {updater_config.access_token}"'
                 tum_esm_utils.shell.run_shell_command(
-                    f"curl -L {header} https://api.{config.updater.provider_host}/repos/{config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}",
+                    f"curl -L {header} https://api.{updater_config.provider_host}/repos/{updater_config.repository}/tarball/{version.as_tag()} --output {tarball_name}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
-            elif config.updater.provider == "gitlab":
+            elif updater_config.provider == "gitlab":
                 auth_param: str = ""
-                if config.updater.access_token is not None:
-                    auth_param = f"?private_token={config.updater.access_token}"
-                repository_name = config.updater.repository.split("/")[-1]
+                if updater_config.access_token is not None:
+                    auth_param = f"?private_token={updater_config.access_token}"
+                repository_name = updater_config.repository.split("/")[-1]
                 tum_esm_utils.shell.run_shell_command(
-                    f"curl -L https://{config.updater.provider_host}/{config.updater.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
+                    f"curl -L https://{updater_config.provider_host}/{updater_config.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             else:
                 raise NotImplementedError(
-                    f"Source code provider {config.updater.provider} not implemented"
+                    f"Source code provider {updater_config.provider} not implemented"
                 )
 
             name_of_directory_in_tarball = (
