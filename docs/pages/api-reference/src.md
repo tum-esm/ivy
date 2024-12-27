@@ -1087,6 +1087,7 @@ This is a static method, so it can be tested independently.
 def install_dependencies(
     version: tum_esm_utils.validators.Version,
     log_progress: typing.Callable[[str], None],
+    installation_command: str,
 ) -> None:
 ```
 
@@ -1144,9 +1145,10 @@ Remove all old virtual environments, besides the current one.
 **`run_pytests`**
 
 ```python
+@staticmethod
 def run_pytests(
-    self,
     version: tum_esm_utils.validators.Version,
+    pytest_marker: str,
 ) -> None:
 ```
 
@@ -1155,6 +1157,7 @@ Run all pytests with the mark "version_change" in the version directory.
 **Arguments:**
 
  * `version`: The version of the source code to be tested
+ * `pytest_marker`: The pytest marker to run
 
 **`update_cli_pointer`**
 

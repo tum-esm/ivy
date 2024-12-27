@@ -171,7 +171,7 @@ class Updater:
 
             self.logger.debug("Running pytests")
             try:
-                self.run_pytests(foreign_config.general.software_version)
+                Updater.run_pytests(foreign_config.general.software_version)
                 self.logger.debug("Successfully ran pytests")
             except Exception as e:
                 self.logger.exception(e, "Running pytests failed")
@@ -284,6 +284,7 @@ class Updater:
     def install_dependencies(
         version: tum_esm_utils.validators.Version,
         log_progress: Callable[[str], None],
+        installation_command: str = "pdm sync --no-self",
     ) -> None:
         """Create a virtual environment and install the dependencies in the
         version directory using PDM. It uses the `pdm sync` command to exactly
@@ -317,25 +318,27 @@ class Updater:
 
         log_progress(f"Installing dependencies using PDM")
         tum_esm_utils.shell.run_shell_command(
-            f"source .venv/bin/activate && pdm sync --no-self",
+            f"source .venv/bin/activate && {installation_command}",
             working_directory=version_dir,
         )
 
+    @staticmethod
     def run_pytests(
-        self,
         version: tum_esm_utils.validators.Version,
+        pytest_marker: str = "version_change",
     ) -> None:
         """Run all pytests with the mark "version_change" in the version directory.
 
         Args:
             version: The version of the source code to be tested
+            pytest_marker: The pytest marker to run
         """
 
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
         tum_esm_utils.shell.run_shell_command(
-            f'.venv/bin/python -m pytest -m "version_change" tests/',
+            f'.venv/bin/python -m pytest -m "{pytest_marker}" tests/',
             working_directory=version_dir,
         )
 
