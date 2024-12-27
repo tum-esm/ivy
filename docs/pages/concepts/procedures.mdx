@@ -15,9 +15,10 @@ All procedures are located inside `src/procedures/` . You can use `src/procedure
 ```python
 import src
 
-def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+def run(config: src.types.Config, name: str) -> None:
     """..."""
 
+    logger = src.utils.Logger(config, origin=name)
     messaging_agent = src.utils.MessagingAgent()
     ...
 ```
@@ -31,7 +32,7 @@ lifecycle_managers: list[src.utils.LifecycleManager] = [
     src.utils.LifecycleManager(
         config=config,
         entrypoint=src.procedures.new_procedure.run,
-        procedure_name="new-procedure",
+        name="new-procedure",
         variant="procedure",
     ),
 ]

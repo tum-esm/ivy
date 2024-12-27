@@ -22,18 +22,18 @@ class LifecycleManager:
         self,
         config: src.types.Config,
         entrypoint: Union[
-            Callable[[src.types.Config, Logger], None],
-            Callable[[src.types.Config, Logger, multiprocessing.synchronize.Event], None],
+            Callable[[src.types.Config, str], None],
+            Callable[[src.types.Config, str, multiprocessing.synchronize.Event], None],
         ],
-        procedure_name: str,
+        name: str,
         variant: Literal["procedure", "backend"],
     ) -> None:
-        """Initializes a new procedure manager.
+        """Initializes a new lifecycle manager.
 
         Args:
             config:         The configuration object.
             entrypoint:     The entrypoint of the procedure or backend.
-            procedure_name: The name of the procedure or backend. Used to name
+            name: The name of the procedure or backend. Used to name
                             the spawned process.
             variant:        Whether the entrypoint is a procedure or a backend.
                             The difference is only in the teardown logic.
@@ -47,8 +47,8 @@ class LifecycleManager:
         self.process: Optional[multiprocessing.Process] = None
 
         self.entrypoint: Union[
-            Callable[[src.types.Config, Logger], None],
-            Callable[[src.types.Config, Logger, multiprocessing.synchronize.Event], None],
+            Callable[[src.types.Config, str], None],
+            Callable[[src.types.Config, str, multiprocessing.synchronize.Event], None],
         ]
         self.variant = variant
         self.teardown_indicator = multiprocessing.Event()
@@ -57,7 +57,7 @@ class LifecycleManager:
                 self.entrypoint = (
                     pydantic.RootModel[
                         Callable[
-                            [src.types.Config, Logger],
+                            [src.types.Config, str],
                             None,
                         ]
                     ]
@@ -65,10 +65,10 @@ class LifecycleManager:
                     .root
                 )
             else:
-                self.procedure_entrypoint = (
+                self.entrypoint = (
                     pydantic.RootModel[
                         Callable[
-                            [src.types.Config, Logger, multiprocessing.synchronize.Event],
+                            [src.types.Config, str, multiprocessing.synchronize.Event],
                             None,
                         ]
                     ]
@@ -78,9 +78,8 @@ class LifecycleManager:
         except pydantic.ValidationError as e:
             raise ValueError(f"Given variant '{variant}' does not match the entrypoint signature")
 
-        self.procedure_name = procedure_name
-        self.logger = Logger(config=config, origin=f"{self.procedure_name}-procedure-manager")
-        self.procedure_logger = Logger(config=config, origin=f"{self.procedure_name}")
+        self.name = name
+        self.logger = Logger(config=config, origin=f"{self.name}-lifecycle-manager")
 
     def procedure_is_running(self) -> bool:
         """Returns True if the procedure has been started. Does not check
@@ -99,13 +98,13 @@ class LifecycleManager:
         if self.procedure_is_running():
             raise RuntimeError("procedure is already running")
         self.process = multiprocessing.Process(
-            target=self.procedure_entrypoint,
+            target=self.entrypoint,
             args=(
-                (self.config, self.procedure_logger)
+                (self.config, self.name)
                 if (self.variant == "procedure")
-                else (self.config, self.procedure_logger, self.teardown_indicator)
+                else (self.config, self.name, self.teardown_indicator)
             ),
-            name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
+            name=f"{src.constants.NAME}-procedure-{self.name}",
             daemon=True,
         )
         self.process.start()

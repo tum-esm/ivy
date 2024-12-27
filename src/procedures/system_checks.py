@@ -7,14 +7,15 @@ import tum_esm_utils
 import src
 
 
-def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+def run(config: src.types.Config, name: str) -> None:
     """Logs the system load and last boot time.
 
     Args:
         config: The configuration object.
-        logger: The logger object.
+        name: The name of the procedure.
     """
 
+    logger = src.utils.Logger(config=config, origin=name)
     messaging_agent = src.utils.MessagingAgent()
 
     # register a teardown procedure
