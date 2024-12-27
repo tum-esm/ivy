@@ -12,7 +12,7 @@ dependencies = [
   "python-dotenv>=1.0.1",
   "psutil>=6.1.0",
   "tenta>=0.1.5",
-  "tum-esm-utils>=2.4.0",
+  "tum-esm-utils>=2.5.3",
   "typing-extensions>=4.12.2",
   "paho-mqtt>=2.1.0",
 ]
@@ -69,14 +69,17 @@ markers = [
 [tool.pdm.scripts]
 quick-tests = { shell = """
   export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "quick" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 integration-tests = { shell = """
   export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "integration" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 updater-tests = { shell = """
   export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "updater" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 start-mosquitto = { shell = """

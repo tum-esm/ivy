@@ -9,17 +9,17 @@ def _run(
     updater_config: src.types.UpdaterConfig,
     version: tum_esm_utils.validators.Version,
 ) -> None:
-    target_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+    target_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
     assert os.path.isdir(
-        src.constants.IVY_ROOT_DIR
-    ), f"IVY_ROOT_DIR ({src.constants.IVY_ROOT_DIR}) does not exist"
+        src.constants.ROOT_DIR
+    ), f"IVY_ROOT_DIR ({src.constants.ROOT_DIR}) does not exist"
     assert not os.path.exists(target_dir), f"Target directory ({target_dir}) already exists"
 
     # download source code
     src.utils.Updater.download_source_code(updater_config, version)
 
     assert os.path.isdir(target_dir), f"Target directory ({target_dir}) does not exist"
-    files = os.listdir(src.constants.IVY_ROOT_DIR)
+    files = os.listdir(src.constants.ROOT_DIR)
     assert len(files) == 1, f"Unexpected files: {files}"
     shutil.rmtree(target_dir)
 

@@ -9,7 +9,7 @@ import random
 @pytest.mark.order(4)
 @pytest.mark.updater
 def test_cli_pointer_switching() -> None:
-    cli_path = os.path.join(src.constants.IVY_ROOT_DIR, f"{src.constants.NAME}-cli.sh")
+    cli_path = os.path.join(src.constants.ROOT_DIR, f"{src.constants.NAME}-cli.sh")
     assert not os.path.exists(cli_path)
 
     local_cli_file = tum_esm_utils.files.rel_to_abs_path("../../cli.py")
@@ -19,7 +19,7 @@ def test_cli_pointer_switching() -> None:
         version = tum_esm_utils.validators.Version(
             f"{random.randint(0, 9)}.{random.randint(0, 9)}.{random.randint(0, 9)}"
         )
-        target_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+        target_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
 
         src.utils.Updater.update_cli_pointer(version)
 

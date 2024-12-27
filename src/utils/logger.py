@@ -264,3 +264,19 @@ class Logger:
                     body=body.strip("\n"),
                 )
             )
+
+    @staticmethod
+    def read_current_log_file() -> Optional[str]:
+        """Reads the current log file and returns its content.
+
+        Returns:
+            The content of the current log file.
+        """
+
+        try:
+            with filelock.FileLock(FILELOCK_PATH, timeout=3):
+                return tum_esm_utils.files.load_file(
+                    os.path.join(LOGS_ARCHIVE_DIR, datetime.datetime.now().strftime("%Y-%m-%d.log"))
+                )
+        except FileNotFoundError:
+            return None
