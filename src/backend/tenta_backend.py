@@ -32,15 +32,20 @@ def run(
     def on_config_message(message: tenta.types.ConfigurationMessage) -> None:
         logger.info(
             f"Received config with revision {message.revision}",
-            details=json.dumps(message, indent=4),
+            details=str(message.configuration),
         )
         try:
-            foreign_config = src.types.ForeignConfig.model_validate_json(message.configuration)
-            foreign_config.general.config_revision = message.revision
+            assert isinstance(message.configuration, dict), "Configuration is not a dictionary"
+            assert "general" in message.configuration, "General configuration is missing"
+            assert isinstance(
+                message.configuration["general"], dict
+            ), "General configuration is not a dictionary"
+            message.configuration["general"]["config_revision"] = message.revision
+            foreign_config = src.types.ForeignConfig.model_validate(message.configuration)
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
-            logger.info(f"Config with revision {message.revision} was parsed")
-        except pydantic.ValidationError as e:
+            logger.info(f"Config with revision {message.revision} was parsed successfully")
+        except (pydantic.ValidationError, AssertionError) as e:
             logger.error(
                 f"Config with revision {message.revision} is invalid",
                 details=e.json(indent=4),
