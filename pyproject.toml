@@ -83,8 +83,8 @@ updater-tests = { shell = """
   pytest --verbose -m "updater" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 start-mosquitto = { shell = """
-  docker run --detach --publish 1883:1883 --name ivy-test-mosquitto eclipse-mosquitto
+  mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password \
+  echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > \
+  $PWD/tests/updater/data/mosquitto.conf && mosquitto -d -c tests/updater/data/mosquitto.conf
   """ }
-stop-mosquitto = { shell = """
-  docker rm -f ivy-test-mosquitto
-  """ }
+stop-mosquitto = { shell = 'pkill -f "mosquitto -d"' }
