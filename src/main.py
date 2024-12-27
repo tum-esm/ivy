@@ -44,7 +44,10 @@ def run() -> None:
 
     # remove old venvs
 
-    updater.remove_old_venvs()
+    updater.remove_old_venvs(
+        current_version=config.general.software_version,
+        log_progress=logger.info,
+    )
 
     # initialize lifecycle managers which are responsible for
     # starting/stopping each procedure/backend in a child process
