@@ -61,11 +61,22 @@ module = ["jsonref"]
 [tool.pytest.ini_options]
 markers = [
   "quick: can be run in any environment (< 10s)",
+  "updater: can be run in any environment (> 10s)",
   "integration: can only be run on a configured system (< 10s)",
   "version_change: will run before switching to a new version",
 ]
 
 [tool.pdm.scripts]
-run-quick-tests = { shell = 'pytest --verbose -m "quick" --cov=src --exitfirst tests/' }
-run-integration-tests = { shell = 'pytest --verbose -m "integration" --cov=src --exitfirst tests/' }
-run-updater-tests = { shell = 'IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR && pytest --verbose -m "updater" --cov=src --exitfirst tests/' }
+quick-tests = { shell = """
+  pytest --verbose -m "quick" --cov=src --exitfirst tests/
+  """ }
+integration-tests = { shell = """
+  pytest --verbose -m "integration" --cov=src --exitfirst tests/
+  """ }
+updater-tests = { shell = """
+  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" &&
+  echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR &&
+  mkdir $IVY_ROOT_DIR &&
+  pytest --verbose -m "updater" --cov=src --exitfirst tests/
+  rm -rf /tmp/ivy-ci-test-*
+  """ }
