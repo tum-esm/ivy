@@ -1084,8 +1084,8 @@ This is a static method, so it can be tested independently.
 ```python
 @staticmethod
 def install_dependencies(
-    logger: src.utils.logger.Logger,
     version: tum_esm_utils.validators.Version,
+    log_progress: typing.Callable[[str], None],
 ) -> None:
 ```
 

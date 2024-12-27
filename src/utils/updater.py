@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Callable, Optional
 import json
 import os
 import sys
@@ -143,7 +143,9 @@ class Updater:
 
             self.logger.debug("Installing dependencies")
             try:
-                Updater.install_dependencies(self.logger, foreign_config.general.software_version)
+                Updater.install_dependencies(
+                    foreign_config.general.software_version, self.logger.debug
+                )
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
@@ -279,8 +281,8 @@ class Updater:
 
     @staticmethod
     def install_dependencies(
-        logger: src.utils.Logger,
         version: tum_esm_utils.validators.Version,
+        log_progress: Callable[[str], None],
     ) -> None:
         """Create a virtual environment and install the dependencies in the
         version directory using PDM. It uses the `pdm sync` command to exactly
@@ -303,16 +305,16 @@ class Updater:
 
         venv_path = os.path.join(version_dir, ".venv")
         if os.path.isdir(venv_path):
-            logger.debug(f"Removing existing virtual environment at {venv_path}")
+            log_progress(f"Removing existing virtual environment at {venv_path}")
             shutil.rmtree(venv_path)
 
-        logger.debug(f"Creating virtual environment at {venv_path}")
+        log_progress(f"Creating virtual environment at {venv_path}")
         tum_esm_utils.shell.run_shell_command(
             f"python{sys.version_info.major}.{sys.version_info.minor} -m venv .venv",
             working_directory=version_dir,
         )
 
-        logger.debug(f"Installing dependencies using PDM")
+        log_progress(f"Installing dependencies using PDM")
         tum_esm_utils.shell.run_shell_command(
             f"source .venv/bin/activate && pdm sync --no-self",
             working_directory=version_dir,
