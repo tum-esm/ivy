@@ -1159,8 +1159,8 @@ Run all pytests with the mark "version_change" in the version directory.
 **`update_cli_pointer`**
 
 ```python
+@staticmethod
 def update_cli_pointer(
-    self,
     to_version: tum_esm_utils.validators.Version,
 ) -> None:
 ```

@@ -184,7 +184,7 @@ class Updater:
 
             self.logger.debug("Updating cli pointer")
             try:
-                self.update_cli_pointer(foreign_config.general.software_version)
+                Updater.update_cli_pointer(foreign_config.general.software_version)
                 self.logger.debug("Successfully updated cli pointer")
             except Exception as e:
                 self.logger.exception(e, "Could not update cli pointer")
@@ -339,8 +339,8 @@ class Updater:
             working_directory=version_dir,
         )
 
+    @staticmethod
     def update_cli_pointer(
-        self,
         to_version: tum_esm_utils.validators.Version,
     ) -> None:
         """Update the cli pointer to a new version.
@@ -349,15 +349,15 @@ class Updater:
             to_version: The version to update the cli pointer to
         """
 
-        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier(), ".venv")
-        code_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier(), "src")
+        version_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier())
+        venv_path = os.path.join(version_path, ".venv")
         with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
             f.writelines(
                 [
                     "#!/bin/bash",
                     "set -o errexit",
                     "",
-                    f"{venv_path}/bin/python {code_path}/cli.py $*",
+                    f"{venv_path}/bin/python {version_path}/cli.py $*",
                 ]
             )
         os.chmod(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
