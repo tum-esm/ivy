@@ -56,7 +56,9 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
 
 
 @pytest.mark.ci
-def test_all_message_types(restore_production_files: None, ) -> None:
+def test_all_message_types(
+    restore_production_files: None,
+) -> None:
     config = src.types.Config.load_template().to_foreign_config()
     agent = MessagingAgent()
     assert len(agent.get_n_latest_messages(20)) == 0, "message queue is not empty"
@@ -85,20 +87,16 @@ def test_all_message_types(restore_production_files: None, ) -> None:
     # check filtering by message id
     for i in range(len(mids) + 1):
         for mids_subset in itertools.combinations(mids, i):
-            messages = agent.get_n_latest_messages(
-                20, excluded_message_ids=set(mids_subset)
-            )
+            messages = agent.get_n_latest_messages(20, excluded_message_ids=set(mids_subset))
             filtered_mids = set([message.identifier for message in messages])
             assert set(mids_subset).isdisjoint(
                 filtered_mids
             ), "filtering by message id is not correct"
-            assert set(mids_subset).union(
-                filtered_mids
-            ) == mids, "filtering by message id is not correct"
+            assert (
+                set(mids_subset).union(filtered_mids) == mids
+            ), "filtering by message id is not correct"
             timestamps = [message.timestamp for message in messages]
-            assert timestamps == list(
-                sorted(timestamps)
-            ), "messages are not sorted by timestamp"
+            assert timestamps == list(sorted(timestamps)), "messages are not sorted by timestamp"
 
     # check correctness of message types
     messages = agent.get_n_latest_messages(20)

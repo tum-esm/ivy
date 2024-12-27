@@ -22,7 +22,7 @@ class Updater:
 
     def __init__(self, config: src.types.Config) -> None:
         """Initialize an Updater instance.
-        
+
         Args:
             config: The current config.
         """
@@ -39,42 +39,42 @@ class Updater:
 
         See the [documentation](/core-concepts/over-the-air-updates) for a detailed
         explanation of the update process.
-        
+
         Args:
             foreign_config: The received config.
         """
 
         if foreign_config.general.config_revision <= self.config.general.config_revision:
             self.logger.info(
-                f"Received config has " + (
-                    "lower revision number than" if (
-                        foreign_config.general.config_revision <
-                        self.config.general.config_revision
-                    ) else "same revision number as"
-                ) +
-                f" current config ({foreign_config.general.config_revision}) -> not updating"
+                f"Received config has "
+                + (
+                    "lower revision number than"
+                    if (
+                        foreign_config.general.config_revision < self.config.general.config_revision
+                    )
+                    else "same revision number as"
+                )
+                + f" current config ({foreign_config.general.config_revision}) -> not updating"
             )
             return
 
         if foreign_config.general.config_revision in self.processed_config_revisions:
             self.logger.debug(
-                f"The config with revision {foreign_config.general.config_revision} " +
-                "has already been processed"
+                f"The config with revision {foreign_config.general.config_revision} "
+                + "has already been processed"
             )
             return
 
         self.processed_config_revisions.add(foreign_config.general.config_revision)
         self.logger.info(
             f"Processing new config with revision {foreign_config.general.config_revision}",
-            details=f"config = {foreign_config.model_dump_json(indent=4)}"
+            details=f"config = {foreign_config.model_dump_json(indent=4)}",
         )
 
         if foreign_config.general.software_version == self.config.general.software_version:
             self.logger.info("Received config has same version")
             try:
-                local_config = src.types.Config.load_from_string(
-                    foreign_config.model_dump_json()
-                )
+                local_config = src.types.Config.load_from_string(foreign_config.model_dump_json())
                 self.logger.info(f"Successfully parsed local config")
             except pydantic.ValidationError as e:
                 self.logger.exception(e, label="Could not parse local config")
@@ -102,9 +102,7 @@ class Updater:
             self.messaging_agent.add_message(
                 src.types.ConfigMessageBody(status="accepted", config=local_config)
             )
-            self.logger.debug(
-                "Exiting mainloop so that it can be restarted with the new config"
-            )
+            self.logger.debug("Exiting mainloop so that it can be restarted with the new config")
             exit(0)
         else:
             self.logger.info(
@@ -191,7 +189,7 @@ class Updater:
         directory. This is currently only implemented for github and
         gitlab for private and public repositories. Feel free to request
         other providers in the issue tracker.
-        
+
         Args:
             version: The version of the source code to download.
         """
@@ -215,7 +213,7 @@ class Updater:
                 if self.config.updater.access_token is not None:
                     header += f'--header "Authorization: Bearer {self.config.updater.access_token}"'
                 tum_esm_utils.shell.run_shell_command(
-                    f'curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}',
+                    f"curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             elif self.config.updater.provider == "gitlab":
@@ -232,14 +230,18 @@ class Updater:
                     f"Source code provider {self.config.updater.provider} not implemented"
                 )
 
-            name_of_directory_in_tarball = tum_esm_utils.shell.run_shell_command(
-                f"tar -tf {tarball_name} | head -1",
-                working_directory=src.constants.IVY_ROOT_DIR,
-            ).strip(" \n/").replace("\n", " ")
+            name_of_directory_in_tarball = (
+                tum_esm_utils.shell.run_shell_command(
+                    f"tar -tf {tarball_name} | head -1",
+                    working_directory=src.constants.IVY_ROOT_DIR,
+                )
+                .strip(" \n/")
+                .replace("\n", " ")
+            )
             if " " not in name_of_directory_in_tarball:
                 raise RuntimeError(
-                    f"Found multiple directories/files in source code " +
-                    f"tarball {name_of_directory_in_tarball.split(' ')}"
+                    f"Found multiple directories/files in source code "
+                    + f"tarball {name_of_directory_in_tarball.split(' ')}"
                 )
 
             tum_esm_utils.shell.run_shell_command(
@@ -251,11 +253,11 @@ class Updater:
         """Create a virtual environment and install the dependencies in the
         version directory using PDM. It uses the `pdm sync` command to exactly
         create the desired environmont.
-        
+
         Since the `pyproject.toml` file generated by PDM is complying with PEP
         standards, one could also use `pip install .`. However, we recommend
         using PDM for due to caching and dependency locking.
-        
+
         Args:
             version: The version of the source code to download.
         """
@@ -283,7 +285,7 @@ class Updater:
 
     def run_pytests(self, version: tum_esm_utils.validators.Version) -> None:
         """Run all pytests with the mark "version_change" in the version directory.
-        
+
         Args:
             version: The version of the source code to download.
         """
@@ -298,24 +300,22 @@ class Updater:
 
     def update_cli_pointer(self, version: tum_esm_utils.validators.Version) -> None:
         """Update the cli pointer to a new version.
-        
+
         Args:
             version: The version of the source code to download.
         """
 
-        venv_path = os.path.join(
-            src.constants.IVY_ROOT_DIR, version.as_identifier(), ".venv"
-        )
-        code_path = os.path.join(
-            src.constants.IVY_ROOT_DIR, version.as_identifier(), "src"
-        )
+        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier(), ".venv")
+        code_path = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier(), "src")
         with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
-            f.writelines([
-                "#!/bin/bash",
-                "set -o errexit",
-                "",
-                f"{venv_path}/bin/python {code_path}/cli.py $*",
-            ])
+            f.writelines(
+                [
+                    "#!/bin/bash",
+                    "set -o errexit",
+                    "",
+                    f"{venv_path}/bin/python {code_path}/cli.py $*",
+                ]
+            )
         os.chmod(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
 
     def remove_old_venvs(self) -> None:

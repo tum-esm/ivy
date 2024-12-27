@@ -11,18 +11,18 @@ def test_connection_to_repository() -> None:
 
     headers: str
 
-    if config.updater.provider == 'github':
+    if config.updater.provider == "github":
         headers = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28"'
         if config.updater.access_token is not None:
             headers += f' --header "Authorization: Bearer {config.updater.access_token}"'
         try:
             tum_esm_utils.shell.run_shell_command(
-                f'curl --fail -L {headers} https://api.{config.updater.provider_host}/repos/{config.updater.repository}/readme'
+                f"curl --fail -L {headers} https://api.{config.updater.provider_host}/repos/{config.updater.repository}/readme"
             )
         except Exception as e:
-            raise Exception(f'Could not connect to repository: {e}')
+            raise Exception(f"Could not connect to repository: {e}")
 
-    if config.updater.provider == 'gitlab':
+    if config.updater.provider == "gitlab":
         headers = ""
         if config.updater.access_token is not None:
             headers += f'--header "PRIVATE-TOKEN: {config.updater.access_token}"'
@@ -31,4 +31,4 @@ def test_connection_to_repository() -> None:
                 f'curl -L --fail {headers} https://{config.updater.provider_host}/api/v4/projects/{config.updater.repository.replace("/", "%2F")}/repository/tags?search=v0.0.0'
             )
         except Exception as e:
-            raise Exception(f'Could not connect to repository: {e}')
+            raise Exception(f"Could not connect to repository: {e}")

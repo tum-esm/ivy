@@ -9,7 +9,7 @@ import src
 
 def run() -> None:
     """Run the automation.
-    
+
     1. Load the configuration
     2. Initialize the logger
     3. Initialize the messaging agent
@@ -38,11 +38,9 @@ def run() -> None:
 
     logger.info(
         f"Starting automation with PID {os.getpid()}",
-        details=f"config = {config.model_dump_json(indent=4)}"
+        details=f"config = {config.model_dump_json(indent=4)}",
     )
-    messaging_agent.add_message(
-        src.types.ConfigMessageBody(status="startup", config=config)
-    )
+    messaging_agent.add_message(src.types.ConfigMessageBody(status="startup", config=config))
 
     # remove old venvs
 
@@ -116,7 +114,7 @@ def run() -> None:
             for pending_config in pending_configs:
                 updater.perform_update(pending_config)
             with src.utils.StateInterface.update() as state:
-                state.pending_configs = state.pending_configs[len(pending_configs):]
+                state.pending_configs = state.pending_configs[len(pending_configs) :]
 
             exponential_backoff.reset()
             time.sleep(10)

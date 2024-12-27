@@ -9,13 +9,13 @@ def _get_object_source(obj: typing.Any) -> tuple[str, str]:
     This is used to detect decorators and class inheritance."""
     s = inspect.getsource(obj)
     indent: str = re.match(r"^(\s*)", s).group(0)  # type: ignore
-    s = "\n".join([l[len(indent):] for l in s.split("\n")])
+    s = "\n".join([l[len(indent) :] for l in s.split("\n")])
     decorator: str = ""
     definition: str = ""
     for i, l in enumerate(s.split("\n")):
         if l.startswith("def ") or l.startswith("class "):
-            decorator = "\n".join(s.split("\n")[: i])
-            definition = "\n".join(s.split("\n")[i :])
+            decorator = "\n".join(s.split("\n")[:i])
+            definition = "\n".join(s.split("\n")[i:])
             break
 
     depth: int = 0
@@ -32,8 +32,8 @@ def _get_object_source(obj: typing.Any) -> tuple[str, str]:
 
 def _clean_type_name(type_name: typing.Any) -> str:
     parsed_type_name = str(type_name).replace("NoneType", "None")
-    if (parsed_type_name.startswith("<class '") and parsed_type_name.endswith("'>")):
-        parsed_type_name = parsed_type_name[8 :-2]
+    if parsed_type_name.startswith("<class '") and parsed_type_name.endswith("'>"):
+        parsed_type_name = parsed_type_name[8:-2]
     return parsed_type_name
 
 
@@ -56,7 +56,8 @@ def _prettify_docstring(module: typing.Any) -> str:
 
     params = [
         f" * `{param.arg_name}`: {param.description}"
-        for param in docstring.params if param.description is not None
+        for param in docstring.params
+        if param.description is not None
     ]
     if len(params) > 0:
         docstring_text += "**Arguments:**\n\n"
@@ -66,7 +67,8 @@ def _prettify_docstring(module: typing.Any) -> str:
         docstring_text += f"**Returns:** {docstring.returns.description}\n\n"
 
     raises = [
-        f" * `{raises.type_name}`: {raises.description}" for raises in docstring.raises
+        f" * `{raises.type_name}`: {raises.description}"
+        for raises in docstring.raises
         if ((raises.description is not None) and (raises.type_name is not None))
     ]
     if len(raises) > 0:
@@ -89,7 +91,7 @@ def _render_variables(module: typing.Any, module_depth: int) -> str:
                 extra_type_hint = type_hint_extras[name]
                 if isinstance(
                     extra_type_hint,
-                    typing._AnnotatedAlias  # type: ignore
+                    typing._AnnotatedAlias,  # type: ignore
                 ):
                     metadata = extra_type_hint.__metadata__
                     if len(metadata) > 0 and isinstance(metadata[0], str):
@@ -138,9 +140,9 @@ def _render_class(cls: typing.Any, module_depth: int) -> str:
     for member in inspect.getmembers(cls):
         if inspect.isfunction(member[1]):
             function = member[1]
-            if ((
-                function.__name__.startswith("__") and (function.__name__ != "__init__")
-            ) or (function.__name__ not in cls.__dict__)):
+            if (function.__name__.startswith("__") and (function.__name__ != "__init__")) or (
+                function.__name__ not in cls.__dict__
+            ):
                 continue
             output += _render_function(function)
         # does not render "@property" and "@classmethod" methods (yet)
@@ -165,13 +167,14 @@ def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
         # render submodules (directories first, then files)
         for m in sorted(
             inspect.getmembers(module, inspect.ismodule),
-            key=lambda x: 1 if ((x[1].__file__ or "").endswith("__init__.py")) else 0
+            key=lambda x: 1 if ((x[1].__file__ or "").endswith("__init__.py")) else 0,
         ):
             output += generate_module_reference(m[1], module_depth + 1)
 
     else:
         functions = [
-            f[1] for f in inspect.getmembers(module, inspect.isfunction)
+            f[1]
+            for f in inspect.getmembers(module, inspect.isfunction)
             if (f[1].__module__ == module.__name__) and not f[0].startswith("_")
         ]
         if len(functions) > 0:
@@ -181,7 +184,8 @@ def generate_module_reference(module: typing.Any, module_depth: int = 1) -> str:
                 output += _render_function(function)
 
         classes = [
-            c[1] for c in inspect.getmembers(module, inspect.isclass)
+            c[1]
+            for c in inspect.getmembers(module, inspect.isclass)
             if c[1].__module__ == module.__name__ and not c[0].startswith("_")
         ]
         if len(classes) > 0:

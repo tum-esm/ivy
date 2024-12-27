@@ -16,6 +16,4 @@ def test_static_types() -> None:
     _rm(".mypy_cache/3.*/docs/scripts")
 
     for path in ["src/", "tests/", "run.py", "docs/scripts/"]:
-        assert os.system(
-            f"cd {src.constants.PROJECT_DIR} && {sys.executable} -m mypy {path}"
-        ) == 0
+        assert os.system(f"cd {src.constants.PROJECT_DIR} && {sys.executable} -m mypy {path}") == 0

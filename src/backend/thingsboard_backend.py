@@ -42,14 +42,10 @@ def run(
             assert isinstance(data, dict)
             if "configuration" not in data.keys():
                 return
-            foreign_config = src.types.ForeignConfig.model_validate_json(
-                data["configuration"]
-            )
+            foreign_config = src.types.ForeignConfig.model_validate_json(data["configuration"])
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
-            logger.info(
-                f"Config with revision {foreign_config.general.config_revision} was parsed"
-            )
+            logger.info(f"Config with revision {foreign_config.general.config_revision} was parsed")
         except (AssertionError, json.JSONDecodeError) as e:
             logger.exception(e, f"Received config message in invalid format")
         except pydantic.ValidationError as e:
@@ -61,8 +57,9 @@ def run(
             # the rejection still shows up in the logs
 
     # active = in the process of sending
-    active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo,
-                               src.types.MessageQueueItem]] = set()
+    active_messages: set[tuple[paho.mqtt.client.MQTTMessageInfo, src.types.MessageQueueItem]] = (
+        set()
+    )
     thingsboard_client: Optional[paho.mqtt.client.Client] = None
     exponential_backoff = tum_esm_utils.timing.ExponentialBackoff(
         log_info=logger.info, buckets=[120, 900, 3600]
@@ -83,8 +80,12 @@ def run(
         signal.signal(signal.SIGINT, teardown_handler)
         signal.signal(signal.SIGTERM, teardown_handler)
 
-        def connect() -> tuple[paho.mqtt.client.Client, set[tuple[
-            paho.mqtt.client.MQTTMessageInfo, src.types.MessageQueueItem]]]:
+        def connect() -> (
+            tuple[
+                paho.mqtt.client.Client,
+                set[tuple[paho.mqtt.client.MQTTMessageInfo, src.types.MessageQueueItem]],
+            ]
+        ):
             assert config.backend is not None
             logger.info("Connecting to ThingsBoard backend")
             thingsboard_client = paho.mqtt.client.Client(
@@ -116,7 +117,7 @@ def run(
             thingsboard_client.loop_start()
             thingsboard_client.publish(
                 f"v1/devices/me/attributes/request/{int(time.time()*1000)}",
-                json.dumps({"sharedKeys": "configuration"})
+                json.dumps({"sharedKeys": "configuration"}),
             )
             logger.info("ThingsBoard connection has been set up")
             return thingsboard_client, set()
@@ -131,7 +132,7 @@ def run(
         MAX_LOOP_TIME = config.backend.max_parallel_messages * 8 + 5
         tum_esm_utils.timing.set_alarm(
             MAX_LOOP_TIME,
-            f"The ThingsBoard backend did not finish one loop within {MAX_LOOP_TIME} seconds"
+            f"The ThingsBoard backend did not finish one loop within {MAX_LOOP_TIME} seconds",
         )
 
         def send_data(
@@ -151,17 +152,13 @@ def run(
                     if teardown_indicator.is_set():
                         logger.debug("Received a teardown indicator")
                         logger.debug(
-                            f"Waiting max. {config.backend.max_drain_time} " +
-                            "seconds to send remaining messages"
+                            f"Waiting max. {config.backend.max_drain_time} "
+                            + "seconds to send remaining messages"
                         )
                         teardown_receipt_time = time.time()
                 else:
-                    if (
-                        time.time() - teardown_receipt_time
-                    ) > config.backend.max_drain_time:
-                        logger.debug(
-                            "Max. drain time reached, stopping the Tenta backend"
-                        )
+                    if (time.time() - teardown_receipt_time) > config.backend.max_drain_time:
+                        logger.debug("Max. drain time reached, stopping the Tenta backend")
                         return
 
                 if not thingsboard_client.is_connected():
@@ -170,21 +167,16 @@ def run(
                     exponential_backoff.reset()
 
                 # send new messages
-                open_message_slots = config.backend.max_parallel_messages - len(
-                    active_messages
-                )
+                open_message_slots = config.backend.max_parallel_messages - len(active_messages)
                 if open_message_slots > 0:
                     new_messages = messaging_agent.get_n_latest_messages(
                         open_message_slots,
-                        excluded_message_ids={m[1].identifier
-                                              for m in active_messages},
+                        excluded_message_ids={m[1].identifier for m in active_messages},
                     )
                     for message in new_messages:
                         message_info: Optional[paho.mqtt.client.MQTTMessageInfo] = None
                         if message.message_body.variant == "data":
-                            message_info = send_data(
-                                message.timestamp, message.message_body.data
-                            )
+                            message_info = send_data(message.timestamp, message.message_body.data)
                         if message.message_body.variant == "log":
                             message_info = send_data(
                                 message.timestamp,
@@ -245,9 +237,7 @@ def run(
 
                 if teardown_receipt_time is not None:
                     # the backoff procedure should not prevent remaining messages from being sent
-                    logger.debug(
-                        "Sleeping only 5 seconds because a teardown has been issued"
-                    )
+                    logger.debug("Sleeping only 5 seconds because a teardown has been issued")
                     time.sleep(5)
                 else:
                     sleep_seconds = exponential_backoff.sleep()

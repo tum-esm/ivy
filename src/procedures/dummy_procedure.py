@@ -9,10 +9,10 @@ import src
 
 def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     """Performs a random walk and sends out the current position.
-    
+
     You can use this as an example for your own procedures and
     remove this in your own project
-    
+
     Args:
         config: The configuration object.
         logger: The logger object.
@@ -37,8 +37,7 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     while True:
         try:
             t = src.utils.functions.get_time_to_next_datapoint(
-                seconds_between_datapoints=config.dummy_procedure.
-                seconds_between_datapoints,
+                seconds_between_datapoints=config.dummy_procedure.seconds_between_datapoints,
             )
             logger.debug(f"sleeping for {t} seconds")
             time.sleep(t)

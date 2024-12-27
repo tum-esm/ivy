@@ -8,8 +8,8 @@ import src
 
 ACTIVE_QUEUE_FILE: Annotated[
     str,
-    "The absolute path of the SQLite database that stores the active message queue " +
-    "(`data/active-message-queue.sqlite3`)",
+    "The absolute path of the SQLite database that stores the active message queue "
+    + "(`data/active-message-queue.sqlite3`)",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -18,8 +18,7 @@ ACTIVE_QUEUE_FILE: Annotated[
 
 MESSAGE_ARCHIVE_DIR: Annotated[
     str,
-    "The absolute path of the directory that stores the message archive " +
-    "(`data/messages/`)",
+    "The absolute path of the directory that stores the message archive " + "(`data/messages/`)",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -28,9 +27,9 @@ MESSAGE_ARCHIVE_DIR: Annotated[
 
 MESSAGE_ARCHIVE_DIR_LOCK: Annotated[
     str,
-    "The absolute path of the lock file that is used to lock the message archive " +
-    "directory (`data/messages.lock`). This is used to make sure that only one " +
-    "process can write to the message archive at a time.",
+    "The absolute path of the lock file that is used to lock the message archive "
+    + "directory (`data/messages.lock`). This is used to make sure that only one "
+    + "process can write to the message archive at a time.",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -38,10 +37,10 @@ MESSAGE_ARCHIVE_DIR_LOCK: Annotated[
 )
 
 
-class MessagingAgent():
+class MessagingAgent:
     def __init__(self) -> None:
         """Create a new messaging agent.
-        
+
         Sets up a connection to the SQLite database that stores the active
         message queue. Creates the SQL tables if they don't exist yet.
         """
@@ -73,7 +72,7 @@ class MessagingAgent():
         """Add a message to the active message queue and the message archive.
         Messages are written to the archive right away so they don't get lost
         if the backend process fails to send them out.
-        
+
         Args:
             message_body: The message body.
         """
@@ -113,7 +112,7 @@ class MessagingAgent():
             excluded_message_ids: The message IDs to exclude from the result. Can be
                                   used to exclude messages that are already being processed
                                   but are still in the active message queue.
-        
+
         Returns:
             A list of messages from the active queue.
         """
@@ -137,7 +136,8 @@ class MessagingAgent():
                 identifier=result[0],
                 timestamp=result[1],
                 message_body=json.loads(result[2]),
-            ) for result in results
+            )
+            for result in results
         ]
 
     def remove_messages(self, message_ids: set[int] | list[int]) -> None:
@@ -154,7 +154,7 @@ class MessagingAgent():
                     DELETE FROM QUEUE
                     WHERE internal_id IN ({mids_placeholder});
                 """,
-                (*message_ids, ),
+                (*message_ids,),
             )
 
     @staticmethod
@@ -163,7 +163,7 @@ class MessagingAgent():
 
         return os.path.join(
             MESSAGE_ARCHIVE_DIR,
-            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.csv")
+            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.csv"),
         )
 
     def teardown(self) -> None:
@@ -177,7 +177,7 @@ class MessagingAgent():
 
         Args:
             date: The date for which to load the message archive.
-        
+
         Returns:
             A list of messages from the message archive.
         """
@@ -186,13 +186,13 @@ class MessagingAgent():
         results: list[src.types.MessageArchiveItem] = []
         if os.path.isfile(path):
             with open(path, "r") as f:
-                lines = f.read().strip(" \n").split("\n")[1 :]
+                lines = f.read().strip(" \n").split("\n")[1:]
 
             for line in lines:
                 line_parts = line.split(",")
                 assert len(line_parts) >= 2
                 timestamp = line_parts[0]
-                message_body = ",".join(line_parts[1 :]).replace('""', '"')[1 :-1]
+                message_body = ",".join(line_parts[1:]).replace('""', '"')[1:-1]
                 results.append(
                     src.types.MessageArchiveItem(
                         timestamp=float(timestamp),
