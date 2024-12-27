@@ -6,7 +6,7 @@ import src
 import random
 
 
-@pytest.mark.order(2)
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_cli_pointer_switching() -> None:
     cli_path = os.path.join(src.constants.IVY_ROOT_DIR, f"{src.constants.NAME}-cli.sh")
