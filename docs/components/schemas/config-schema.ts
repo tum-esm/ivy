@@ -142,7 +142,7 @@ const CONFIG_SCHEMA: any = {
                         "provider",
                         "provider_host"
                     ],
-                    "title": "_UpdaterConfig",
+                    "title": "UpdaterConfig",
                     "type": "object"
                 },
                 {

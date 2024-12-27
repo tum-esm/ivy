@@ -217,6 +217,12 @@ class Updater:
             version: The version of the source code to download.
         """
 
+        # TODO: support downloading arbitrary commit shas
+
+        assert os.path.isdir(
+            src.constants.IVY_ROOT_DIR
+        ), f"IVY_ROOT_DIR ({src.constants.IVY_ROOT_DIR}) is not a directory"
+
         dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if os.path.isfile(dst_dir):
             raise FileExistsError(f"There should not be a file at {dst_dir}")
