@@ -361,10 +361,14 @@ class Updater:
             )
         os.chmod(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
 
-    def remove_old_venvs(self) -> None:
+    @staticmethod
+    def remove_old_venvs(
+        current_version: tum_esm_utils.validators.Version,
+        log_progress: Callable[[str], None],
+    ) -> None:
         """Remove all old virtual environments, that are not currently in use."""
 
-        self.logger.info("Removing all unused .venvs")
+        log_progress("Removing all unused .venvs")
 
         venvs_to_be_removed: list[str] = []
         for subdir in os.listdir(src.constants.IVY_ROOT_DIR):
@@ -372,17 +376,16 @@ class Updater:
                 tum_esm_utils.validators.Version(subdir)
             except pydantic.ValidationError:
                 continue
-            if subdir == self.config.general.software_version.as_identifier():
+            if subdir == current_version.as_identifier():
                 continue
             venv_path = os.path.join(src.constants.IVY_ROOT_DIR, subdir, ".venv")
             if os.path.isdir(venv_path):
                 venvs_to_be_removed.append(venv_path)
 
-        self.logger.debug(
-            f"found {len(venvs_to_be_removed)} old .venvs to be removed",
-            details=f"paths = {json.dumps(venvs_to_be_removed, indent=4)}",
+        log_progress(
+            f"found {len(venvs_to_be_removed)} old .venvs to be removed: {venvs_to_be_removed}"
         )
         for v in venvs_to_be_removed:
             shutil.rmtree(v)
 
-        self.logger.debug(f"successfully removed all old .venvs")
+        log_progress(f"successfully removed all old .venvs")

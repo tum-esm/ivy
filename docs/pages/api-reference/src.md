@@ -1126,8 +1126,10 @@ explanation of the update process.
 **`remove_old_venvs`**
 
 ```python
+@staticmethod
 def remove_old_venvs(
-    self,
+    current_version: tum_esm_utils.validators.Version,
+    log_progress: typing.Callable[[str], None],
 ) -> None:
 ```
 
