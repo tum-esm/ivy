@@ -11,6 +11,7 @@ from src.utils.messaging_agent import MessagingAgent, ACTIVE_QUEUE_FILE
 from src.types import DataMessageBody, LogMessageBody, ConfigMessageBody
 
 
+@pytest.mark.order(2)
 @pytest.mark.quick
 def test_simple_addition_and_deletion(restore_production_files: None) -> None:
     archive_file = MessagingAgent.get_message_archive_file()
@@ -55,6 +56,7 @@ def test_simple_addition_and_deletion(restore_production_files: None) -> None:
     agent.teardown()
 
 
+@pytest.mark.order(2)
 @pytest.mark.quick
 def test_all_message_types(
     restore_production_files: None,
@@ -107,6 +109,7 @@ def test_all_message_types(
         assert isinstance(messages[i].message_body, ConfigMessageBody)
 
 
+@pytest.mark.order(2)
 @pytest.mark.quick
 def test_message_archive_integrity(restore_production_files: None) -> None:
     agent = MessagingAgent()
