@@ -255,7 +255,7 @@ class ForeignConfig(pydantic.BaseModel):
         """Dump the config file to the path `<ivy_root>/<version>/config/config.json`"""
 
         path = os.path.join(
-            src.constants.IVY_ROOT_DIR,
+            src.constants.ROOT_DIR,
             self.general.software_version.as_identifier(),
             "config",
             "config.json",
