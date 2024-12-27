@@ -68,15 +68,23 @@ markers = [
 
 [tool.pdm.scripts]
 quick-tests = { shell = """
-  pytest --verbose -m "quick" --cov=src --exitfirst tests/
+  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" &&
+  echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR &&
+  mkdir $IVY_ROOT_DIR &&
+  pytest --verbose -m "quick" --cov=src --exitfirst tests/ &&
+  rm -rf /tmp/ivy-ci-test-*
   """ }
 integration-tests = { shell = """
-  pytest --verbose -m "integration" --cov=src --exitfirst tests/
+  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" &&
+  echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR &&
+  mkdir $IVY_ROOT_DIR &&
+  pytest --verbose -m "integration" --cov=src --exitfirst tests/ &&
+  rm -rf /tmp/ivy-ci-test-*
   """ }
 updater-tests = { shell = """
   export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" &&
   echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR &&
   mkdir $IVY_ROOT_DIR &&
-  pytest --verbose -m "updater" --cov=src --exitfirst tests/
+  pytest --verbose -m "updater" --cov=src --exitfirst tests/ &&
   rm -rf /tmp/ivy-ci-test-*
   """ }
