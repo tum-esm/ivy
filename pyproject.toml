@@ -33,14 +33,14 @@ documentation = "https://tum-esm-ivy.netlify.app/"
 
 [project.optional-dependencies]
 dev = [
-    "docstring-parser>=0.16",
-    "jsonref>=1.1.0",
-    "mypy>=1.13.0",
-    "pytest-cov>=6.0.0",
-    "setuptools>=75.5.0",
-    "types-psutil>=6.1.0.20241102",
-    "ruff>=0.8.4",
-    "pytest-order>=1.3.0",
+  "docstring-parser>=0.16",
+  "jsonref>=1.1.0",
+  "mypy>=1.13.0",
+  "pytest-cov>=6.0.0",
+  "setuptools>=75.5.0",
+  "types-psutil>=6.1.0.20241102",
+  "ruff>=0.8.4",
+  "pytest-order>=1.3.0",
 ]
 [tool.pdm]
 distribution = false
@@ -66,6 +66,6 @@ markers = [
 ]
 
 [tool.pdm.scripts]
-run-quick-tests = { shell = 'pytest --verbose -m "quick" --cov=src tests/' }
-run-integration-tests = { shell = 'pytest --verbose -m "integration" --cov=src tests/' }
-run-updater-tests = { shell = 'IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR && pytest --verbose -m "updater" --cov=src tests/' }
+run-quick-tests = { shell = 'pytest --verbose -m "quick" --cov=src --exitfirst tests/' }
+run-integration-tests = { shell = 'pytest --verbose -m "integration" --cov=src --exitfirst tests/' }
+run-updater-tests = { shell = 'IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR && pytest --verbose -m "updater" --cov=src --exitfirst tests/' }
