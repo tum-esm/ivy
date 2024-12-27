@@ -20,7 +20,10 @@ class Updater:
 
     instance: Optional[Updater] = None
 
-    def __init__(self, config: src.types.Config) -> None:
+    def __init__(
+        self,
+        config: src.types.Config,
+    ) -> None:
         """Initialize an Updater instance.
 
         Args:
@@ -34,7 +37,10 @@ class Updater:
         self.logger = Logger(config=config, origin="updater")
         self.messaging_agent = MessagingAgent()
 
-    def perform_update(self, foreign_config: src.types.ForeignConfig) -> None:
+    def perform_update(
+        self,
+        foreign_config: src.types.ForeignConfig,
+    ) -> None:
         """Perform an update for a received config file.
 
         See the [documentation](/core-concepts/over-the-air-updates) for a detailed
@@ -137,7 +143,7 @@ class Updater:
 
             self.logger.debug("Installing dependencies")
             try:
-                self.install_dependencies(foreign_config.general.software_version)
+                Updater.install_dependencies(self.logger, foreign_config.general.software_version)
                 self.logger.debug("Successfully installed dependencies")
             except Exception as e:
                 self.logger.exception(e, "Could not install dependencies")
@@ -205,6 +211,8 @@ class Updater:
         gitlab for private and public repositories. Feel free to request
         other providers in the issue tracker.
 
+        This is a static method, so it can be tested independently.
+
         Args:
             version: The version of the source code to download.
         """
@@ -262,7 +270,11 @@ class Updater:
                 working_directory=src.constants.IVY_ROOT_DIR,
             )
 
-    def install_dependencies(self, version: tum_esm_utils.validators.Version) -> None:
+    @staticmethod
+    def install_dependencies(
+        logger: src.utils.Logger,
+        version: tum_esm_utils.validators.Version,
+    ) -> None:
         """Create a virtual environment and install the dependencies in the
         version directory using PDM. It uses the `pdm sync` command to exactly
         create the desired environmont.
@@ -271,7 +283,10 @@ class Updater:
         standards, one could also use `pip install .`. However, we recommend
         using PDM for due to caching and dependency locking.
 
+        This is a static method, so it can be tested independently.
+
         Args:
+            logger: A logger instance.
             version: The version of the source code to download.
         """
 
@@ -281,22 +296,25 @@ class Updater:
 
         venv_path = os.path.join(version_dir, ".venv")
         if os.path.isdir(venv_path):
-            self.logger.debug(f"Removing existing virtual environment at {venv_path}")
+            logger.debug(f"Removing existing virtual environment at {venv_path}")
             shutil.rmtree(venv_path)
 
-        self.logger.debug(f"Creating virtual environment at {venv_path}")
+        logger.debug(f"Creating virtual environment at {venv_path}")
         tum_esm_utils.shell.run_shell_command(
             f"python{sys.version_info.major}.{sys.version_info.minor} -m venv .venv",
             working_directory=version_dir,
         )
 
-        self.logger.debug(f"Installing dependencies using PDM")
+        logger.debug(f"Installing dependencies using PDM")
         tum_esm_utils.shell.run_shell_command(
             f"source .venv/bin/activate && pdm sync --no-self",
             working_directory=version_dir,
         )
 
-    def run_pytests(self, version: tum_esm_utils.validators.Version) -> None:
+    def run_pytests(
+        self,
+        version: tum_esm_utils.validators.Version,
+    ) -> None:
         """Run all pytests with the mark "version_change" in the version directory.
 
         Args:
@@ -311,7 +329,10 @@ class Updater:
             working_directory=version_dir,
         )
 
-    def update_cli_pointer(self, version: tum_esm_utils.validators.Version) -> None:
+    def update_cli_pointer(
+        self,
+        version: tum_esm_utils.validators.Version,
+    ) -> None:
         """Update the cli pointer to a new version.
 
         Args:
