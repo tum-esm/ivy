@@ -232,7 +232,7 @@ class Updater:
 
         if not os.path.isdir(dst_dir):
             repository_name = updater_config.repository.split("/")[-1]
-            tarball_name = f"{updater_config.repository}-{version.as_tag()}.tar.gz"
+            tarball_name = f"{repository_name}-{version.as_tag()}.tar.gz"
             dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
 
             if updater_config.provider == "github":
@@ -265,7 +265,7 @@ class Updater:
                 .strip(" \n/")
                 .replace("\n", " ")
             )
-            if " " not in name_of_directory_in_tarball:
+            if " " in name_of_directory_in_tarball:
                 raise RuntimeError(
                     f"Found multiple directories/files in source code "
                     + f"tarball {name_of_directory_in_tarball.split(' ')}"
@@ -275,6 +275,7 @@ class Updater:
                 f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version.as_identifier()}",
                 working_directory=src.constants.IVY_ROOT_DIR,
             )
+            os.remove(dst_tar)
 
     @staticmethod
     def install_dependencies(
