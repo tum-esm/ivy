@@ -113,7 +113,7 @@ class Updater:
 
             self.logger.debug(f"Downloading new source code")
             try:
-                self.download_source_code(foreign_config.general.software_version)
+                Updater.download_source_code(self.config, foreign_config.general.software_version)
                 self.logger.debug(f"Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
@@ -184,7 +184,11 @@ class Updater:
             )
             exit(0)
 
-    def download_source_code(self, version: tum_esm_utils.validators.Version) -> None:
+    @staticmethod
+    def download_source_code(
+        config: src.types.Config,
+        version: tum_esm_utils.validators.Version,
+    ) -> None:
         """Download the source code of the new version to the version
         directory. This is currently only implemented for github and
         gitlab for private and public repositories. Feel free to request
@@ -194,40 +198,40 @@ class Updater:
             version: The version of the source code to download.
         """
 
-        assert self.config.updater is not None
+        assert config.updater is not None, "Updater has to be configured"
 
         dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
         if os.path.isfile(dst_dir):
             raise FileExistsError(f"There should not be a file at {dst_dir}")
         if os.path.isdir(dst_dir):
-            if self.config.updater.source_conflict_strategy == "overwrite":
+            if config.updater.source_conflict_strategy == "overwrite":
                 shutil.rmtree(dst_dir)
 
         if not os.path.isdir(dst_dir):
-            repository_name = self.config.updater.repository.split("/")[-1]
-            tarball_name = f"{self.config.updater.repository}-{version.as_tag()}.tar.gz"
+            repository_name = config.updater.repository.split("/")[-1]
+            tarball_name = f"{config.updater.repository}-{version.as_tag()}.tar.gz"
             dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
 
-            if self.config.updater.provider == "github":
+            if config.updater.provider == "github":
                 header: str = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28" '
-                if self.config.updater.access_token is not None:
-                    header += f'--header "Authorization: Bearer {self.config.updater.access_token}"'
+                if config.updater.access_token is not None:
+                    header += f'--header "Authorization: Bearer {config.updater.access_token}"'
                 tum_esm_utils.shell.run_shell_command(
-                    f"curl -L {header} https://api.{self.config.updater.provider_host}/repos/{self.config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}",
+                    f"curl -L {header} https://api.{config.updater.provider_host}/repos/{config.updater.repository}/tarball/{version.as_tag()} --output {tarball_name}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
-            elif self.config.updater.provider == "gitlab":
+            elif config.updater.provider == "gitlab":
                 auth_param: str = ""
-                if self.config.updater.access_token is not None:
-                    auth_param = f"?private_token={self.config.updater.access_token}"
-                repository_name = self.config.updater.repository.split("/")[-1]
+                if config.updater.access_token is not None:
+                    auth_param = f"?private_token={config.updater.access_token}"
+                repository_name = config.updater.repository.split("/")[-1]
                 tum_esm_utils.shell.run_shell_command(
-                    f"curl -L https://{self.config.updater.provider_host}/{self.config.updater.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
+                    f"curl -L https://{config.updater.provider_host}/{config.updater.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
                     working_directory=src.constants.IVY_ROOT_DIR,
                 )
             else:
                 raise NotImplementedError(
-                    f"Source code provider {self.config.updater.provider} not implemented"
+                    f"Source code provider {config.updater.provider} not implemented"
                 )
 
             name_of_directory_in_tarball = (
