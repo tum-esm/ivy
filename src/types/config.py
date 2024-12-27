@@ -109,7 +109,7 @@ class MQTTBrokerConfig(pydantic.BaseModel):
     )
 
 
-class _BackendConfig(pydantic.BaseModel):
+class BackendConfig(pydantic.BaseModel):
     provider: Literal["tenta", "thingsboard"] = pydantic.Field(
         ...,
         description="The provider to use for the backend. The template ships with these two providers but is easily extendable to support other backends.",
@@ -119,13 +119,13 @@ class _BackendConfig(pydantic.BaseModel):
         description="The MQTT broker to use for the backend. In future versions, one could add support for other protocols like `https_connection` or `lorawan_connection`.",
     )
     max_parallel_messages: int = pydantic.Field(
-        ...,
+        50,
         ge=1,
         le=10000,
         description="How many messages that are not published yet should be passed to the backend at once",
     )
     max_drain_time: int = pydantic.Field(
-        ...,
+        600,
         ge=10,
         le=7200,
         description="When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages.",
@@ -162,7 +162,7 @@ class Config(pydantic.BaseModel):
         default=None,
         description="If this is not set, the updater will not be used.",
     )
-    backend: Optional[_BackendConfig] = pydantic.Field(
+    backend: Optional[BackendConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the backend will not be used.",
     )
