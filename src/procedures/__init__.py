@@ -8,7 +8,7 @@ All of the procedures in this module should have the signature:
 ```python
 def run(
     config: src.types.Config,
-    logger: src.utils.Logger,
+    name: str,
 ) -> None:
     ...
 ```"""

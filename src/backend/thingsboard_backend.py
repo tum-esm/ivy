@@ -13,18 +13,19 @@ import src
 
 def run(
     config: src.types.Config,
-    logger: src.utils.Logger,
+    name: str,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
     """The main procedure for the ThingsBoard backend.
 
     Args:
         config: The configuration object.
-        logger: The logger object.
+        name: The name of the backend procedure.
         teardown_indicator: The event that is set when the procedure should terminate.
     """
     assert config.backend is not None
     assert config.backend.provider == "thingsboard"
+    logger = src.utils.Logger(config=config, origin=name)
     messaging_agent = src.utils.MessagingAgent()
 
     # parse incoming config messages

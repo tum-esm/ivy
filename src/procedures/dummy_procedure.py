@@ -7,7 +7,7 @@ import tum_esm_utils
 import src
 
 
-def run(config: src.types.Config, logger: src.utils.Logger) -> None:
+def run(config: src.types.Config, name: str) -> None:
     """Performs a random walk and sends out the current position.
 
     You can use this as an example for your own procedures and
@@ -15,9 +15,10 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
 
     Args:
         config: The configuration object.
-        logger: The logger object.
+        name: The name of the procedure.
     """
 
+    logger = src.utils.Logger(config=config, origin=name)
     messaging_agent = src.utils.MessagingAgent()
     random.seed(time.time())
     current_positions: tuple[int, int] = (0, 0)

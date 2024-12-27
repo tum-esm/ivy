@@ -56,13 +56,13 @@ def run() -> None:
         src.utils.LifecycleManager(
             config=config,
             entrypoint=src.procedures.dummy_procedure.run,
-            procedure_name="dummy-procedure",
+            name="dummy-procedure",
             variant="procedure",
         ),
         src.utils.LifecycleManager(
             config=config,
             entrypoint=src.procedures.system_checks.run,
-            procedure_name="system-checks",
+            name="system-checks",
             variant="procedure",
         ),
         # CUSTOM: Add your own procedures here
@@ -74,7 +74,7 @@ def run() -> None:
                 src.utils.LifecycleManager(
                     config=config,
                     entrypoint=src.backend.tenta_backend.run,
-                    procedure_name="tenta-backend",
+                    name="tenta-backend",
                     variant="backend",
                 )
             )
@@ -83,7 +83,7 @@ def run() -> None:
                 src.utils.LifecycleManager(
                     config=config,
                     entrypoint=src.backend.thingsboard_backend.run,
-                    procedure_name="thingsboard-backend",
+                    name="thingsboard-backend",
                     variant="backend",
                 )
             )

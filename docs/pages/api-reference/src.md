@@ -105,7 +105,7 @@ All of the procedures in this module should have the signature:
 ```python
 def run(
     config: src.types.Config,
-    logger: src.utils.Logger,
+    name: str,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
     ...
@@ -124,7 +124,7 @@ gives more freedom on how to handle the shutdown of the backend.
 ```python
 def run(
     config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
+    name: str,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
 ```
@@ -134,7 +134,7 @@ The main procedure for the Tenta backend.
 **Arguments:**
 
  * `config`: The configuration object.
- * `logger`: The logger object.
+ * `name`: The name of the backend procedure.
  * `teardown_indicator`: The event that is set when the procedure should terminate.
 
 ### `src.backend.thingsboard_backend.py` [#src.backend.thingsboard_backend]
@@ -146,7 +146,7 @@ The main procedure for the Tenta backend.
 ```python
 def run(
     config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
+    name: str,
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
 ```
@@ -156,7 +156,7 @@ The main procedure for the ThingsBoard backend.
 **Arguments:**
 
  * `config`: The configuration object.
- * `logger`: The logger object.
+ * `name`: The name of the backend procedure.
  * `teardown_indicator`: The event that is set when the procedure should terminate.
 
 ## `src.procedures` [#src.procedures]
@@ -171,7 +171,7 @@ All of the procedures in this module should have the signature:
 ```python
 def run(
     config: src.types.Config,
-    logger: src.utils.Logger,
+    name: str,
 ) -> None:
     ...
 ```
@@ -185,7 +185,7 @@ def run(
 ```python
 def run(
     config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
+    name: str,
 ) -> None:
 ```
 
@@ -197,7 +197,7 @@ remove this in your own project
 **Arguments:**
 
  * `config`: The configuration object.
- * `logger`: The logger object.
+ * `name`: The name of the procedure.
 
 ### `src.procedures.system_checks.py` [#src.procedures.system_checks]
 
@@ -208,7 +208,7 @@ remove this in your own project
 ```python
 def run(
     config: src.types.config.Config,
-    logger: src.utils.logger.Logger,
+    name: str,
 ) -> None:
 ```
 
@@ -217,7 +217,7 @@ Logs the system load and last boot time.
 **Arguments:**
 
  * `config`: The configuration object.
- * `logger`: The logger object.
+ * `name`: The name of the procedure.
 
 ## `src.types` [#src.types]
 
@@ -502,19 +502,19 @@ manager.
 def __init__(
     self,
     config: src.types.config.Config,
-    entrypoint: typing.Union[typing.Callable[[src.types.config.Config, src.utils.logger.Logger], None], typing.Callable[[src.types.config.Config, src.utils.logger.Logger, multiprocessing.synchronize.Event], None]],
-    procedure_name: str,
+    entrypoint: typing.Union[typing.Callable[[src.types.config.Config, str], None], typing.Callable[[src.types.config.Config, str, multiprocessing.synchronize.Event], None]],
+    name: str,
     variant: typing.Literal['procedure', 'backend'],
 ) -> None:
 ```
 
-Initializes a new procedure manager.
+Initializes a new lifecycle manager.
 
 **Arguments:**
 
  * `config`:         The configuration object.
  * `entrypoint`:     The entrypoint of the procedure or backend.
- * `procedure_name`: The name of the procedure or backend. Used to name
+ * `name`: The name of the procedure or backend. Used to name
 the spawned process.
  * `variant`:        Whether the entrypoint is a procedure or a backend.
 The difference is only in the teardown logic.
@@ -770,6 +770,17 @@ Writes a INFO log line.
 
  * `message`:  The message to log.
  * `details`:  Additional details to log, useful for verbose output.
+
+**`read_current_log_file`**
+
+```python
+@staticmethod
+def read_current_log_file() -> typing.Optional[str]:
+```
+
+Reads the current log file and returns its content.
+
+**Returns:** The content of the current log file.
 
 **`warning`**
 
