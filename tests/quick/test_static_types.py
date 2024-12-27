@@ -8,7 +8,7 @@ def _rm(path: str) -> None:
     os.system(f"rm -rf {os.path.join(src.constants.PROJECT_DIR, path)}")
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_static_types() -> None:
     _rm(".mypy_cache/3.*/src")
     _rm(".mypy_cache/3.*/tests")

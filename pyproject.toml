@@ -44,15 +44,8 @@ dev = [
 [tool.pdm]
 distribution = false
 
-[tool.setuptools]
-packages = []
-
-[tool.pytest.ini_options]
-markers = [
-  "ci: can be run in any environment",
-  "integration: can only be run on a configured system",
-  "version_change: will run before switching to a new version",
-]
+[tool.ruff]
+line-length = 100
 
 [tool.mypy]
 implicit_reexport = true
@@ -60,9 +53,18 @@ plugins = ["pydantic.mypy"]
 strict = true
 warn_unused_ignores = false
 
-[tool.ruff]
-line-length = 100
-
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
 module = ["jsonref"]
+
+[tool.pytest.ini_options]
+markers = [
+  "quick: can be run in any environment (< 10s)",
+  "integration: can only be run on a configured system (< 10s)",
+  "version_change: will run before switching to a new version",
+]
+
+[tool.pdm.scripts]
+run-quick-tests = { shell = 'pytest --verbose -m "quick" --cov=src tests/' }
+run-integration-tests = { shell = 'pytest --verbose -m "integration" --cov=src tests/' }
+run-updater-tests = { shell = 'IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && echo running pytests with IVY_ROOT_DIR=$IVY_ROOT_DIR && pytest --verbose -m "updater" --cov=src tests/' }
