@@ -9,8 +9,7 @@ import tum_esm_utils
 STATE_FILE: Annotated[
     str, "Points to `data/state.json` where the state is communicated with all threads"
 ] = os.path.join(
-    src.constants.PROJECT_DIR,
-    "data",
+    src.constants.DATA_DIR,
     "state.json",
 )
 
@@ -18,8 +17,7 @@ STATE_FILE_LOCK: Annotated[
     str,
     "Points to `data/state.lock` which is used to ensure that only one thread can access the state at a time.",
 ] = os.path.join(
-    src.constants.PROJECT_DIR,
-    "data",
+    src.constants.DATA_DIR,
     "state.lock",
 )
 

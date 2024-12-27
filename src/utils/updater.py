@@ -223,10 +223,10 @@ class Updater:
         # TODO: support downloading arbitrary commit shas
 
         assert os.path.isdir(
-            src.constants.IVY_ROOT_DIR
-        ), f"IVY_ROOT_DIR ({src.constants.IVY_ROOT_DIR}) is not a directory"
+            src.constants.ROOT_DIR
+        ), f"ROOT_DIR ({src.constants.ROOT_DIR}) is not a directory"
 
-        dst_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+        dst_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
         if os.path.isfile(dst_dir):
             raise FileExistsError(f"There should not be a file at {dst_dir}")
         if os.path.isdir(dst_dir):
@@ -236,7 +236,7 @@ class Updater:
         if not os.path.isdir(dst_dir):
             repository_name = updater_config.repository.split("/")[-1]
             tarball_name = f"{repository_name}-{version.as_tag()}.tar.gz"
-            dst_tar = os.path.join(src.constants.IVY_ROOT_DIR, tarball_name)
+            dst_tar = os.path.join(src.constants.ROOT_DIR, tarball_name)
 
             if updater_config.provider == "github":
                 header: str = '--header "Accept: application/vnd.github+json" --header "X-GitHub-Api-Version: 2022-11-28" '
@@ -244,7 +244,7 @@ class Updater:
                     header += f'--header "Authorization: Bearer {updater_config.access_token}"'
                 tum_esm_utils.shell.run_shell_command(
                     f"curl -L {header} https://api.{updater_config.provider_host}/repos/{updater_config.repository}/tarball/{version.as_tag()} --output {tarball_name}",
-                    working_directory=src.constants.IVY_ROOT_DIR,
+                    working_directory=src.constants.ROOT_DIR,
                 )
             elif updater_config.provider == "gitlab":
                 auth_param: str = ""
@@ -253,7 +253,7 @@ class Updater:
                 repository_name = updater_config.repository.split("/")[-1]
                 tum_esm_utils.shell.run_shell_command(
                     f"curl -L https://{updater_config.provider_host}/{updater_config.repository}/-/archive/{version.as_tag()}/{repository_name}-{version.as_tag()}.tar.gz{auth_param} --output {dst_tar}",
-                    working_directory=src.constants.IVY_ROOT_DIR,
+                    working_directory=src.constants.ROOT_DIR,
                 )
             else:
                 raise NotImplementedError(
@@ -263,7 +263,7 @@ class Updater:
             name_of_directory_in_tarball = (
                 tum_esm_utils.shell.run_shell_command(
                     f"tar -tf {tarball_name} | head -1",
-                    working_directory=src.constants.IVY_ROOT_DIR,
+                    working_directory=src.constants.ROOT_DIR,
                 )
                 .strip(" \n/")
                 .replace("\n", " ")
@@ -276,7 +276,7 @@ class Updater:
 
             tum_esm_utils.shell.run_shell_command(
                 f"tar -xf {tarball_name} && mv {name_of_directory_in_tarball} {version.as_identifier()}",
-                working_directory=src.constants.IVY_ROOT_DIR,
+                working_directory=src.constants.ROOT_DIR,
             )
             os.remove(dst_tar)
 
@@ -301,7 +301,7 @@ class Updater:
             log_progress: A function to log progress messages
         """
 
-        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+        version_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
 
@@ -334,7 +334,7 @@ class Updater:
             pytest_marker: The pytest marker to run
         """
 
-        version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+        version_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
         if not os.path.isdir(version_dir):
             raise RuntimeError(f"Directory {version_dir} does not exist")
         tum_esm_utils.shell.run_shell_command(
@@ -352,9 +352,9 @@ class Updater:
             to_version: The version to update the cli pointer to
         """
 
-        version_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier())
+        version_path = os.path.join(src.constants.ROOT_DIR, to_version.as_identifier())
         venv_path = os.path.join(version_path, ".venv")
-        with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
+        with open(f"{src.constants.ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
             f.writelines(
                 [
                     "#!/bin/bash",
@@ -363,7 +363,7 @@ class Updater:
                     f"{venv_path}/bin/python {version_path}/cli.py $*",
                 ]
             )
-        os.chmod(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
+        os.chmod(f"{src.constants.ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
 
     @staticmethod
     def remove_old_venvs(
@@ -380,14 +380,14 @@ class Updater:
         log_progress("Removing all unused .venvs")
 
         venvs_to_be_removed: list[str] = []
-        for subdir in os.listdir(src.constants.IVY_ROOT_DIR):
+        for subdir in os.listdir(src.constants.ROOT_DIR):
             try:
                 tum_esm_utils.validators.Version(subdir)
             except pydantic.ValidationError:
                 continue
             if subdir == current_version.as_identifier():
                 continue
-            venv_path = os.path.join(src.constants.IVY_ROOT_DIR, subdir, ".venv")
+            venv_path = os.path.join(src.constants.ROOT_DIR, subdir, ".venv")
             if os.path.isdir(venv_path):
                 venvs_to_be_removed.append(venv_path)
 

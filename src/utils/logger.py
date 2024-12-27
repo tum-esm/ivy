@@ -10,8 +10,8 @@ import src
 from .functions import log_level_is_visible
 from .messaging_agent import MessagingAgent
 
-LOGS_ARCHIVE_DIR = os.path.join(src.constants.PROJECT_DIR, "data", "logs")
-FILELOCK_PATH = os.path.join(src.constants.PROJECT_DIR, "data", "logs.lock")
+LOGS_ARCHIVE_DIR = os.path.join(src.constants.DATA_DIR, "logs")
+FILELOCK_PATH = os.path.join(src.constants.DATA_DIR, "logs.lock")
 
 
 def _pad_str_right(

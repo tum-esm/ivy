@@ -29,6 +29,12 @@ PROJECT_DIR: str
 The root directory of the project (the parent of `src/`)
 
 ```python
+DATA_DIR: str
+```
+
+The directory where the data files are stored = `PROJECT_DIR/data` or the value of the environment variable `IVY_DATA_DIR` (if set)
+
+```python
 VERSION: tum_esm_utils.validators.Version
 ```
 
@@ -41,7 +47,7 @@ NAME: str
 The name of the project
 
 ```python
-IVY_ROOT_DIR: str
+ROOT_DIR: str
 ```
 
 The root directory of the project on a production system = `~/Documents/{NAME}` or the value of the environment variable `IVY_ROOT_DIR` (if set)

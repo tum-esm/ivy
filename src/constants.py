@@ -6,6 +6,10 @@ PROJECT_DIR: Annotated[
     str,
     "The root directory of the project (the parent of `src/`)",
 ] = os.path.dirname(os.path.dirname(__file__))
+DATA_DIR: Annotated[
+    str,
+    "The directory where the data files are stored = `PROJECT_DIR/data` or the value of the environment variable `IVY_DATA_DIR` (if set)",
+] = os.environ.get("IVY_DATA_DIR", os.path.join(PROJECT_DIR, "data"))
 
 VERSION: Annotated[
     tum_esm_utils.validators.Version,
@@ -14,7 +18,7 @@ VERSION: Annotated[
 
 NAME: Annotated[str, "The name of the project"] = "ivy"
 
-IVY_ROOT_DIR: Annotated[
+ROOT_DIR: Annotated[
     str,
     "The root directory of the project on a production system = `~/Documents/{NAME}` or the value of the environment variable `IVY_ROOT_DIR` (if set)",
 ] = os.environ.get("IVY_ROOT_DIR", os.path.join(os.path.expanduser("~"), "Documents", NAME))

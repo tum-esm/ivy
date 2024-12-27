@@ -8,8 +8,8 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
 import src
 
-if not os.path.isdir(src.constants.IVY_ROOT_DIR):
-    raise FileNotFoundError(f"The directory {src.constants.IVY_ROOT_DIR} does not exist")
+if not os.path.isdir(src.constants.ROOT_DIR):
+    raise FileNotFoundError(f"The directory {src.constants.ROOT_DIR} does not exist")
 
 
 @pytest.fixture(scope="function")
