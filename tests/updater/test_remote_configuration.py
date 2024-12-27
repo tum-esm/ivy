@@ -6,6 +6,7 @@ import pytest
 # TODO: During this test, point src.constants.IVY_ROOT_DIR to a directory inside /tmp
 
 
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_remote_config_receiving() -> None:
     # TODO: test whether messages sent to the broker are received by the backend and correctly put into the messaging queue
@@ -13,6 +14,7 @@ def test_remote_config_receiving() -> None:
     pass
 
 
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_reconfiguration() -> None:
     # TODO: test whether the update procedure correctly processes the received messages
@@ -22,6 +24,7 @@ def test_reconfiguration() -> None:
     pass
 
 
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_version_update() -> None:
     # TODO: test whether the update procedure correctly updates to a new version

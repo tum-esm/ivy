@@ -12,6 +12,7 @@ def _get_checksum() -> str:
     )
 
 
+@pytest.mark.order(1)
 @pytest.mark.quick
 def test_api_reference_state() -> None:
     checksum_before = _get_checksum()

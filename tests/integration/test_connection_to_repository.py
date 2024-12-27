@@ -3,6 +3,7 @@ import tum_esm_utils
 import src
 
 
+@pytest.mark.order(3)
 @pytest.mark.integration
 def test_connection_to_repository() -> None:
     config = src.types.Config.load()

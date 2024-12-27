@@ -2,6 +2,7 @@ import pytest
 import src
 
 
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_code_github_download() -> None:
     updater_config = src.types.UpdaterConfig(
@@ -14,6 +15,7 @@ def test_code_github_download() -> None:
     # 2.1.0
 
 
+@pytest.mark.order(4)
 @pytest.mark.updater
 def test_code_gitlab_download() -> None:
     updater_config = src.types.UpdaterConfig(

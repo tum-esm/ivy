@@ -33,13 +33,14 @@ documentation = "https://tum-esm-ivy.netlify.app/"
 
 [project.optional-dependencies]
 dev = [
-  "docstring-parser>=0.16",
-  "jsonref>=1.1.0",
-  "mypy>=1.13.0",
-  "pytest-cov>=6.0.0",
-  "setuptools>=75.5.0",
-  "types-psutil>=6.1.0.20241102",
-  "ruff>=0.8.4",
+    "docstring-parser>=0.16",
+    "jsonref>=1.1.0",
+    "mypy>=1.13.0",
+    "pytest-cov>=6.0.0",
+    "setuptools>=75.5.0",
+    "types-psutil>=6.1.0.20241102",
+    "ruff>=0.8.4",
+    "pytest-order>=1.3.0",
 ]
 [tool.pdm]
 distribution = false
