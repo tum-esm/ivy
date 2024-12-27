@@ -1,7 +1,7 @@
 """This module contains all type definitions of the codebase and
 may implement loading and dumping functionality like `Config.load`."""
 
-from .config import Config, ForeignConfig
+from .config import Config, UpdaterConfig, ForeignConfig
 from .messages import (
     DataMessageBody,
     LogMessageBody,

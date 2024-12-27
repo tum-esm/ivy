@@ -55,7 +55,7 @@ class _LoggingVerbosityConfig(pydantic.BaseModel):
     )
 
 
-class _UpdaterConfig(pydantic.BaseModel):
+class UpdaterConfig(pydantic.BaseModel):
     repository: str = pydantic.Field(
         ...,
         pattern=r"[a-zA-Z0-9-]+/[a-zA-Z0-9-]+",
@@ -158,7 +158,7 @@ class Config(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra="forbid")
     general: _GeneralConfig = pydantic.Field(...)
     logging_verbosity: _LoggingVerbosityConfig = pydantic.Field(...)
-    updater: Optional[_UpdaterConfig] = pydantic.Field(
+    updater: Optional[UpdaterConfig] = pydantic.Field(
         default=None,
         description="If this is not set, the updater will not be used.",
     )
