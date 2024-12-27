@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 path = os.path.join(src.constants.PROJECT_DIR, "pyproject.toml")
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_pyproject_toml() -> None:
     with open(path, "rb") as f:
         data = tomllib.load(f)

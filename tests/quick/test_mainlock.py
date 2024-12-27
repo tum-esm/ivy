@@ -2,7 +2,7 @@ import pytest
 import src
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_mainlock() -> None:
     with src.utils.functions.with_automation_lock():
         try:
@@ -10,3 +10,5 @@ def test_mainlock() -> None:
                 raise Exception("mainlock could be acquired twice")
         except TimeoutError:
             pass
+        return
+    assert False, "mainlock could not be acquired at all"

@@ -3,7 +3,7 @@ import pytest
 import src
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_config_templates() -> None:
     """Test whether the config template is parseable using the
     config schema and the foreign config schema."""
@@ -16,7 +16,7 @@ def test_config_templates() -> None:
     src.types.ForeignConfig.model_validate_json(src.types.Config.load_template().model_dump_json())
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_config_validation() -> None:
     """Test whether the config validation fails as expected."""
     try:

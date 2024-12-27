@@ -5,7 +5,7 @@ from ..fixtures import restore_production_files
 import src
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_logging_to_files(restore_production_files: None) -> None:
     config = src.types.Config.load_template()
 
@@ -47,7 +47,7 @@ def test_logging_to_files(restore_production_files: None) -> None:
     check_last_line(["some-origin", "EXCEPTION", "ZeroDivisionError: division by zero"])
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_logging_to_messages(restore_production_files: None) -> None:
     config = src.types.Config.load_template()
 
@@ -82,7 +82,7 @@ def test_logging_to_messages(restore_production_files: None) -> None:
     assert len(messaging_agent.get_n_latest_messages(10)) == 0
 
 
-@pytest.mark.ci
+@pytest.mark.quick
 def test_log_level_visibiliy() -> None:
     # min_log_level=None
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
