@@ -27,7 +27,7 @@ class Updater:
         """Initialize an Updater instance.
 
         Args:
-            config: The current config.
+            config: The current config object
         """
 
         assert Updater.instance is None, "There should only be one Updater instance"
@@ -47,7 +47,7 @@ class Updater:
         explanation of the update process.
 
         Args:
-            foreign_config: The received config.
+            foreign_config: The received foreign config object
         """
 
         if foreign_config.general.config_revision <= self.config.general.config_revision:
@@ -216,7 +216,8 @@ class Updater:
         This is a static method, so it can be tested independently.
 
         Args:
-            version: The version of the source code to download.
+            updater_config: The updater config object
+            version: The version of the source code to download
         """
 
         # TODO: support downloading arbitrary commit shas
@@ -295,8 +296,8 @@ class Updater:
         This is a static method, so it can be tested independently.
 
         Args:
-            logger: A logger instance.
-            version: The version of the source code to download.
+            version: The version of the source code to download
+            log_progress: A function to log progress messages
         """
 
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
@@ -327,7 +328,7 @@ class Updater:
         """Run all pytests with the mark "version_change" in the version directory.
 
         Args:
-            version: The version of the source code to download.
+            version: The version of the source code to be tested
         """
 
         version_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
@@ -340,16 +341,16 @@ class Updater:
 
     def update_cli_pointer(
         self,
-        version: tum_esm_utils.validators.Version,
+        to_version: tum_esm_utils.validators.Version,
     ) -> None:
         """Update the cli pointer to a new version.
 
         Args:
-            version: The version of the source code to download.
+            to_version: The version to update the cli pointer to
         """
 
-        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier(), ".venv")
-        code_path = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier(), "src")
+        venv_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier(), ".venv")
+        code_path = os.path.join(src.constants.IVY_ROOT_DIR, to_version.as_identifier(), "src")
         with open(f"{src.constants.IVY_ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
             f.writelines(
                 [
@@ -366,7 +367,12 @@ class Updater:
         current_version: tum_esm_utils.validators.Version,
         log_progress: Callable[[str], None],
     ) -> None:
-        """Remove all old virtual environments, that are not currently in use."""
+        """Remove all old virtual environments, besides the current one.
+
+        Args:
+            current_version: The current version of the software
+            log_progress: A function to log progress
+        """
 
         log_progress("Removing all unused .venvs")
 

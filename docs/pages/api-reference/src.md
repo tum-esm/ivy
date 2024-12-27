@@ -1055,7 +1055,7 @@ Initialize an Updater instance.
 
 **Arguments:**
 
- * `config`: The current config.
+ * `config`: The current config object
 
 **`download_source_code`**
 
@@ -1077,7 +1077,8 @@ This is a static method, so it can be tested independently.
 
 **Arguments:**
 
- * `version`: The version of the source code to download.
+ * `updater_config`: The updater config object
+ * `version`: The version of the source code to download
 
 **`install_dependencies`**
 
@@ -1102,8 +1103,8 @@ This is a static method, so it can be tested independently.
 
 **Arguments:**
 
- * `logger`: A logger instance.
- * `version`: The version of the source code to download.
+ * `version`: The version of the source code to download
+ * `log_progress`: A function to log progress messages
 
 **`perform_update`**
 
@@ -1121,7 +1122,7 @@ explanation of the update process.
 
 **Arguments:**
 
- * `foreign_config`: The received config.
+ * `foreign_config`: The received foreign config object
 
 **`remove_old_venvs`**
 
@@ -1133,7 +1134,12 @@ def remove_old_venvs(
 ) -> None:
 ```
 
-Remove all old virtual environments, that are not currently in use.
+Remove all old virtual environments, besides the current one.
+
+**Arguments:**
+
+ * `current_version`: The current version of the software
+ * `log_progress`: A function to log progress
 
 **`run_pytests`**
 
@@ -1148,14 +1154,14 @@ Run all pytests with the mark "version_change" in the version directory.
 
 **Arguments:**
 
- * `version`: The version of the source code to download.
+ * `version`: The version of the source code to be tested
 
 **`update_cli_pointer`**
 
 ```python
 def update_cli_pointer(
     self,
-    version: tum_esm_utils.validators.Version,
+    to_version: tum_esm_utils.validators.Version,
 ) -> None:
 ```
 
@@ -1163,5 +1169,5 @@ Update the cli pointer to a new version.
 
 **Arguments:**
 
- * `version`: The version of the source code to download.
+ * `to_version`: The version to update the cli pointer to
 
