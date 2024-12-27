@@ -16,8 +16,10 @@ NAME: Annotated[str, "The name of the project"] = "ivy"
 
 IVY_ROOT_DIR: Annotated[
     str,
-    "The root directory of the project on a production system = `~/Documents/{NAME}`",
-] = os.path.join(os.path.expanduser('~'), "Documents", NAME)
+    "The root directory of the project on a production system = `~/Documents/{NAME}` or the value of the environment variable `IVY_ROOT_DIR` (if set)",
+] = os.environ.get(
+    "IVY_ROOT_DIR", os.path.join(os.path.expanduser("~"), "Documents", NAME)
+)
 
 LOGGING_LEVEL_PRIORITIES: Annotated[
     dict[
@@ -29,5 +31,5 @@ LOGGING_LEVEL_PRIORITIES: Annotated[
 
 SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN: Annotated[
     int,
-    "Number of seconds to wait for a procedure process to tear down gracefully before killing it"
+    "Number of seconds to wait for a procedure process to tear down gracefully before killing it",
 ] = 30
