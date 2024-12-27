@@ -17,7 +17,7 @@ def test_venv_creation_and_destruction() -> None:
     )
     other_version = tum_esm_utils.validators.Version("2.5.0")
     version = tum_esm_utils.validators.Version("2.5.3")
-    target_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+    target_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
     venv_dir = os.path.join(target_dir, ".venv")
 
     src.utils.Updater.download_source_code(updater_config, version)

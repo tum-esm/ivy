@@ -60,3 +60,12 @@ def restore_production_files() -> Generator[None, None, None]:
                 os.remove(path)
             if os.path.isfile(tmp_path):
                 os.rename(tmp_path, path)
+
+
+@pytest.fixture(scope="function")
+def provide_test_config() -> Generator[src.types.Config, None, None]:
+    config = src.types.Config.load_template()
+    config.general.system_identifier = "test-system-" + src.constants.ROOT_DIR.split("-")[-1]
+    config.updater = None
+    config.backend = None
+    yield config

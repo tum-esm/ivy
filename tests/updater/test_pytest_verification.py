@@ -16,7 +16,7 @@ def test_pytest_verification() -> None:
         source_conflict_strategy="reuse",
     )
     version = tum_esm_utils.validators.Version("2.5.3")
-    target_dir = os.path.join(src.constants.IVY_ROOT_DIR, version.as_identifier())
+    target_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
 
     src.utils.Updater.download_source_code(updater_config, version)
     src.utils.Updater.install_dependencies(
