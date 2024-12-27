@@ -39,6 +39,7 @@ dev = [
   "pytest-cov>=6.0.0",
   "setuptools>=75.5.0",
   "types-psutil>=6.1.0.20241102",
+  "ruff>=0.8.4",
 ]
 [tool.pdm]
 distribution = false
@@ -59,13 +60,8 @@ plugins = ["pydantic.mypy"]
 strict = true
 warn_unused_ignores = false
 
-[tool.yapf]
-based_on_style = "facebook"
-coalesce_brackets = true
-each_dict_entry_on_separate_line = false
-spaces_around_subscript_colon = true
-split_before_dict_set_generator = true
-column_limit = 90
+[tool.ruff]
+line-length = 100
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true

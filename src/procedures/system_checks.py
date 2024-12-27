@@ -9,7 +9,7 @@ import src
 
 def run(config: src.types.Config, logger: src.utils.Logger) -> None:
     """Logs the system load and last boot time.
-    
+
     Args:
         config: The configuration object.
         logger: The logger object.
@@ -42,13 +42,13 @@ def run(config: src.types.Config, logger: src.utils.Logger) -> None:
             load_last_5_min = round(loads[1], 2)
             load_last_15_min = round(loads[2], 2)
             logger.debug(
-                "Average CPU load (last 1/5/15 minutes) [%]:" +
-                f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
+                "Average CPU load (last 1/5/15 minutes) [%]:"
+                + f" {load_last_1_min}/{load_last_5_min}/{load_last_15_min}"
             )
             if load_last_5_min > 75:
                 logger.warning(
                     "CPU load is very high",
-                    details=f"CPU load was at {load_last_5_min} % in the last 5 minutes"
+                    details=f"CPU load was at {load_last_5_min} % in the last 5 minutes",
                 )
 
             # get and log last boot time

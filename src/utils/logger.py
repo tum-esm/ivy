@@ -26,7 +26,7 @@ def _pad_str_right(
         text:       The text to pad.
         min_width:  The minimum width of the string.
         fill_char:  The character to fill the string with.
-    
+
     Returns:
         The padded string.
     """
@@ -75,6 +75,7 @@ class Logger:
     ----------------------------------------
     ```
     """
+
     def __init__(
         self,
         config: src.types.Config,
@@ -97,7 +98,7 @@ class Logger:
         fill_char: Literal["-", "=", ".", "_"] = "=",
     ) -> None:
         """Writes a horizontal line.
-        
+
         Args:
             fill_char:  The character to fill the line with.
         """
@@ -110,7 +111,7 @@ class Logger:
         details: Optional[str] = None,
     ) -> None:
         """Writes a INFO log line.
-        
+
         Args:
             message:  The message to log.
             details:  Additional details to log, useful for verbose output.
@@ -124,7 +125,7 @@ class Logger:
         details: Optional[str] = None,
     ) -> None:
         """Writes a INFO log line.
-        
+
         Args:
             message:  The message to log.
             details:  Additional details to log, useful for verbose output.
@@ -138,7 +139,7 @@ class Logger:
         details: Optional[str] = None,
     ) -> None:
         """Writes a WARNING log line.
-        
+
         Args:
             message:  The message to log.
             details:  Additional details to log, useful for verbose output.
@@ -167,7 +168,7 @@ class Logger:
 
         The subject will be formatted like this:
         `(label, )ZeroDivisionError: division by zero`
-        
+
         Args:
             e:       The exception to log.
             label:   A label to prepend to the exception name.
@@ -180,8 +181,7 @@ class Logger:
             traceback.format_exception(type(e), e, e.__traceback__)
         ).strip()
         exception_details = None
-        if isinstance(e, tum_esm_utils.shell.CommandLineException
-                     ) and (e.details is not None):
+        if isinstance(e, tum_esm_utils.shell.CommandLineException) and (e.details is not None):
             exception_details = e.details.strip()
 
         if label is None:
@@ -195,7 +195,7 @@ class Logger:
                 ("exception details", exception_details),
                 ("traceback", exception_traceback),
                 ("details", details),
-            ]
+            ],
         )
 
     def _write_log_line(
@@ -226,17 +226,15 @@ class Logger:
             utc_offset = round(utc_offset)
 
         log_string = (
-            f"{str(now)[:-3]} UTC{'' if utc_offset < 0 else '+'}{utc_offset} " +
-            f"- {_pad_str_right(self.origin, min_width=16)} " +
-            f"- {_pad_str_right(level, min_width=9)} " + f"- {subject}\n"
+            f"{str(now)[:-3]} UTC{'' if utc_offset < 0 else '+'}{utc_offset} "
+            + f"- {_pad_str_right(self.origin, min_width=16)} "
+            + f"- {_pad_str_right(level, min_width=9)} "
+            + f"- {subject}\n"
         )
         filtered_details = [(k, v) for k, v in details if v is not None]
         body: str = ""
         for key, value in filtered_details:
-            body += (
-                _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") +
-                f"\n{value}\n"
-            )
+            body += _pad_str_right(f"--- {key} ", min_width=40, fill_char="-") + f"\n{value}\n"
         if len(filtered_details) > 0:
             body += "-" * 40 + "\n"
 

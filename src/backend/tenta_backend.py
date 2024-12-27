@@ -15,7 +15,7 @@ def run(
     teardown_indicator: multiprocessing.synchronize.Event,
 ) -> None:
     """The main procedure for the Tenta backend.
-    
+
     Args:
         config: The configuration object.
         logger: The logger object.
@@ -34,9 +34,7 @@ def run(
             details=json.dumps(message, indent=4),
         )
         try:
-            foreign_config = src.types.ForeignConfig.model_validate_json(
-                message.configuration
-            )
+            foreign_config = src.types.ForeignConfig.model_validate_json(message.configuration)
             foreign_config.general.config_revision = message.revision
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
@@ -81,8 +79,7 @@ def run(
         signal.signal(signal.SIGINT, teardown_handler)
         signal.signal(signal.SIGTERM, teardown_handler)
 
-        def connect(
-        ) -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
+        def connect() -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
             assert config.backend is not None
             logger.info("Connecting to Tenta backend")
             tenta_client = tenta.TentaClient(
@@ -98,9 +95,7 @@ def run(
             logger.info("Tenta connection has been set up")
             return tenta_client, set()
 
-        tum_esm_utils.timing.set_alarm(
-            20, "Could not connect to Tenta backend within 20 seconds"
-        )
+        tum_esm_utils.timing.set_alarm(20, "Could not connect to Tenta backend within 20 seconds")
         tenta_client, active_messages = connect()
         tum_esm_utils.timing.clear_alarm()
 
@@ -108,7 +103,7 @@ def run(
         MAX_LOOP_TIME = config.backend.max_parallel_messages * 8 + 5
         tum_esm_utils.timing.set_alarm(
             MAX_LOOP_TIME,
-            f"The Tenta backend did not finish one loop within {MAX_LOOP_TIME} seconds"
+            f"The Tenta backend did not finish one loop within {MAX_LOOP_TIME} seconds",
         )
 
         while True:
@@ -118,17 +113,13 @@ def run(
                     if teardown_indicator.is_set():
                         logger.debug("Received a teardown indicator")
                         logger.debug(
-                            f"Waiting max. {config.backend.max_drain_time} " +
-                            "seconds to send remaining messages"
+                            f"Waiting max. {config.backend.max_drain_time} "
+                            + "seconds to send remaining messages"
                         )
                         teardown_receipt_time = time.time()
                 else:
-                    if (
-                        time.time() - teardown_receipt_time
-                    ) > config.backend.max_drain_time:
-                        logger.debug(
-                            "Max. drain time reached, stopping the Tenta backend"
-                        )
+                    if (time.time() - teardown_receipt_time) > config.backend.max_drain_time:
+                        logger.debug("Max. drain time reached, stopping the Tenta backend")
                         return
 
                 if not tenta_client.client.is_connected():
@@ -137,14 +128,11 @@ def run(
                     exponential_backoff.reset()
 
                 # send new messages
-                open_message_slots = config.backend.max_parallel_messages - len(
-                    active_messages
-                )
+                open_message_slots = config.backend.max_parallel_messages - len(active_messages)
                 if open_message_slots > 0:
                     new_messages = messaging_agent.get_n_latest_messages(
                         open_message_slots,
-                        excluded_message_ids={m[1].identifier
-                                              for m in active_messages}
+                        excluded_message_ids={m[1].identifier for m in active_messages},
                     )
                     for message in new_messages:
                         mqtt_message_id: Optional[int] = None
@@ -162,7 +150,7 @@ def run(
                         if message.message_body.variant == "log":
                             mqtt_message_id = tenta_client.publish(
                                 tenta.types.LogMessage(
-                                    severity={ # type: ignore
+                                    severity={  # type: ignore
                                         "DEBUG": "info",
                                         "INFO": "info",
                                         "WARNING": "warning",
@@ -170,8 +158,9 @@ def run(
                                         "EXCEPTION": "error",
                                     }[message.message_body.level],
                                     message=(
-                                        message.message_body.subject + "\n\n" +
-                                        message.message_body.body
+                                        message.message_body.subject
+                                        + "\n\n"
+                                        + message.message_body.body
                                     ),
                                     revision=config.general.config_revision,
                                 )
@@ -180,11 +169,8 @@ def run(
                             if message.message_body.status in ["accepted", "rejected"]:
                                 mqtt_message_id = tenta_client.publish(
                                     tenta.types.AcknowledgmentMessage(
-                                        revision=message.message_body.config.general.
-                                        config_revision,
-                                        success=(
-                                            message.message_body.status == "accepted"
-                                        ),
+                                        revision=message.message_body.config.general.config_revision,
+                                        success=(message.message_body.status == "accepted"),
                                     )
                                 )
                             # received and startup not implemented in Tenta yet
@@ -204,7 +190,7 @@ def run(
                 active_messages = set(
                     filter(
                         lambda m: m[1].identifier not in published_message_identifiers,
-                        active_messages
+                        active_messages,
                     )
                 )
 
@@ -227,9 +213,7 @@ def run(
 
                 if teardown_receipt_time is not None:
                     # the backoff procedure should not prevent remaining messages from being sent
-                    logger.debug(
-                        "Sleeping only 5 seconds because a teardown has been issued"
-                    )
+                    logger.debug("Sleeping only 5 seconds because a teardown has been issued")
                     time.sleep(5)
                 else:
                     sleep_seconds = exponential_backoff.sleep()

@@ -16,7 +16,7 @@ STATE_FILE: Annotated[
 
 STATE_FILE_LOCK: Annotated[
     str,
-    "Points to `data/state.lock` which is used to ensure that only one thread can access the state at a time."
+    "Points to `data/state.lock` which is used to ensure that only one thread can access the state at a time.",
 ] = os.path.join(
     src.constants.PROJECT_DIR,
     "data",
@@ -24,7 +24,7 @@ STATE_FILE_LOCK: Annotated[
 )
 
 
-class StateInterface():
+class StateInterface:
     @tum_esm_utils.decorators.with_filelock(STATE_FILE_LOCK, timeout=6)
     @staticmethod
     def load() -> src.types.State:
@@ -41,18 +41,18 @@ class StateInterface():
     @contextlib.contextmanager
     def update() -> Generator[src.types.State, None, None]:
         """Load the state file and update it within a semaphore.
-        
+
         This makes sure that only one process can access this section at a time.
         If you would do 1. load, 2. modify, 3. save in separate calls, you might
         overwrite the changes by another process.
-        
+
         Usage:
-        
+
         ```python
         with State.update() as state:
             state.system.last_boot_time = datetime.datetime.now()
         ```
-        
+
         Returns:
             A generator that yields the state object.
         """

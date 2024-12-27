@@ -8,7 +8,7 @@ from .logger import Logger
 import src
 
 
-class LifecycleManager():
+class LifecycleManager:
     """Manages the lifecycle of a procedure or a backend process.
 
     Both procedures and backends run an infinite loop to perform their
@@ -17,6 +17,7 @@ class LifecycleManager():
 
     Each procedure/backend is wrapped in one instance of the lifecycle
     manager."""
+
     def __init__(
         self,
         config: src.types.Config,
@@ -36,7 +37,7 @@ class LifecycleManager():
                             the spawned process.
             variant:        Whether the entrypoint is a procedure or a backend.
                             The difference is only in the teardown logic.
-        
+
         Raises:
             ValueError: If the given variant does not match the entrypoint
                         signature.
@@ -53,24 +54,32 @@ class LifecycleManager():
         self.teardown_indicator = multiprocessing.Event()
         try:
             if variant == "procedure":
-                self.entrypoint = pydantic.RootModel[Callable[
-                    [src.types.Config, Logger],
-                    None,
-                ]].model_validate(entrypoint).root
+                self.entrypoint = (
+                    pydantic.RootModel[
+                        Callable[
+                            [src.types.Config, Logger],
+                            None,
+                        ]
+                    ]
+                    .model_validate(entrypoint)
+                    .root
+                )
             else:
-                self.procedure_entrypoint = pydantic.RootModel[Callable[
-                    [src.types.Config, Logger, multiprocessing.synchronize.Event],
-                    None,
-                ]].model_validate(entrypoint).root
+                self.procedure_entrypoint = (
+                    pydantic.RootModel[
+                        Callable[
+                            [src.types.Config, Logger, multiprocessing.synchronize.Event],
+                            None,
+                        ]
+                    ]
+                    .model_validate(entrypoint)
+                    .root
+                )
         except pydantic.ValidationError as e:
-            raise ValueError(
-                f"Given variant '{variant}' does not match the entrypoint signature"
-            )
+            raise ValueError(f"Given variant '{variant}' does not match the entrypoint signature")
 
         self.procedure_name = procedure_name
-        self.logger = Logger(
-            config=config, origin=f"{self.procedure_name}-procedure-manager"
-        )
+        self.logger = Logger(config=config, origin=f"{self.procedure_name}-procedure-manager")
         self.procedure_logger = Logger(config=config, origin=f"{self.procedure_name}")
 
     def procedure_is_running(self) -> bool:
@@ -81,7 +90,7 @@ class LifecycleManager():
 
     def start_procedure(self) -> None:
         """Starts the procedure in a separate process.
-        
+
         Raises:
             RuntimeError: If the procedure is already running. This is a
                           wrong usage of the procedure manager.
@@ -91,9 +100,11 @@ class LifecycleManager():
             raise RuntimeError("procedure is already running")
         self.process = multiprocessing.Process(
             target=self.procedure_entrypoint,
-            args=((self.config, self.procedure_logger) if
-                  (self.variant == "procedure") else
-                  (self.config, self.procedure_logger, self.teardown_indicator)),
+            args=(
+                (self.config, self.procedure_logger)
+                if (self.variant == "procedure")
+                else (self.config, self.procedure_logger, self.teardown_indicator)
+            ),
             name=f"{src.constants.NAME}-procedure-{self.procedure_name}",
             daemon=True,
         )
@@ -106,7 +117,7 @@ class LifecycleManager():
     def check_procedure_status(self) -> None:
         """Checks if the procedure is still running. Logs an error if
         the procedure has died unexpectedly.
-        
+
         Raises:
             RuntimeError: If the procedure has not been started yet. This
                           is a wrong usage of the procedure manager.
@@ -123,7 +134,7 @@ class LifecycleManager():
 
     def teardown(self) -> None:
         """Tears down the procedures.
-        
+
         For procedures, it sends a SIGTERM to the process. For backends, it
         sets a multiprocessing.Event to signal the backend to shut down. This
         gives the backend processes more freedom to manage a shutdown.
@@ -131,7 +142,7 @@ class LifecycleManager():
         The lifecycle manager waits for the process to shut down gracefully
         for a certain amount of time. If the process does not shut down in
         time, it kills the process forcefully by sending a SIGKILL.
-        
+
         For procedures, the SIGKILL is sent after
         `src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN` seconds. For
         backends, the SIGKILL is sent after `config.backend.max_drain_time + 120`
@@ -151,8 +162,8 @@ class LifecycleManager():
             # what to do if process does not tear down gracefully
             def kill_process(*args: Any) -> None:
                 self.logger.error(
-                    f"process did not gracefully tear down in " +
-                    f"{graceful_shutdown_time} seconds, killing it forcefully"
+                    f"process did not gracefully tear down in "
+                    + f"{graceful_shutdown_time} seconds, killing it forcefully"
                 )
                 if self.process is not None:
                     self.process.kill()

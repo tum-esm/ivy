@@ -10,17 +10,13 @@ def _remove_allof_wrapping(o: typing.Any) -> typing.Any:
         if "properties" in o.keys():
             return {
                 **o,
-                "properties": {
-                    k: _remove_allof_wrapping(v)
-                    for k, v in o["properties"].items()
-                },
+                "properties": {k: _remove_allof_wrapping(v) for k, v in o["properties"].items()},
             }
         elif "allOf" in o.keys():
             assert len(o["allOf"]) == 1
             return {
                 **o["allOf"][0],
-                **{k: v
-                   for k, v in o.items() if k != "allOf"},
+                **{k: v for k, v in o.items() if k != "allOf"},
             }
         else:
             return {k: _remove_allof_wrapping(v) for k, v in o.items()}
@@ -30,14 +26,10 @@ def _remove_allof_wrapping(o: typing.Any) -> typing.Any:
 
 def generate_jsonschema_tsfile(obj: typing.Any, label: str) -> str:
     # remove $ref usages
-    schema_without_refs = jsonref.loads(
-        json.dumps(obj.model_json_schema(by_alias=False))
-    )
+    schema_without_refs = jsonref.loads(json.dumps(obj.model_json_schema(by_alias=False)))
 
     # remove $defs section
-    schema_without_defs = json.loads(
-        jsonref.dumps(schema_without_refs, indent=4)
-    )
+    schema_without_defs = json.loads(jsonref.dumps(schema_without_refs, indent=4))
     if "$defs" in schema_without_defs.keys():
         del schema_without_defs["$defs"]
 
@@ -46,7 +38,7 @@ def generate_jsonschema_tsfile(obj: typing.Any, label: str) -> str:
 
     # write out file
     return (
-        f"/* prettier-ignore */\nconst {label}: any = " +
-        json.dumps(schema_without_allofs, indent=4) +
-        f";\n\nexport default {label};"
+        f"/* prettier-ignore */\nconst {label}: any = "
+        + json.dumps(schema_without_allofs, indent=4)
+        + f";\n\nexport default {label};"
     )

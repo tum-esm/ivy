@@ -16,7 +16,7 @@ def test_logging_to_files(restore_production_files: None) -> None:
 
     logging_file = os.path.join(
         src.utils.logger.LOGS_ARCHIVE_DIR,
-        datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.log")
+        datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.log"),
     )
     assert not os.path.isfile(logging_file)
 
@@ -24,7 +24,9 @@ def test_logging_to_files(restore_production_files: None) -> None:
         with open(logging_file, "r") as f:
             last_line = [l for l in f.readlines() if l[0] == "2"][-1].strip("\n")
         for snippet in snippets:
-            assert snippet in last_line, f"last line should contain '{snippet}', but it is '{last_line}'"
+            assert (
+                snippet in last_line
+            ), f"last line should contain '{snippet}', but it is '{last_line}'"
 
     logger.debug("debug message")
     check_last_line(["some-origin", "DEBUG", "debug message"])
@@ -86,60 +88,60 @@ def test_log_level_visibiliy() -> None:
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
         assert not src.utils.functions.log_level_is_visible(
             min_log_level=None,
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
 
     # min_log_level="DEBUG"
     for level in ["DEBUG", "INFO", "WARNING", "ERROR", "EXCEPTION"]:
         assert src.utils.functions.log_level_is_visible(
             min_log_level="DEBUG",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
 
     # min_log_level="INFO"
     for level in ["DEBUG"]:
         assert not src.utils.functions.log_level_is_visible(
             min_log_level="INFO",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
     for level in ["INFO", "WARNING", "ERROR", "EXCEPTION"]:
         assert src.utils.functions.log_level_is_visible(
             min_log_level="INFO",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
 
     # min_log_level="WARNING"
     for level in ["DEBUG", "INFO"]:
         assert not src.utils.functions.log_level_is_visible(
             min_log_level="WARNING",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
     for level in ["WARNING", "ERROR", "EXCEPTION"]:
         assert src.utils.functions.log_level_is_visible(
             min_log_level="WARNING",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
 
     # min_log_level="ERROR"
     for level in ["DEBUG", "INFO", "WARNING"]:
         assert not src.utils.functions.log_level_is_visible(
             min_log_level="ERROR",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
     for level in ["ERROR", "EXCEPTION"]:
         assert src.utils.functions.log_level_is_visible(
             min_log_level="ERROR",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
 
     # min_log_level="EXCEPTION"
     for level in ["DEBUG", "INFO", "WARNING", "ERROR"]:
         assert not src.utils.functions.log_level_is_visible(
             min_log_level="EXCEPTION",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )
     for level in ["EXCEPTION"]:
         assert src.utils.functions.log_level_is_visible(
             min_log_level="EXCEPTION",
-            log_level=level  # type: ignore
+            log_level=level,  # type: ignore
         )

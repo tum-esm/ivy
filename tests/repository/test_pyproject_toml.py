@@ -22,8 +22,7 @@ def test_pyproject_toml() -> None:
             data["project"]["name"] == src.constants.NAME
         ), "NAME in pyproject.toml should be the same as in src/constants.py"
         assert (
-            tum_esm_utils.validators.Version(data["project"]["version"]
-                                            ) == src.constants.VERSION
+            tum_esm_utils.validators.Version(data["project"]["version"]) == src.constants.VERSION
         ), "VERSION in pyproject.toml should be the same as in src/constants.py"
 
         try:
