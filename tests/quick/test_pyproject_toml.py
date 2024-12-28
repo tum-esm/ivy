@@ -13,6 +13,7 @@ except ModuleNotFoundError:
 path = os.path.join(src.constants.PROJECT_DIR, "pyproject.toml")
 
 
+@pytest.mark.version_change
 @pytest.mark.order(1)
 @pytest.mark.quick
 def test_pyproject_toml() -> None:

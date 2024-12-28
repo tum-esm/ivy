@@ -2,6 +2,7 @@ import pytest
 import src
 
 
+@pytest.mark.version_change
 @pytest.mark.order(3)
 @pytest.mark.integration
 def test_config() -> None:

@@ -6,20 +6,9 @@ import tum_esm_utils
 
 import src
 from ...fixtures import provide_test_config
-from .utils import version_is_running, version_is_not_running
+from .utils import version_is_running, version_is_not_running, replace_file_content
 
 
-def _replace_file_content(filepath: str, old: str, new: str) -> None:
-    with open(filepath, "r") as f:
-        content = f.read()
-    assert (
-        content.count(old) == 1
-    ), f"Expected exactly one occurence of {old} in {filepath}, got {content.count(old)}"
-    with open(filepath, "w") as f:
-        f.write(content.replace(old, new))
-
-
-@pytest.mark.skip
 @pytest.mark.order(9)
 @pytest.mark.updater
 def test_version_update(provide_test_config: src.types.Config) -> None:
@@ -44,17 +33,17 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
         os.system(f"git archive --format=tar HEAD | tar -x -C {target_dir}")
         assert not os.path.exists(os.path.join(target_dir, ".git"))
         assert not os.path.exists(os.path.join(target_dir, ".venv"))
-        _replace_file_content(
+        replace_file_content(
             os.path.join(target_dir, "pyproject.toml"),
             f'version = "{current_v.as_identifier()}"',
             f'version = "{v.as_identifier()}"',
         )
-        _replace_file_content(
+        replace_file_content(
             os.path.join(target_dir, "src/constants.py"),
             f'tum_esm_utils.validators.Version("{current_v.as_identifier()}")',
             f'tum_esm_utils.validators.Version("{v.as_identifier()}")',
         )
-        _replace_file_content(
+        replace_file_content(
             os.path.join(target_dir, "config/config.template.json"),
             f'"software_version": "{current_v.as_identifier()}"',
             f'"software_version": "{v.as_identifier()}"',
@@ -104,7 +93,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
     src.utils.functions.publish_mqtt_message(
         topic=f"configurations/{from_config.general.system_identifier}",
         message={
-            "config": from_config.model_dump(),
+            "configuration": from_config.model_dump(),
             "revision": from_config.general.config_revision,
         },
     )
@@ -122,7 +111,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
     src.utils.functions.publish_mqtt_message(
         topic=f"configurations/{from_config.general.system_identifier}",
         message={
-            "config": to_config.model_dump(),
+            "configuration": to_config.model_dump(),
             "revision": to_config.general.config_revision,
         },
     )
@@ -152,7 +141,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
             "Updating cli pointer",
             "Successfully updated cli pointer",
             f"Successfully updated to version {to_v.as_identifier()}, shutting down",
-            "finished teardown of the main loop",
+            "Finished teardown of the main loop",
         ],
     )
 

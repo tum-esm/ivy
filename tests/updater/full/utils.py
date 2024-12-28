@@ -57,3 +57,13 @@ def version_is_not_running(
     for line in expected_log_lines:
         assert line in current_logs, f"Expected log line not found: {line}"
     return not any([psutil.pid_exists(pid) for pid in pids])
+
+
+def replace_file_content(filepath: str, old: str, new: str) -> None:
+    with open(filepath, "r") as f:
+        content = f.read()
+    assert (
+        content.count(old) == 1
+    ), f"Expected exactly one occurence of {old} in {filepath}, got {content.count(old)}"
+    with open(filepath, "w") as f:
+        f.write(content.replace(old, new))
