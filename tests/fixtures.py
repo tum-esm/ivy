@@ -66,4 +66,7 @@ def restore_production_files() -> Generator[None, None, None]:
 def provide_test_config() -> Generator[src.types.Config, None, None]:
     config = src.types.Config.load_template()
     config.general.system_identifier = "test-system-" + src.constants.ROOT_DIR.split("-")[-1]
+    config.logging_verbosity.console_prints = None
+    config.dummy_procedure.seconds_between_datapoints = 5
+    config.system_checks.seconds_between_checks = 5
     yield config

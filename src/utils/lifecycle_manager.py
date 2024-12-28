@@ -108,10 +108,7 @@ class LifecycleManager:
             daemon=True,
         )
         self.process.start()
-        self.logger.info(
-            "started process",
-            details=f"pid = {self.process.pid}\nname={self.process.name}",
-        )
+        self.logger.info(f"started process with pid {self.process.pid}")
 
     def check_procedure_status(self) -> None:
         """Checks if the procedure is still running. Logs an error if

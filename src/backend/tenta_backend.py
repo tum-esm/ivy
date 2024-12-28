@@ -129,7 +129,9 @@ def run(
                         return
 
                 if not tenta_client.client.is_connected():
-                    raise ConnectionError("MQTT client is not connected")
+                    tenta_client.client.reconnect()
+                    if not tenta_client.client.is_connected():
+                        raise ConnectionError("MQTT client is not connected")
                 else:
                     exponential_backoff.reset()
 

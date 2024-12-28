@@ -101,12 +101,16 @@ class Updater:
             except Exception as e:
                 self.logger.exception(e, "Could not dump config file")
                 self.messaging_agent.add_message(
-                    src.types.ConfigMessageBody(status="rejected", config=local_config)
+                    src.types.ConfigMessageBody(
+                        status="rejected", config=local_config.to_foreign_config()
+                    )
                 )
                 return
 
             self.messaging_agent.add_message(
-                src.types.ConfigMessageBody(status="accepted", config=local_config)
+                src.types.ConfigMessageBody(
+                    status="accepted", config=local_config.to_foreign_config()
+                )
             )
             self.logger.debug("Exiting mainloop so that it can be restarted with the new config")
             exit(0)

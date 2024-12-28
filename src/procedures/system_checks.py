@@ -34,7 +34,7 @@ def run(config: src.types.Config, name: str) -> None:
             t = src.utils.functions.get_time_to_next_datapoint(
                 seconds_between_datapoints=config.system_checks.seconds_between_checks
             )
-            logger.debug(f"sleeping for {t} seconds")
+            logger.debug(f"sleeping for {t:.2f} seconds")
             time.sleep(t)
 
             # get and log CPU load
@@ -70,7 +70,7 @@ def run(config: src.types.Config, name: str) -> None:
             messaging_agent.add_message(
                 src.types.DataMessageBody(
                     data={
-                        "last_boot_time": last_boot_time,
+                        "last_boot_time": last_boot_time.timestamp(),
                         "last_5_min_load": load_last_5_min,
                     }
                 )

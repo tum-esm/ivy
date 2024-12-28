@@ -40,13 +40,13 @@ def run(config: src.types.Config, name: str) -> None:
             t = src.utils.functions.get_time_to_next_datapoint(
                 seconds_between_datapoints=config.dummy_procedure.seconds_between_datapoints,
             )
-            logger.debug(f"sleeping for {t} seconds")
+            logger.debug(f"sleeping for {t:.2f} seconds")
             time.sleep(t)
 
             state = src.utils.StateInterface.load()
             assert (
                 state.system.last_5_min_load or 0
-            ) < 0.75, "can't perform this procedure while system load is above 75%"
+            ) < 75, "can't perform this procedure while system load is above 75%"
 
             # do a random walk
             current_positions = (
