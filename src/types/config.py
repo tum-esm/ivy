@@ -9,7 +9,7 @@ import src
 class _GeneralConfig(pydantic.BaseModel):
     config_revision: int = pydantic.Field(
         ...,
-        ge=0,
+        ge=-1,
         description="The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
     software_version: tum_esm_utils.validators.Version = pydantic.Field(
@@ -217,7 +217,7 @@ class ForeignGeneralConfig(pydantic.BaseModel):
 
     config_revision: int = pydantic.Field(
         ...,
-        ge=0,
+        ge=-1,
         description="The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
     )
     software_version: tum_esm_utils.validators.Version = pydantic.Field(
