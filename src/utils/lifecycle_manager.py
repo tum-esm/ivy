@@ -108,7 +108,7 @@ class LifecycleManager:
             daemon=True,
         )
         self.process.start()
-        self.logger.info(f"started process with pid {self.process.pid}")
+        self.logger.info(f"Starting process with PID {self.process.pid}")
 
     def check_procedure_status(self) -> None:
         """Checks if the procedure is still running. Logs an error if
@@ -123,9 +123,9 @@ class LifecycleManager:
             raise RuntimeError("procedure has not been started yet")
 
         if self.process.is_alive():
-            self.logger.debug("process is alive")
+            self.logger.debug("Process is alive")
         else:
-            self.logger.error("process died unexpectedly")
+            self.logger.error("Process died unexpectedly")
             self.process = None
 
     def teardown(self) -> None:
@@ -147,7 +147,7 @@ class LifecycleManager:
         self.logger.info(f"starting teardown of {self.variant}")
         if self.process is not None:
             if not self.process.is_alive():
-                self.logger.debug("nothing to tear down, process is already stopped")
+                self.logger.debug("Nothing to tear down, process is already stopped")
                 self.process = None
                 return
 
@@ -170,11 +170,11 @@ class LifecycleManager:
             self.process.join(graceful_shutdown_time)
             if self.process.is_alive():
                 self.logger.error(
-                    f"process did not gracefully tear down in "
+                    f"Process did not gracefully tear down in "
                     + f"{graceful_shutdown_time} seconds, killing it forcefully"
                 )
                 self.process.kill()
             self.process = None
-            self.logger.info("teardown complete")
+            self.logger.info("Teardown complete")
         else:
-            self.logger.info("no process to tear down")
+            self.logger.info("No process to tear down")
