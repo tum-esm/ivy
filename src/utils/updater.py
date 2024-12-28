@@ -323,7 +323,7 @@ class Updater:
 
         log_progress(f"Creating virtual environment at {venv_path}")
         tum_esm_utils.shell.run_shell_command(
-            f"python{sys.version_info.major}.{sys.version_info.minor} -m venv .venv",
+            f"{sys.executable} -m venv .venv",
             working_directory=version_dir,
         )
 

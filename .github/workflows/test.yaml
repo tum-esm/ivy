@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m venv .venv
+          python${{ matrix.python_version }} -m venv .venv
           source .venv/bin/activate
           pdm sync --with=dev
 
