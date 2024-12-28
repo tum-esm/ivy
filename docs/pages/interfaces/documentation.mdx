@@ -8,13 +8,13 @@ The docs are written in [MDX](https://mdxjs.com/) and built with [Nextra](https:
 
 ```bash
 # install the dependencies required to build the documentation
-npm install
+bun install
 
 # start the development server
-npm run dev
+bun run dev
 
 # build the production version of the documentation
-npm run build
+bun run build
 ```
 
 When building the documentation, static HTML files are generated in the `out/` directory. You can deploy these files to any static hosting provider, such as [Netlify](https://www.netlify.com/) or [Cloudflare Pages](https://pages.cloudflare.com/).
@@ -23,9 +23,9 @@ When building the documentation, static HTML files are generated in the `out/` d
 
 Part of the documentation is not written by hand, but automatically generated from the source code. This part can be found in the API reference section. Running `python docs/scripts/sync.py` will update the respective files using the local source code. This includes:
 
-* Copying the contents of the `README.md` file to `docs/pages/index.mdx`
-* Generate a JSON Schema for each JSON file, the codebase interacts with (configuration, etc.), and save it to `docs/components/schemas/`
-* Copy the contents of `config/config.template.json` to the blocks inside `docs/pages/file-interfaces/configuration.mdx` and `docs/pages/api-reference/configuration.mdx`
+- Copying the contents of the `README.md` file to `docs/pages/index.mdx`
+- Generate a JSON Schema for each JSON file, the codebase interacts with (configuration, etc.), and save it to `docs/components/schemas/`
+- Copy the contents of `config/config.template.json` to the blocks inside `docs/pages/file-interfaces/configuration.mdx` and `docs/pages/api-reference/configuration.mdx`
 
 Before releasing a version, please run the script `docs/scripts/sync.py` to sync the API reference. There is a pytest (`tests/repository/test_api_reference_sync.py`) that fails, if the API reference is not up to date.
 
@@ -37,7 +37,7 @@ The interfaces should not change between patch versions (e.g. `1.0.0` to `1.0.1`
 
 You can deploy multiple branches by using "Branch Deploys" on [Netlify](https://www.netlify.com/) or "Preview Deployments" on [Cloudflare Pages](https://pages.cloudflare.com/).
 
-The dropdown in the documentation's navigation bar is controlled in the file `docs/pages/_meta.json`: 
+The dropdown in the documentation's navigation bar is controlled in the file `docs/pages/_meta.json`:
 
 ```json
 {
@@ -61,7 +61,6 @@ The dropdown in the documentation's navigation bar is controlled in the file `do
   }
 }
 ```
-
 
 <Callout type="info" emoji="💡">
 
