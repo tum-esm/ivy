@@ -67,6 +67,11 @@ markers = [
 ]
 
 [tool.pdm.scripts]
+quick-tests = { shell = """
+  export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
+  pytest --verbose -m "quick" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ci-tests-ivy* &&
+  pkill -f "Python"
+  """ }
 ci-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
   pytest --verbose -m "quick or updater" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ci-tests-ivy* &&
