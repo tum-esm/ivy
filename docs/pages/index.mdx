@@ -2,26 +2,24 @@
 
 <img
   alt="Supported Python Versions"
-  src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Ftum-esm%2Futils%2Fmain%2Fpyproject.toml&label=Supported%20Python%20Version&labelColor=0f172a&color=f43f5e"
+  src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Ftum-esm%2Fivy%2Fmain%2Fpyproject.toml&label=Supported%20Python%20Versions&labelColor=0f172a&color=f43f5e"
   className="inline p-0 m-px mt-6"
 />
 <img
   alt="GitHub Tag"
-  src="https://img.shields.io/github/v/tag/tum-esm/utils?sort=semver&style=flat&label=Latest%20Template%20Version&color=f43f5e&cacheSeconds=60&labelColor=0f172a"
+  src="https://img.shields.io/github/v/tag/tum-esm/ivy?sort=semver&style=flat&label=Latest%20Template%20Version&color=f43f5e&cacheSeconds=60&labelColor=0f172a"
   className="inline p-0 m-px mt-6"
 />
 <img
   alt="GitHub License"
-  src="https://img.shields.io/github/license/tum-esm/utils?style=flat&label=License&labelColor=0f172a&color=4ade80"
+  src="https://img.shields.io/github/license/tum-esm/ivy?style=flat&label=License&labelColor=0f172a&color=4ade80&cacheSeconds=60"
   className="inline p-0 m-px mt-6"
 />
 <img
   alt="Documentation Status"
-  src="https://img.shields.io/website?url=https%3A%2F%2Ftum-esm-utils.netlify.app%2F&up_message=online&up_color=4ade80&down_message=unavailable&down_color=f87171&label=Documentation&labelColor=0f172a"
+  src="https://img.shields.io/website?url=https%3A%2F%2Ftum-esm-ivy.netlify.app%2F&up_message=online&up_color=4ade80&down_message=unavailable&down_color=f87171&label=Documentation&labelColor=0f172a&cacheSeconds=60"
   className="inline p-0 m-px mt-6"
 />
-
-TODO: link shields to correct repository
 
 A Python boilerplate for an IoT node data acqusition system (DAS) supporting remote configuration and software updates. An Ivy-based network is made up of many (remote) computers running autonomously - e.g. performing measurements, controlling actuators, etc. - and a central backend connecting these devices.
 

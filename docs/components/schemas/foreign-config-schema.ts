@@ -8,7 +8,7 @@ const FOREIGN_CONFIG_SCHEMA: any = {
             "properties": {
                 "config_revision": {
                     "description": "The revision of this config file. This should be incremented when the config file is changed. It is used to tag messages with the settings that were active at the time of sending.",
-                    "minimum": 0,
+                    "minimum": -1,
                     "title": "Config Revision",
                     "type": "integer"
                 },
