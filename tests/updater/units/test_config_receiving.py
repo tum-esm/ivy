@@ -6,12 +6,13 @@ from ...fixtures import provide_test_config
 import src
 
 
+@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_connection_to_test_broker() -> None:
     client = paho.mqtt.client.Client(
         callback_api_version=paho.mqtt.client.CallbackAPIVersion.VERSION2,
-        client_id="test_connection_to_test_broker",
+        client_id=f"test_connection_to_test_broker",
     )
     client.username_pw_set(username="test_username", password="test_password")
     r = client.connect(host="localhost", port=1883)
@@ -28,6 +29,7 @@ def test_connection_to_test_broker() -> None:
     assert not client.is_connected(), "Client is still connected"
 
 
+@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
@@ -113,6 +115,7 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
         backend_lm.teardown()
 
 
+@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> None:

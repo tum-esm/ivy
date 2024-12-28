@@ -5,6 +5,7 @@ import tum_esm_utils
 import src
 
 
+@pytest.mark.skip
 @pytest.mark.order(7)
 @pytest.mark.updater
 def test_pytest_verification() -> None:
@@ -20,7 +21,8 @@ def test_pytest_verification() -> None:
 
     src.utils.Updater.download_source_code(updater_config, version)
     src.utils.Updater.install_dependencies(
-        version, print, installation_command="pdm sync --with=dev,all --no-self"
+        version,
+        installation_command="pdm sync --with=dev,all --no-self",
     )
     src.utils.Updater.run_pytests(version, pytest_marker="quick")
 

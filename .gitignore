@@ -1,12 +1,14 @@
 # custom ivy ignores
 config/config.json
-run.lock
-data/logs.lock
-data/messages.lock
-data/**/*.csv
-data/**/*.sqlite3
+*.lock
+!pdm.lock
+data/*.json
+data/*.sqlite3
+data/logs/*.log
+data/messages/*.csv
 hidden/
 .pdm-python
+nohup.out
 
 # certificates
 *.pem

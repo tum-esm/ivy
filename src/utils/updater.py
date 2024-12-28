@@ -116,7 +116,7 @@ class Updater:
             exit(0)
         else:
             self.logger.info(
-                f"Received config has different version ({foreign_config.general.software_version})"
+                f"Received config has different version ({foreign_config.general.software_version.as_identifier()})"
             )
             updater_config = self.config.updater
             if updater_config is None:
@@ -130,12 +130,14 @@ class Updater:
 
             # Download source code
 
-            self.logger.debug(f"Downloading new source code")
+            self.logger.debug("Downloading new source code")
             try:
                 Updater.download_source_code(
-                    updater_config, foreign_config.general.software_version
+                    updater_config,
+                    foreign_config.general.software_version,
+                    self.logger.debug,
                 )
-                self.logger.debug(f"Successfully downloaded source code")
+                self.logger.debug("Successfully downloaded source code")
             except Exception as e:
                 self.logger.exception(e, "Could not download source code")
                 self.messaging_agent.add_message(
@@ -203,7 +205,7 @@ class Updater:
                 src.types.ConfigMessageBody(status="accepted", config=foreign_config)
             )
             self.logger.info(
-                f"Successfully updated to version {foreign_config.general.software_version}, shutting down"
+                f"Successfully updated to version {foreign_config.general.software_version.as_identifier()}, shutting down"
             )
             exit(0)
 
@@ -211,6 +213,7 @@ class Updater:
     def download_source_code(
         updater_config: src.types.UpdaterConfig,
         version: tum_esm_utils.validators.Version,
+        log_progress: Callable[[str], None] = print,
     ) -> None:
         """Download the source code of the new version to the version
         directory. This is currently only implemented for github and
@@ -235,7 +238,11 @@ class Updater:
             raise FileExistsError(f"There should not be a file at {dst_dir}")
         if os.path.isdir(dst_dir):
             if updater_config.source_conflict_strategy == "overwrite":
+                log_progress(f"Removing existing directory at {dst_dir}")
                 shutil.rmtree(dst_dir)
+            elif updater_config.source_conflict_strategy == "reuse":
+                log_progress(f"Directory {dst_dir} already exists, skipping download")
+                return
 
         if not os.path.isdir(dst_dir):
             repository_name = updater_config.repository.split("/")[-1]
@@ -287,7 +294,7 @@ class Updater:
     @staticmethod
     def install_dependencies(
         version: tum_esm_utils.validators.Version,
-        log_progress: Callable[[str], None],
+        log_progress: Callable[[str], None] = print,
         installation_command: str = "pdm sync --no-self",
     ) -> None:
         """Create a virtual environment and install the dependencies in the
@@ -374,7 +381,7 @@ class Updater:
     @staticmethod
     def remove_old_venvs(
         current_version: tum_esm_utils.validators.Version,
-        log_progress: Callable[[str], None],
+        log_progress: Callable[[str], None] = print,
     ) -> None:
         """Remove all old virtual environments, besides the current one.
 

@@ -15,9 +15,6 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "const": "data",
                             "default": "data",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "enum": [
-                                "data"
-                            ],
                             "title": "Variant",
                             "type": "string"
                         },
@@ -62,9 +59,6 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "const": "log",
                             "default": "log",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "enum": [
-                                "log"
-                            ],
                             "title": "Variant",
                             "type": "string"
                         },
@@ -113,9 +107,6 @@ const MESSAGE_ARCHIVE_ITEM_SCHEMA: any = {
                             "const": "config",
                             "default": "config",
                             "description": "Indicating the variant of the message. All possible message bodies have this field.",
-                            "enum": [
-                                "config"
-                            ],
                             "title": "Variant",
                             "type": "string"
                         },

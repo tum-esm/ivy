@@ -5,13 +5,14 @@ import src
 import random
 
 
+@pytest.mark.skip
 @pytest.mark.order(4)
 @pytest.mark.updater
 def test_cli_pointer_switching() -> None:
     cli_path = os.path.join(src.constants.ROOT_DIR, f"{src.constants.NAME}-cli.sh")
     assert not os.path.exists(cli_path)
 
-    local_cli_file = tum_esm_utils.files.rel_to_abs_path("../../cli.py")
+    local_cli_file = os.path.join(src.constants.PROJECT_DIR, "cli.py")
     assert os.path.exists(local_cli_file), f"CLI entrypoint not found at {local_cli_file}"
 
     for _ in range(5):

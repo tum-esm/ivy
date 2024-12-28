@@ -225,7 +225,7 @@ const CONFIG_SCHEMA: any = {
                             "default": 600,
                             "description": "When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages.",
                             "maximum": 7200,
-                            "minimum": 10,
+                            "minimum": 0,
                             "title": "Max Drain Time",
                             "type": "integer"
                         }

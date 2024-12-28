@@ -459,6 +459,20 @@ levels are forwarded.
 
 **Returns:** Whether `log_level` is at least as important as `min_log_level`
 
+**`publish_mqtt_message`**
+
+```python
+def publish_mqtt_message(
+    topic: str,
+    message: dict[typing.Any, typing.Any],
+    host: str,
+    port: int,
+    username: str,
+    password: str,
+    sleep: float,
+) -> None:
+```
+
 **`with_automation_lock`**
 
 ```python
@@ -594,7 +608,7 @@ time, it kills the process forcefully by sending a SIGKILL.
 
 For procedures, the SIGKILL is sent after
 `src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN` seconds. For
-backends, the SIGKILL is sent after `config.backend.max_drain_time + 120`
+backends, the SIGKILL is sent after `config.backend.max_drain_time + 15`
 seconds.
 
 ### `src.utils.logger.py` [#src.utils.logger]
@@ -1087,6 +1101,7 @@ Initialize an Updater instance.
 def download_source_code(
     updater_config: src.types.config.UpdaterConfig,
     version: tum_esm_utils.validators.Version,
+    log_progress: typing.Callable[[str], None],
 ) -> None:
 ```
 

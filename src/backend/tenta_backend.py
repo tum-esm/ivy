@@ -89,7 +89,9 @@ def run(
 
         def connect() -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
             assert config.backend is not None
-            logger.info("Connecting to Tenta backend")
+            logger.info(
+                f"Connecting to Tenta backend with client id {config.backend.mqtt_connection.client_id}"
+            )
             tenta_client = tenta.TentaClient(
                 mqtt_client_id=config.backend.mqtt_connection.client_id,
                 mqtt_host=config.backend.mqtt_connection.host,
