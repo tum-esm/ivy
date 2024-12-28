@@ -2,10 +2,10 @@ name: "test"
 on:
   push:
     branches:
-      - notactive
+      - main
   pull_request:
     branches:
-      - notactive
+      - main
 
 jobs:
   test:
@@ -20,7 +20,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python_version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
           cache: "pip"
@@ -28,5 +28,30 @@ jobs:
       - name: Install dependencies
         run: pip install ".[dev]"
 
-      - name: Run pytests
-        run: pytest --verbose -m "quick" --cov=src --exitfirst tests/
+      - name: Install mosquitto dependencies
+        run: |
+          sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa -y
+          sudo apt-get update -y
+          sudo apt-get install -y mosquitto-clients
+
+      - name: Start mosquitto broker
+        run: |
+          mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password
+          echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > $PWD/tests/updater/data/mosquitto.conf
+          mosquitto -d -c tests/updater/data/mosquitto.conf
+
+      - name: Run quick pytests for all Python versions except 3.10
+        if: matrix.python_version != '3.10'
+        run: |
+          export TS="$(date +%s)"
+          export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS"
+          mkdir $IVY_ROOT_DIR
+          pytest --verbose -m "quick" --cov=$PWD/src --exitfirst tests/
+
+      - name: Run all pytests for Python 3.10
+        if: matrix.python_version == '3.10'
+        run: |
+          export TS="$(date +%s)"
+          export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS"
+          mkdir $IVY_ROOT_DIR
+          pytest --verbose -m "quick or updater" --cov=$PWD/src --exitfirst tests/
