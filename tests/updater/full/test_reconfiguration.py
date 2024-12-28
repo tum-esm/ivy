@@ -1,12 +1,15 @@
 import re
 import shutil
+import subprocess
 import time
 import pytest
 import tum_esm_utils
 import src
 import os
 from ...fixtures import provide_test_config
-from .utils import version_is_running, version_is_not_running
+from .utils import version_is_running, version_is_not_running, read_current_logs
+
+
 # TODO: Rename the two cases to "reconfiguration" and "version_change"
 
 
@@ -36,15 +39,15 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
     ).replace("/private/tmp/", "/tmp/")
     assert f"Source code: {target_dir}" in out, f"CLI command had unexpected output: {out}"
 
-    os.system(f"{src.constants.ROOT_DIR}/ivy-cli.sh start")
+    subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True)
     time.sleep(10)
 
     assert version_is_running(src.constants.VERSION)
-    current_logs = src.utils.Logger.read_current_log_file()
-    assert current_logs is not None
+    current_logs = read_current_logs(src.constants.VERSION)
+    print("current_logs: ", current_logs)
     for procedure_name in ["system-checks", "dummy-procedure"]:
         matches = re.findall(
-            r"\s" + procedure_name + r"\s+\- DEBUG\s+\- sleeping for \d+(.\d{2})? seconds",
+            r"\s" + procedure_name + r"\s+\- DEBUG\s+\- Sleeping for \d+(.\d{2})? seconds",
             current_logs,
         )
         assert (
@@ -63,7 +66,12 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
         },
     )
 
-    time.sleep(20)
+    tum_esm_utils.timing.wait_for_condition(
+        lambda: version_is_not_running(src.constants.VERSION, print_logs=False),
+        timeout_message="Version did not stop within 30 seconds after reconfiguration",
+        timeout_seconds=30,
+        check_interval_seconds=3,
+    )
 
     assert version_is_not_running(
         src.constants.VERSION,

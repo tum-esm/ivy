@@ -6,7 +6,6 @@ from ...fixtures import provide_test_config
 import src
 
 
-@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_connection_to_test_broker() -> None:

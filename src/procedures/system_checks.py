@@ -36,7 +36,7 @@ def run(config: src.types.Config, name: str) -> None:
             t = src.utils.functions.get_time_to_next_datapoint(
                 seconds_between_datapoints=config.system_checks.seconds_between_checks
             )
-            logger.debug(f"sleeping for {t:.2f} seconds")
+            logger.debug(f"Sleeping for {t:.2f} seconds")
             time.sleep(t)
 
             # get and log CPU load
