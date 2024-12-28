@@ -1,3 +1,20 @@
-TODO: What should a IoT backend come with so that it can be used for all the features of Ivy?
+import { Callout } from "nextra/components";
 
-TODO: How to add new ones (look at data streams docs).
+# What is an IoT Backend?
+
+In our context, an IoT backend is a server that receives data from sensor nodes and stores it in a central database. It also sends parameter updates to the sensor nodes. This bidirectional communication can be implemented via MQTT, AMQP, Web Sockets, or and other publish-subscribe messaging protocol.
+
+<Callout emoji="💡" type="info">
+  If you don't need parameter changes to be applied by the sensor nodes
+  instantly, you could also use a standard REST API, where sensor nodes – which
+  are not directly addressable in this case – regularly fetch the latest
+  parameters from the backend.
+</Callout>
+
+Ivy support two backends out of the box: Thingsboard [@thingsboard] and Tenta [@tenta]. It uses the MQTT protocol to communicate with them. These backends are run as regular procedures – they run in a thread and are started by the mainloop on DAS startup.
+
+You can have a look at `src/backend/` to see how these two backends are implemented. We are happy to include additional backends in the Ivy template and of course list you as a contributor.
+
+Have a look at the [Configuration API Reference](/api-reference/configuration) for all options to configure the communication with the backend.
+
+![](../../../paper/figures/architecture-1.png)
