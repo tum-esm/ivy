@@ -227,8 +227,6 @@ class Updater:
             version: The version of the source code to download
         """
 
-        # TODO: support downloading arbitrary commit shas
-
         assert os.path.isdir(
             src.constants.ROOT_DIR
         ), f"ROOT_DIR ({src.constants.ROOT_DIR}) is not a directory"
