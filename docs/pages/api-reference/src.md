@@ -226,6 +226,12 @@ may implement loading and dumping functionality like `Config.load`.
 
 ### `src.types.config.py` [#src.types.config]
 
+#### Class `BackendConfig` [#src.types.config.BackendConfig.classes]
+
+```python
+class BackendConfig(pydantic.BaseModel):
+```
+
 #### Class `Config` [#src.types.config.Config.classes]
 
 ```python
