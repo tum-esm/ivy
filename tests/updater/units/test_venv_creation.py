@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import pytest
 import tum_esm_utils
 import src
@@ -27,7 +28,9 @@ def test_venv_creation_and_destruction() -> None:
 
     src.utils.Updater.install_dependencies(version)
     assert os.path.isdir(venv_dir), f"venv directory ({venv_dir}) does not exist"
-    some_lib_dir = os.path.join(venv_dir, "lib/python3.10/site-packages/filelock")
+    some_lib_dir = os.path.join(
+        venv_dir, f"lib/python3.{sys.version_info.minor}/site-packages/filelock"
+    )
     assert os.path.isdir(some_lib_dir), f"Library directory ({some_lib_dir}) does not exist"
     activate_script = os.path.join(venv_dir, "bin/activate")
     assert os.path.isfile(activate_script), f"Activate script ({activate_script}) does not exist"
