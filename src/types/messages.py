@@ -74,6 +74,12 @@ class MessageArchiveItem(pydantic.BaseModel):
     )
     message_body: DataMessageBody | LogMessageBody | ConfigMessageBody
 
+    def __hash__(self) -> int:
+        return hash(self.timestamp)
+
 
 class MessageQueueItem(MessageArchiveItem):
     identifier: int = pydantic.Field(..., description="The identifier of the message")
+
+    def __hash__(self) -> int:
+        return self.identifier

@@ -16,15 +16,14 @@ def cli() -> None:
     help="Information about which CLI version and paths are used.",
 )
 def info() -> None:
-    click.echo(f"CLI version: {src.constants.VERSION}")
+    click.echo(f"CLI version: {src.constants.VERSION.as_identifier}")
     click.echo(f"Python interpreter: {sys.executable}")
     click.echo(f"Source code: {src.constants.PROJECT_DIR}")
 
 
 @cli.command(
     name="start",
-    help="Start the automation as a background process. " +
-    "Prevents spawning multiple processes.",
+    help="Start the automation as a background process. " + "Prevents spawning multiple processes.",
 )
 def start() -> None:
     src.utils.MainloopToggle.start_mainloop()

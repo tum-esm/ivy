@@ -19,11 +19,11 @@
   "backend": {
     "provider": "tenta",
     "mqtt_connection": {
-      "host": "...",
+      "host": "localhost",
       "port": 1883,
-      "client_id": "...",
-      "username": "...",
-      "password": "..."
+      "client_id": "test_client",
+      "username": "test_username",
+      "password": "test_password"
     },
     "max_parallel_messages": 50,
     "max_drain_time": 300

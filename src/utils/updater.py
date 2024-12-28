@@ -355,13 +355,15 @@ class Updater:
         version_path = os.path.join(src.constants.ROOT_DIR, to_version.as_identifier())
         venv_path = os.path.join(version_path, ".venv")
         with open(f"{src.constants.ROOT_DIR}/{src.constants.NAME}-cli.sh", "w") as f:
-            f.writelines(
-                [
-                    "#!/bin/bash",
-                    "set -o errexit",
-                    "",
-                    f"{venv_path}/bin/python {version_path}/cli.py $*",
-                ]
+            f.write(
+                "\n".join(
+                    [
+                        "#!/bin/bash",
+                        "set -o errexit",
+                        "",
+                        f"{venv_path}/bin/python {version_path}/cli.py $*",
+                    ]
+                )
             )
         os.chmod(f"{src.constants.ROOT_DIR}/{src.constants.NAME}-cli.sh", 0o744)
 

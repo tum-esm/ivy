@@ -40,7 +40,9 @@ def run() -> None:
         f"Starting automation with PID {os.getpid()}",
         details=f"config = {config.model_dump_json(indent=4)}",
     )
-    messaging_agent.add_message(src.types.ConfigMessageBody(status="startup", config=config))
+    messaging_agent.add_message(
+        src.types.ConfigMessageBody(status="startup", config=config.to_foreign_config())
+    )
 
     # remove old venvs
 
