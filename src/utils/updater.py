@@ -410,9 +410,9 @@ class Updater:
                     venvs_to_be_removed.append(venv_path)
 
             log_progress(
-                f"found {len(venvs_to_be_removed)} old .venvs to be removed: {venvs_to_be_removed}"
+                f"Found {len(venvs_to_be_removed)} old .venvs to be removed: {venvs_to_be_removed}"
             )
             for v in venvs_to_be_removed:
                 shutil.rmtree(v)
 
-            log_progress(f"successfully removed all old .venvs")
+            log_progress(f"Successfully removed all old .venvs")

@@ -97,11 +97,11 @@ def run() -> None:
     # establish graceful shutdown logic
 
     def teardown_handler(*args: Any) -> None:
-        logger.debug("starting teardown of the main loop")
+        logger.debug("Starting teardown of the main loop")
         for lm in lifecycle_managers:
             if lm.procedure_is_running():
                 lm.teardown()
-        logger.debug("finished teardown of the main loop")
+        logger.debug("Finished teardown of the main loop")
         atexit.unregister(teardown_handler)
         sys.exit(0)
 

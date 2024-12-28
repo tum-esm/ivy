@@ -93,10 +93,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
 
     # start the 1.2.3 version
 
-    env = {**os.environ.copy()}
-    del env["IVY_DATA_DIR"]
-
-    subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True, env=env)
+    subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True)
     time.sleep(5)
     assert version_is_running(from_v), "The 1.2.3 version is not running correctly"
     time.sleep(10)
@@ -130,7 +127,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
         },
     )
     tum_esm_utils.timing.wait_for_condition(
-        is_successful=lambda: version_is_not_running(from_v),
+        is_successful=lambda: version_is_not_running(from_v, print_logs=False),
         timeout_message="The 1.2.3 version did not stop within 180 seconds",
         timeout_seconds=180,
         check_interval_seconds=5,
@@ -168,7 +165,7 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
 
     # start the 4.5.6 version
 
-    subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True, env=env)
+    subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True)
     time.sleep(5)
     assert version_is_running(to_v), "The 4.5.6 version is not running correctly"
     time.sleep(10)

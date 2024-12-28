@@ -144,7 +144,7 @@ class LifecycleManager:
         backends, the SIGKILL is sent after `config.backend.max_drain_time + 15`
         seconds."""
 
-        self.logger.info(f"starting teardown of {self.variant}")
+        self.logger.info(f"Starting teardown of {self.variant}")
         if self.process is not None:
             if not self.process.is_alive():
                 self.logger.debug("Nothing to tear down, process is already stopped")
