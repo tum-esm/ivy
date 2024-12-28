@@ -25,8 +25,11 @@ jobs:
           python-version: ${{ matrix.python_version }}
           cache: "pip"
 
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+
       - name: Install dependencies
-        run: pip install ".[dev]"
+        run: pdm sync --with=dev
 
       - name: Install mosquitto dependencies
         run: |
