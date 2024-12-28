@@ -6,7 +6,7 @@ import tum_esm_utils
 import src
 import os
 from ...fixtures import provide_test_config
-
+from .utils import version_is_running, version_is_not_running
 # TODO: Rename the two cases to "reconfiguration" and "version_change"
 
 
@@ -38,9 +38,9 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
     os.system(f"{src.constants.ROOT_DIR}/ivy-cli.sh start")
     time.sleep(10)
 
+    assert version_is_running(src.constants.VERSION)
     current_logs = src.utils.Logger.read_current_log_file()
     assert current_logs is not None
-    print(f"current logs #1:\n{current_logs}")
     for procedure_name in ["system-checks", "dummy-procedure"]:
         matches = re.findall(
             r"\s" + procedure_name + r"\s+\- DEBUG\s+\- sleeping for \d+(.\d{2})? seconds",
@@ -61,13 +61,15 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
             "configuration": new_config.model_dump(),
         },
     )
-    time.sleep(60)
 
-    current_logs = src.utils.Logger.read_current_log_file()
-    assert current_logs is not None
-    print(f"current logs #2:\n{current_logs}")
-    assert "Exiting mainloop so that it can be restarted with the new config" in current_logs
+    time.sleep(20)
 
-    # TODO: check if process is really running/stopped by the process ids
+    assert version_is_not_running(
+        src.constants.VERSION,
+        expected_log_lines=[
+            "Exiting mainloop so that it can be restarted with the new config",
+            "Finished teardown of the main loop",
+        ],
+    )
 
     shutil.rmtree(target_dir)
