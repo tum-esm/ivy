@@ -4,7 +4,7 @@ import time
 from typing import Any
 import pytest
 import paho.mqtt.client
-from ..fixtures import provide_test_config
+from ...fixtures import provide_test_config
 import src
 
 
@@ -13,7 +13,7 @@ import src
 def test_connection_to_test_broker() -> None:
     client = paho.mqtt.client.Client(
         callback_api_version=paho.mqtt.client.CallbackAPIVersion.VERSION2,
-        clean_session=True,
+        client_id="test_connection_to_test_broker",
     )
     client.username_pw_set(username="test_username", password="test_password")
     r = client.connect(host="localhost", port=1883)
@@ -47,13 +47,12 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
         state.pending_configs = []
 
     config = provide_test_config
-    config.general.system_identifier = "test_client"
     config.backend = src.types.config.BackendConfig(
         provider="tenta",
         mqtt_connection=src.types.config.MQTTBrokerConfig(
             host="localhost",
             port=1883,
-            client_id="test_client",
+            client_id=config.general.system_identifier + "-tenta-config-receiving",
             username="test_username",
             password="test_password",
         ),
@@ -82,22 +81,22 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
 
     try:
         # 1. send valid config to wrong topic
-        _pub(topic="config/test_client", message=c(1))
+        _pub(topic=f"config/{config.general.system_identifier}", message=c(1))
 
         # 2. send valid config to correct topic but wrong client_id
-        _pub(topic="configurations/test_clientee", message=c(2))
+        _pub(topic=f"configurations/{config.general.system_identifier}wrong", message=c(2))
 
         # 3. send valid config to correct topic
-        _pub(topic="configurations/test_client", message=c(3))
+        _pub(topic=f"configurations/{config.general.system_identifier}", message=c(3))
 
         # 4. send invalid config to correct topic
-        _pub(topic="configurations/test_client", message={"other": {}})
+        _pub(topic=f"configurations/{config.general.system_identifier}", message={"other": {}})
 
         # 5. send invalid config to wrong topic
-        _pub(topic="config/test_client", message={"other": {}})
+        _pub(topic=f"config/{config.general.system_identifier}", message={"other": {}})
 
         # 6. send valid config to correct topic
-        _pub(topic="configurations/test_client", message=c(4))
+        _pub(topic=f"configurations/{config.general.system_identifier}", message=c(4))
 
         start_time = time.time()
         while True:
@@ -121,13 +120,12 @@ def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> 
         state.pending_configs = []
 
     config = provide_test_config
-    config.general.system_identifier = "test_client"
     config.backend = src.types.config.BackendConfig(
         provider="thingsboard",
         mqtt_connection=src.types.config.MQTTBrokerConfig(
             host="localhost",
             port=1883,
-            client_id="test_client",
+            client_id=config.general.system_identifier + "-thingsboard-config-receiving",
             username="test_username",
             password="test_password",
         ),
