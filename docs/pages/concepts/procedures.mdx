@@ -2,11 +2,11 @@
 
 ## What are procedures?
 
-A procedure should run in an infinite loop to perform some function of the system - e.g. sampling from a sensor, controlling an actuator, making some decision based on the result of other procedures, etc.
+A procedure should run in an infinite loop to perform some function of the system - e.g., sampling from a sensor, controlling an actuator, making some decision based on the result of other procedures, etc.
 
 The function of the mainloop is to make sure that all procedures run at all times - starting them on program start, restarting them if they crash, sending a graceful teardown notice before the program is shut down.
 
-All procedures are located inside `src/procedures/` . You can use `src/procedures/dummy_procedure.py` as an example of how to write a procedure.
+All procedures are located inside `src/procedures/`. You can use `src/procedures/dummy_procedure.py` as an example of how to write a procedure.
 
 ## How to define a procedure?
 
@@ -38,7 +38,7 @@ lifecycle_managers: list[src.utils.LifecycleManager] = [
 ]
 ```
 
-3. Look at the `src/procedures/dummy_procedure.py` for an example of how a procedure can look like.
+3. Look at the `src/procedures/dummy_procedure.py` for an example of what a procedure can look like.
 
 ## Exponential Backoff
 

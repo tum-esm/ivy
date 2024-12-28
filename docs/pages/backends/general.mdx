@@ -2,7 +2,7 @@ import { Callout } from "nextra/components";
 
 # What is an IoT Backend?
 
-In our context, an IoT backend is a server that receives data from sensor nodes and stores it in a central database. It also sends parameter updates to the sensor nodes. This bidirectional communication can be implemented via MQTT, AMQP, Web Sockets, or and other publish-subscribe messaging protocol.
+In our context, an IoT backend is a server that receives data from sensor nodes and stores it in a central database. It also sends parameter updates to the sensor nodes. This bidirectional communication can be implemented via MQTT, AMQP, Web Sockets, or any other publish-subscribe messaging protocols.
 
 <Callout emoji="💡" type="info">
   If you don't need parameter changes to be applied by the sensor nodes
@@ -11,10 +11,10 @@ In our context, an IoT backend is a server that receives data from sensor nodes 
   parameters from the backend.
 </Callout>
 
-Ivy support two backends out of the box: Thingsboard [@thingsboard] and Tenta [@tenta]. It uses the MQTT protocol to communicate with them. These backends are run as regular procedures – they run in a thread and are started by the mainloop on DAS startup.
+Ivy supports two backends out of the box: Thingsboard [@thingsboard] and Tenta [@tenta]. It uses the MQTT protocol to communicate with them. These backends are run as regular procedures – they run in a thread and are started by the mainloop on DAS startup.
 
-You can have a look at `src/backend/` to see how these two backends are implemented. We are happy to include additional backends in the Ivy template and of course list you as a contributor.
+You can take a look at `src/backend/` to see how these two backends are implemented. We are happy to include additional backends in the Ivy template and, of course, list you as a contributor.
 
-Have a look at the [Configuration API Reference](/api-reference/configuration) for all options to configure the communication with the backend.
+Take a look at the [Configuration API Reference](/api-reference/configuration) for all options to configure the communication with the backend.
 
 ![](../../../paper/figures/architecture-1.png)

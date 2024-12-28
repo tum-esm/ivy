@@ -21,13 +21,13 @@
   className="inline p-0 m-px mt-6"
 />
 
-A Python boilerplate for an IoT node data acqusition system (DAS) supporting remote configuration and software updates. An Ivy-based network is made up of many (remote) computers running autonomously - e.g. performing measurements, controlling actuators, etc. - and a central backend connecting these devices.
+A Python boilerplate for an IoT node data acquisition system (DAS) supporting remote configuration and software updates. An Ivy-based network is made up of many (remote) computers running autonomously - e.g., performing measurements, controlling actuators, etc. - and a central backend connecting these devices.
 
 The idea of Ivy is that you can start building your own DAS based on Ivy instead of starting from scratch. You have full control over the codebase but do not have to rewrite all the logic that every autonomous DAS has to implement. In addition, Ivy provides you with a well-tested and proven way of upgrading your sensor nodes remotely.
 
 **Related Projects:**
 
-🪽 The Ivy software template is based on the experienced gained when realizing the [Hermes Project](https://github.com/tum-esm/hermes)<br/>
+🪽 The Ivy software template is based on the experience gained when realizing the [Hermes Project](https://github.com/tum-esm/hermes)<br/>
 🔨 Many utility functions from the [`tum-esm-utils` package](https://github.com/tum-esm/utils) are included here.<br/>
 🕷️ This client-side code connects to the following IoT platforms: [Tenta](https://github.com/iterize/tenta), [ThingsBoard](https://thingsboard.io/)<br/>
 🌤️ The software architecture of [Pyra](https://github.com/tum-esm/pyra) is quite similar to the Ivy template. If we were to start building Pyra again today, we would use the Ivy template and save a ton of time.

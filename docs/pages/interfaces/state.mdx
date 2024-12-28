@@ -1,6 +1,5 @@
 import { Callout } from "nextra/components";
 
-
 # State
 
 The state is stored at `data/state.json`. The exact schema of this file is defined by `src.types.State` and documented [in the API Reference section](/api-reference/internal-communication).
@@ -21,6 +20,6 @@ with src.utils.StateInterface.update() as state:
 
 <Callout type="info">
 
-The `with ... as state:` construct makes sure, that the code inside is protected by a semaphore, i.e. no other code can access the state while you are updating it.
+The `with ... as state:` construct makes sure, that the code inside is protected by a semaphore, i.e., no other code can access the state while you are updating it.
 
 </Callout>

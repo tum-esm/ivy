@@ -1,8 +1,8 @@
 # Overview
 
-The Ivy template provides the key components we think, almost every Data-Aquisition-System (DAS) requires. It is a template that runs as is. You can base any DAS written in Python on Ivy and start with a very powerful and thought-out baseline instead of having to reinvent the wheel. You own the codebase and can strip away everything you don't use and add everything you need for your application.
+The Ivy template provides the key components, we think, almost every data acquisition system (DAS) requires. It is a template that runs as is. You can base any DAS written in Python on Ivy and start with a very powerful and thought-out baseline instead of having to reinvent the wheel. You own the codebase and can strip away everything you don't use and add everything you need for your application.
 
-As an example, [Pyra](https://github.com/tum-esm/pyra) is a DAS we built a few years ago. It does not connect to a backend and is not using Over-the-Air (OTA) updates. However the rest complies with the Ivy template and we could have saved a ton of time - and a full rewrite - by using Ivy as a baseline.
+As an example, [Pyra](https://github.com/tum-esm/pyra) is a DAS we built a few years ago. It does not connect to a backend and is not using Over-the-Air (OTA) updates. However, the rest complies with the Ivy template, and we could have saved a ton of time - and a full rewrite - by using Ivy as a baseline.
 
 ## Setup, Configuration & the CLI
 
@@ -12,33 +12,33 @@ The CLI (`~/Documents/ivy/x.y.z/cli.py`) is used to start and stop the automatio
 
 ## Procedures & Failure Handling
 
-Procedures are the place where the logic of the system is executed in an infinite loop: sample from sensoric inputs, control actuators, control electrical components like a PLC or a UPS.
+Procedures are the place where the logic of the system is executed in an infinite loop: sample from sensory inputs, control actuators, and control electrical components like a PLC or a UPS.
 
-Every procedure will run inside its own thread. You only have to write the procedure as a function that runs infinitely. The Ivy core will start the thread, restart it every time it crashes and sends a teardown signal before stopping it to enable graceful teardowns.
+Every procedure will run inside its own thread. You only have to write the procedure as a function that runs infinitely. The Ivy core will start the thread, restart it every time it crashes, and send a teardown signal before stopping it to enable graceful teardowns.
 
 Read more about procedures and how to write your own [here](/concepts/procedures).
 
 ## Sharing State Between Components
 
-The state is the internal mechanism of communicating between procedures and with the Ivy core. I.e., a procedure can periodically write some of its results into the state and all other procedures can access it and act accordingly. For example, one procedure is catching signals from a UPS about low battery state and write that into the state. Other procedures can react to that by skipping energy-intensive tasks.
+The state is the internal mechanism of communicating between procedures and with the Ivy core. I.e., a procedure can periodically write some of its results into the state, and all other procedures can access it and act accordingly. For example, one procedure is catching signals from a UPS about a low battery state and writing that into the state. Other procedures can react to that by skipping energy-intensive tasks.
 
 Read more about how to access the shared state from your code [here](/interfaces/state).
 
 ## Backend Connectors and Messaging
 
-An Ivy-based network is made up of many (remote) computers running autonomously - e.g. performing measurements, controlling actors, etc. - and a central backend connects these devices. A backend is a central service to collect data (measurements and logs) and configure sensor-nodes. Ivy comes with connectors for [Tenta](https://tenta.onrender.com) and [ThingsBoard](https://thingsboard.io). However, Ivy can work with any backend that is capable if storing tabular data and providing some endpoints to read and write this data.
+An Ivy-based network is made up of many (remote) computers running autonomously -e.g., performing measurements, controlling actors, etc. - and a central backend connects these devices. A backend is a central service to collect data (measurements and logs) and configure sensor nodes. Ivy comes with connectors for [Tenta](https://tenta.onrender.com) and [ThingsBoard](https://thingsboard.io). However, Ivy can work with any backend that is capable of storing tabular data and providing some endpoints to read and write this data.
 
-In Ivy, "Messages" are data structures sent to the backend. These messages can be sent from any part of the codebase - same as logs. All messages will be stored locally right away and a thread handling the backend communication will send them to the backend. Since the emission is separated from the sending, the procedures producing messages do not have to wait until a message has been send and can continue their operation after a few milliseconds. This "message sending" is done with the `MessagingAgent` and is described [here](/interfaces/messages).
+In Ivy, "Messages" are data structures sent to the backend. These messages can be sent from any part of the codebase - same as logs. All messages will be stored locally right away, and a thread handling the backend communication will send them to the backend. Since the emission is separated from the sending, the procedures producing messages do not have to wait until a message has been sent and can continue their operation after a few milliseconds. This "message sending" is done with the `MessagingAgent` and is described [here](/interfaces/messages).
 
-All messages are stored locally and if you do not have a backend, you can just leave it unconfigured and simple use that local storage (one file per day) to capture the data.
+All messages are stored locally, and if you do not have a backend, you can just leave it unconfigured and simply use that local storage (one file per day) to capture the data.
 
 Read more about Backends and how to set up [Tenta](https://tenta.onrender.com) and [ThingsBoard](https://thingsboard.io) for Ivy [here](/backends/general).
 
 ## Over-the-Air (OTA) Updates
 
-The `config.json` file described above can be changed remotely. The backend can publish new configurations to its devices and Ivy will update itself accordingly.
+The `config.json` file described above can be changed remotely. The backend can publish new configurations to its devices, and Ivy will update itself accordingly.
 
-A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies and remove old dependencies after a successful change.
+A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies, and remove old dependencies after a successful change.
 
 Read more about OTA updates [here](/concepts/over-the-air-updates).
 
@@ -50,6 +50,6 @@ Create your own repository by using Ivy as a "template" on GitHub.
 
 Make yourself familiar with the documentation and the codebase. Once you roughly know how Ivy works, you can write your own procedures, extend the shared state, add your own backend connectors, extend the test suite, and so on.
 
-Ivy is made to be owned so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link the central ivy documentation (https://tum-esm-ivy.netlify.app/).
+Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/).
 
 We are happy to include your additions to the Ivy template - and of course list you as a contributor.
