@@ -1,1 +1,30 @@
-TODO
+import { Callout } from "nextra/components";
+
+# Tenta Setup
+
+1. Setup Tenta, according to the Tenta documentation: https://github.com/iterize/tenta
+2. In the Tenta dashboard, create a new sensor node -> you receive a "sensor identifier".
+3. Use the `config.default.json` file to create a `config.json` file on your sensor node. Set `general.config_revision` to `-1` and `general.system_identifier` to the "sensor identifier" you received from Tenta.
+
+   ```json
+   {
+     "general": {
+        "config_revision": -1,
+        "software_version": "1.0.0",
+        "system_identifier": "ab12cd..."
+     },
+     "backend": {
+       "provider": "tenta",
+       "mqtt_connection": ...
+     },
+   }
+   ```
+
+4. When publishing new configurations with Tenta, you can omit the field `general.config_revision`, because Tenta will assign new revision numbers automatically. The system identifier is requires so the node knows on which MQTT topics to communicate.
+5. The first configuration created by Tenta receives config revision `0`.
+
+<Callout emoji="💡" type="info">
+  In [Hermes](https://github.com/tum-esm/hermes), we solved these initial steps
+  with setup script for each Raspberry Pi that put an initial config with a
+  sensor identifier on the device and published this initial config to Tenta.
+</Callout>
