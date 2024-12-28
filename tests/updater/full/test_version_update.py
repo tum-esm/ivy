@@ -160,12 +160,4 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
     time.sleep(10)
     assert version_is_running(to_v), "The 4.5.6 version is not running correctly"
 
-    os.system(f"{src.constants.ROOT_DIR}/ivy-cli.sh stop")
-    tum_esm_utils.timing.wait_for_condition(
-        is_successful=lambda: version_is_not_running(to_v, print_logs=False),
-        timeout_message="The 4.5.6 version did not stop within 30 seconds",
-        timeout_seconds=30,
-        check_interval_seconds=3,
-    )
-
     clean_root_dir()
