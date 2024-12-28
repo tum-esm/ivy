@@ -25,15 +25,6 @@ jobs:
           python-version: ${{ matrix.python_version }}
           cache: "pip"
 
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v4
-
-      - name: Install dependencies
-        run: |
-          python${{ matrix.python_version }} -m venv .venv
-          source .venv/bin/activate
-          pdm sync --with=dev
-
       - name: Install mosquitto dependencies
         run: |
           sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa -y
@@ -45,6 +36,20 @@ jobs:
           mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password
           echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > $PWD/tests/updater/data/mosquitto.conf
           mosquitto -d -c tests/updater/data/mosquitto.conf
+
+      - name: Test whether broker is running
+        run: |
+          sleep 5
+          mosquitto_pub -h localhost -p 1883 -t test/topic -u test_username -P test_password -m "hello"
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+
+      - name: Install dependencies
+        run: |
+          python${{ matrix.python_version }} -m venv .venv
+          source .venv/bin/activate
+          pdm sync --with=dev
 
       - name: Run quick pytests for all Python versions except 3.10
         if: matrix.python_version != '3.10'
