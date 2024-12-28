@@ -3,6 +3,7 @@ import pytest
 import src
 
 
+@pytest.mark.version_change
 @pytest.mark.order(1)
 @pytest.mark.quick
 def test_config_templates() -> None:
