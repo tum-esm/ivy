@@ -1,5 +1,4 @@
 import os
-import shutil
 import pytest
 import tum_esm_utils
 import src

@@ -1,3 +1,5 @@
+import json
+import time
 from typing import Any, Generator, Literal, Optional
 import datetime
 import contextlib
@@ -92,3 +94,21 @@ def get_time_to_next_datapoint(seconds_between_datapoints: int) -> float:
     )
 
     return seconds_between_datapoints - (current_seconds_in_day % seconds_between_datapoints)
+
+
+def publish_mqtt_message(
+    topic: str,
+    message: dict[Any, Any],
+    host: str = "localhost",
+    port: int = 1883,
+    username: str = "test_username",
+    password: str = "test_password",
+    sleep: float = 0.2,
+) -> None:
+    exit_code = os.system(
+        f"""mosquitto_pub -h {host} -p {port} \\
+        -u '{username}' -P '{password}' \\
+        -t '{topic}' -m '{json.dumps(message)}'"""
+    )
+    assert exit_code == 0, f"Failed to publish message to topic (exit code {topic})"
+    time.sleep(sleep)
