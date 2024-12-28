@@ -1,5 +1,3 @@
-import json
-import os
 import time
 from typing import Any
 import pytest
@@ -28,16 +26,6 @@ def test_connection_to_test_broker() -> None:
     client.loop_stop()
     client.disconnect()
     assert not client.is_connected(), "Client is still connected"
-
-
-def _pub(topic: str, message: Any) -> None:
-    exit_code = os.system(
-        f"""mosquitto_pub -h localhost -p 1883 \\
-        -u 'test_username' -P 'test_password' \\
-        -t '{topic}' -m '{json.dumps(message)}'"""
-    )
-    assert exit_code == 0, f"Failed to publish message to topic {topic}"
-    time.sleep(0.2)
 
 
 @pytest.mark.order(8)
@@ -81,22 +69,34 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
 
     try:
         # 1. send valid config to wrong topic
-        _pub(topic=f"config/{config.general.system_identifier}", message=c(1))
+        src.utils.functions.publish_mqtt_message(
+            topic=f"config/{config.general.system_identifier}", message=c(1)
+        )
 
         # 2. send valid config to correct topic but wrong client_id
-        _pub(topic=f"configurations/{config.general.system_identifier}wrong", message=c(2))
+        src.utils.functions.publish_mqtt_message(
+            topic=f"configurations/{config.general.system_identifier}wrong", message=c(2)
+        )
 
         # 3. send valid config to correct topic
-        _pub(topic=f"configurations/{config.general.system_identifier}", message=c(3))
+        src.utils.functions.publish_mqtt_message(
+            topic=f"configurations/{config.general.system_identifier}", message=c(3)
+        )
 
         # 4. send invalid config to correct topic
-        _pub(topic=f"configurations/{config.general.system_identifier}", message={"other": {}})
+        src.utils.functions.publish_mqtt_message(
+            topic=f"configurations/{config.general.system_identifier}", message={"other": {}}
+        )
 
         # 5. send invalid config to wrong topic
-        _pub(topic=f"config/{config.general.system_identifier}", message={"other": {}})
+        src.utils.functions.publish_mqtt_message(
+            topic=f"config/{config.general.system_identifier}", message={"other": {}}
+        )
 
         # 6. send valid config to correct topic
-        _pub(topic=f"configurations/{config.general.system_identifier}", message=c(4))
+        src.utils.functions.publish_mqtt_message(
+            topic=f"configurations/{config.general.system_identifier}", message=c(4)
+        )
 
         start_time = time.time()
         while True:
@@ -160,22 +160,26 @@ def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> 
 
     try:
         # 1. send valid config to wrong topic
-        _pub(topic="v1/devices/me/attributeseee", message=c(5))
+        src.utils.functions.publish_mqtt_message(topic="v1/devices/me/attributeseee", message=c(5))
 
         # 2. send valid config to wrong topic
-        _pub(topic="v1/devices/me", message=c(6))
+        src.utils.functions.publish_mqtt_message(topic="v1/devices/me", message=c(6))
 
         # 3. send valid config to correct topic
-        _pub(topic="v1/devices/me/attributes", message=c(7))
+        src.utils.functions.publish_mqtt_message(topic="v1/devices/me/attributes", message=c(7))
 
         # 4. send invalid config to correct topic
-        _pub(topic="v1/devices/me/attributes", message={"other": {}})
+        src.utils.functions.publish_mqtt_message(
+            topic="v1/devices/me/attributes", message={"other": {}}
+        )
 
         # 5. send invalid config to wrong topic
-        _pub(topic="v1/devices/me/attributes", message={"other": {}})
+        src.utils.functions.publish_mqtt_message(
+            topic="v1/devices/me/attributes", message={"other": {}}
+        )
 
         # 6. send valid config to correct topic
-        _pub(topic="v1/devices/me/attributes", message=c(8))
+        src.utils.functions.publish_mqtt_message(topic="v1/devices/me/attributes", message=c(8))
 
         start_time = time.time()
         while True:
