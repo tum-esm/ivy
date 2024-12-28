@@ -276,7 +276,10 @@ class Logger:
         try:
             with filelock.FileLock(FILELOCK_PATH, timeout=3):
                 return tum_esm_utils.files.load_file(
-                    os.path.join(LOGS_ARCHIVE_DIR, datetime.datetime.now().strftime("%Y-%m-%d.log"))
+                    os.path.join(
+                        LOGS_ARCHIVE_DIR,
+                        datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d.log"),
+                    )
                 )
         except FileNotFoundError:
             return None

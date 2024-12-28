@@ -18,8 +18,6 @@ def pytest_dummy_procedure(config: src.types.Config, name: str) -> None:
         exit(0)
 
     logger.info("Registering teardown handle")
-    atexit.register(teardown_handler)
-    signal.signal(signal.SIGINT, teardown_handler)
     signal.signal(signal.SIGTERM, teardown_handler)
 
     time.sleep(8)
