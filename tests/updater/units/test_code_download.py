@@ -35,7 +35,7 @@ def test_github_code_download() -> None:
             access_token=None,
             source_conflict_strategy="reuse",
         ),
-        tum_esm_utils.validators.Version("2.5.3"),
+        tum_esm_utils.validators.Version("2.5.4"),
     )
 
 

@@ -16,7 +16,7 @@ def test_venv_creation_and_destruction() -> None:
         source_conflict_strategy="reuse",
     )
     other_version = tum_esm_utils.validators.Version("2.5.0")
-    version = tum_esm_utils.validators.Version("2.5.3")
+    version = tum_esm_utils.validators.Version("2.5.4")
     target_dir = os.path.join(src.constants.ROOT_DIR, version.as_identifier())
     venv_dir = os.path.join(target_dir, ".venv")
 
