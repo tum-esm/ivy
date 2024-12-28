@@ -43,7 +43,7 @@ def run(
             assert isinstance(data, dict)
             if "configuration" not in data.keys():
                 return
-            foreign_config = src.types.ForeignConfig.model_validate_json(data["configuration"])
+            foreign_config = src.types.ForeignConfig.model_validate(data["configuration"])
             with src.utils.StateInterface.update() as state:
                 state.pending_configs.append(foreign_config)
             logger.info(f"Config with revision {foreign_config.general.config_revision} was parsed")
@@ -97,17 +97,18 @@ def run(
                 username=config.backend.mqtt_connection.username,
                 password=config.backend.mqtt_connection.password,
             )
-            thingsboard_client.tls_set(
-                ca_certs=os.path.join(
-                    src.constants.PROJECT_DIR,
-                    "config",
-                    "thingsboard-cloud-ca-root.pem",
-                ),
-                cert_reqs=ssl.CERT_REQUIRED,
-                tls_version=ssl.PROTOCOL_TLSv1_2,
-                # possibly add your own TLS configuration here
-            )
-            thingsboard_client.tls_insecure_set(False)
+            if config.backend.mqtt_connection.host.endswith("thingsboard.cloud"):
+                thingsboard_client.tls_set(
+                    ca_certs=os.path.join(
+                        src.constants.PROJECT_DIR,
+                        "config",
+                        "thingsboard-cloud-ca-root.pem",
+                    ),
+                    cert_reqs=ssl.CERT_REQUIRED,
+                    tls_version=ssl.PROTOCOL_TLSv1_2,
+                    # possibly add your own TLS configuration here
+                )
+                thingsboard_client.tls_insecure_set(False)
             thingsboard_client.on_message = on_config_message
             thingsboard_client.connect(
                 host=config.backend.mqtt_connection.host,
