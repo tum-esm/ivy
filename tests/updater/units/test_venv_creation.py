@@ -5,7 +5,6 @@ import tum_esm_utils
 import src
 
 
-@pytest.mark.skip
 @pytest.mark.order(6)
 @pytest.mark.updater
 def test_venv_creation_and_destruction() -> None:
@@ -42,13 +41,13 @@ def test_venv_creation_and_destruction() -> None:
     # test removing venvs but not the current one
     src.utils.Updater.remove_old_venvs(version, log)
     assert os.path.isdir(venv_dir), f"venv directory ({venv_dir}) does not exist"
-    assert f"found 0 old .venvs to be removed" in "\n".join(logs), f"Unexpected logs: {logs}"
+    assert f"Found 0 old .venvs to be removed" in "\n".join(logs), f"Unexpected logs: {logs}"
     logs.clear()
 
     # test removing venvs including the current one
     src.utils.Updater.remove_old_venvs(other_version, log)
     assert not os.path.isdir(venv_dir), f"venv directory ({venv_dir}) still exists"
-    assert f"found 1 old .venvs to be removed" in "\n".join(logs), f"Unexpected logs: {logs}"
+    assert f"Found 1 old .venvs to be removed" in "\n".join(logs), f"Unexpected logs: {logs}"
     logs.clear()
 
     shutil.rmtree(target_dir)

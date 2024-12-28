@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import shutil
 import psutil
 import tum_esm_utils
 
@@ -67,3 +68,12 @@ def replace_file_content(filepath: str, old: str, new: str) -> None:
     ), f"Expected exactly one occurence of {old} in {filepath}, got {content.count(old)}"
     with open(filepath, "w") as f:
         f.write(content.replace(old, new))
+
+
+def clean_root_dir() -> None:
+    for item in os.listdir(src.constants.ROOT_DIR):
+        item_path = os.path.join(src.constants.ROOT_DIR, item)
+        if os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+        else:
+            os.remove(item_path)

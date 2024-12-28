@@ -4,7 +4,7 @@ import time
 from typing import Any
 import pytest
 import src
-from ..fixtures import provide_test_config
+from ..fixtures import provide_test_config, restore_production_files
 
 
 def pytest_dummy_procedure(config: src.types.Config, name: str) -> None:
@@ -37,7 +37,10 @@ def expected_log_entries(count: int) -> None:
 
 @pytest.mark.order(2)
 @pytest.mark.quick
-def test_lifecycle_manager(provide_test_config: src.types.Config) -> None:
+def test_lifecycle_manager(
+    provide_test_config: src.types.Config,
+    restore_production_files: None,
+) -> None:
     lm = src.utils.LifecycleManager(
         config=provide_test_config,
         entrypoint=pytest_dummy_procedure,

@@ -5,7 +5,6 @@ import tum_esm_utils
 import src
 
 
-@pytest.mark.skip
 @pytest.mark.order(7)
 @pytest.mark.updater
 def test_pytest_verification() -> None:

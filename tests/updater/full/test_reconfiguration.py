@@ -7,13 +7,9 @@ import tum_esm_utils
 import src
 import os
 from ...fixtures import provide_test_config
-from .utils import version_is_running, version_is_not_running, read_current_logs
+from .utils import version_is_running, version_is_not_running, read_current_logs, clean_root_dir
 
 
-# TODO: Rename the two cases to "reconfiguration" and "version_change"
-
-
-@pytest.mark.skip
 @pytest.mark.order(9)
 @pytest.mark.updater
 def test_reconfiguration(provide_test_config: src.types.Config) -> None:
@@ -81,4 +77,4 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
         ],
     )
 
-    shutil.rmtree(target_dir)
+    clean_root_dir()
