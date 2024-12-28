@@ -4,7 +4,6 @@ import time
 from typing import Any
 import pytest
 import paho.mqtt.client
-import tum_esm_utils
 from ..fixtures import provide_test_config
 import src
 
@@ -44,6 +43,9 @@ def _pub(topic: str, message: dict[Any, Any]) -> None:
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
+    with src.utils.StateInterface.update() as state:
+        state.pending_configs = []
+
     config = provide_test_config
     config.general.system_identifier = "test_client"
     config.backend = src.types.config.BackendConfig(
@@ -113,7 +115,78 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
 
 @pytest.mark.order(8)
 @pytest.mark.updater
-def test_thingsboard_config_receiving() -> None:
-    # TODO: test whether messages sent to the broker are received by the backend and correctly put into the messaging queue
-    # TODO: test this using a few invalid and a few valid messages
-    pass
+def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> None:
+    with src.utils.StateInterface.update() as state:
+        state.pending_configs = []
+
+    config = provide_test_config
+    config.general.system_identifier = "test_client"
+    config.backend = src.types.config.BackendConfig(
+        provider="thingsboard",
+        mqtt_connection=src.types.config.MQTTBrokerConfig(
+            host="localhost",
+            port=1883,
+            client_id="test_client",
+            username="test_username",
+            password="test_password",
+        ),
+    )
+    backend_lm = src.utils.LifecycleManager(
+        config=config,
+        entrypoint=src.backend.thingsboard_backend.run,
+        name="thingsboard-backend",
+        variant="backend",
+    )
+    backend_lm.start_procedure()
+    time.sleep(0.5)
+    assert backend_lm.procedure_is_running(), "Backend is not running"
+    time.sleep(0.5)
+
+    current_state = src.utils.StateInterface.load()
+    assert (
+        len(current_state.pending_configs) == 0
+    ), f"There are pending configs in the state: {current_state.pending_configs}"
+
+    c = lambda rev: {
+        "shared": {
+            "configuration": {
+                "general": {
+                    "software_version": f"0.0.{rev}",
+                    "config_revision": rev,
+                }
+            }
+        },
+    }
+
+    try:
+        # 1. send valid config to wrong topic
+        _pub(topic="v1/devices/me/attributeseee", message=c(5))
+
+        # 2. send valid config to wrong topic
+        _pub(topic="v1/devices/me", message=c(6))
+
+        # 3. send valid config to correct topic
+        _pub(topic="v1/devices/me/attributes", message=c(7))
+
+        # 4. send invalid config to correct topic
+        _pub(topic="v1/devices/me/attributes", message={"other": {}})
+
+        # 5. send invalid config to wrong topic
+        _pub(topic="v1/devices/me/attributes", message={"other": {}})
+
+        # 6. send valid config to correct topic
+        _pub(topic="v1/devices/me/attributes", message=c(8))
+
+        start_time = time.time()
+        while True:
+            current_state = src.utils.StateInterface.load()
+            if len(current_state.pending_configs) > 0:
+                assert current_state.pending_configs[0].general.config_revision == 7
+            if len(current_state.pending_configs) > 1:
+                assert current_state.pending_configs[1].general.config_revision == 8
+                break
+            if (time.time() - start_time) > 15:
+                raise Exception("Timeout")
+            time.sleep(2)
+    finally:
+        backend_lm.teardown()
