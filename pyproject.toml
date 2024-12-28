@@ -7,7 +7,7 @@ authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]
 dependencies = [
   "click>=8.1.7",
   "filelock>=3.16.1",
-  "pydantic>=2.9.2",
+  "pydantic>=2.10.4",
   "pytest>=8.3.3",
   "python-dotenv>=1.0.1",
   "psutil>=6.1.0",
@@ -35,7 +35,7 @@ documentation = "https://tum-esm-ivy.netlify.app/"
 dev = [
   "docstring-parser>=0.16",
   "jsonref>=1.1.0",
-  "mypy>=1.13.0",
+  "mypy>=1.14.0",
   "pytest-cov>=6.0.0",
   "setuptools>=75.5.0",
   "types-psutil>=6.1.0.20241102",
@@ -69,22 +69,23 @@ markers = [
 [tool.pdm.scripts]
 quick-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR && mkdir $IVY_DATA_DIR/logs && mkdir $IVY_DATA_DIR/messages &&
   pytest --verbose -m "quick" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 integration-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR && mkdir $IVY_DATA_DIR/logs && mkdir $IVY_DATA_DIR/messages &&
   pytest --verbose -m "integration" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 updater-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
-  pytest --verbose -m "updater" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR && mkdir $IVY_DATA_DIR/logs && mkdir $IVY_DATA_DIR/messages &&
+  pytest --verbose -m "updater" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-* &&
+  pkill -9 -f "ci-tests-ivy-root-dir"
   """ }
 start-mosquitto = { shell = """
-  mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password \
-  echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > \
-  $PWD/tests/updater/data/mosquitto.conf && mosquitto -d -c tests/updater/data/mosquitto.conf
+  mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password &&
+  echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > $PWD/tests/updater/data/mosquitto.conf &&
+  mosquitto -d -c tests/updater/data/mosquitto.conf
   """ }
 stop-mosquitto = { shell = 'pkill -f "mosquitto -d"' }
