@@ -12,6 +12,7 @@ def _get_checksum() -> str:
     )
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Skipping test for Python 3.13 because the documentation renders differently")
 @pytest.mark.order(1)
 @pytest.mark.quick
 def test_api_reference_state() -> None:
@@ -22,3 +23,4 @@ def test_api_reference_state() -> None:
     )
     checksum_after = _get_checksum()
     assert checksum_before == checksum_after, "API reference is out of sync"
+
