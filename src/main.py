@@ -1,7 +1,9 @@
+import sys
 from typing import Any
 import os
 import signal
 import time
+import atexit
 
 import tum_esm_utils
 import src
@@ -97,10 +99,13 @@ def run() -> None:
     def teardown_handler(*args: Any) -> None:
         logger.debug("starting teardown of the main loop")
         for lm in lifecycle_managers:
-            lm.teardown()
+            if lm.procedure_is_running():
+                lm.teardown()
         logger.debug("finished teardown of the main loop")
+        atexit.unregister(teardown_handler)
+        sys.exit(0)
 
-    signal.signal(signal.SIGINT, teardown_handler)
+    atexit.register(teardown_handler)
     signal.signal(signal.SIGTERM, teardown_handler)
 
     # start the main loop

@@ -1,4 +1,6 @@
+import atexit
 import signal
+import sys
 from typing import Any, Optional
 import json
 import multiprocessing.synchronize
@@ -76,10 +78,11 @@ def run(
                 logger.debug("Tearing down the ThingsBoard client")
                 thingsboard_client.loop_stop()
                 thingsboard_client.disconnect()
-            logger.debug("Finishing the teardown")
+            logger.debug("Finished the teardown")
+            atexit.unregister(teardown_handler)
+            sys.exit(0)
 
-        signal.signal(signal.SIGINT, teardown_handler)
-        signal.signal(signal.SIGTERM, teardown_handler)
+        atexit.register(teardown_handler)
 
         def connect() -> (
             tuple[
@@ -223,7 +226,7 @@ def run(
                 # exit the procedure if teardown has been issued and all messages have been sent
                 if (teardown_receipt_time is not None) and (len(active_messages) == 0):
                     logger.debug("Send out all messages, exiting the procedure")
-                    return
+                    exit(0)
 
                 # sleep 5 seconds between message bursts
                 time.sleep(5)
