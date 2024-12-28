@@ -28,7 +28,6 @@ def test_connection_to_test_broker() -> None:
     assert not client.is_connected(), "Client is still connected"
 
 
-@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
@@ -114,7 +113,6 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
         backend_lm.teardown()
 
 
-@pytest.mark.skip
 @pytest.mark.order(8)
 @pytest.mark.updater
 def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> None:

@@ -67,18 +67,14 @@ markers = [
 ]
 
 [tool.pdm.scripts]
-quick-tests = { shell = """
+ci-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
-  pytest --verbose -m "quick" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
+  pytest --verbose -m "quick or updater" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-* &&
+  pkill -f "Python"
   """ }
 integration-tests = { shell = """
   export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
   pytest --verbose -m "integration" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
-  """ }
-updater-tests = { shell = """
-  export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
-  pytest --verbose -m "updater" --cov=$PWD/src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-* &&
-  pkill -f "Python"
   """ }
 start-mosquitto = { shell = """
   mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password &&

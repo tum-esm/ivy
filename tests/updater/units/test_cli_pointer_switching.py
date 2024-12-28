@@ -5,7 +5,6 @@ import src
 import random
 
 
-@pytest.mark.skip
 @pytest.mark.order(4)
 @pytest.mark.updater
 def test_cli_pointer_switching() -> None:
