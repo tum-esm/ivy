@@ -68,18 +68,18 @@ markers = [
 
 [tool.pdm.scripts]
 quick-tests = { shell = """
-  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
+  export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "quick" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 integration-tests = { shell = """
-  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
+  export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "integration" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 updater-tests = { shell = """
-  export IVY_ROOT_DIR="/tmp/ivy-ci-test-$(date +%s)" && mkdir $IVY_ROOT_DIR &&
-  export IVY_DATA_DIR="$IVY_ROOT_DIR/data" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
+  export TS="$(date +%s)" && export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS" && mkdir $IVY_ROOT_DIR &&
+  export IVY_DATA_DIR="/tmp/ci-tests-ivy-data-dir-$TS" && mkdir $IVY_DATA_DIR $IVY_DATA_DIR/logs $IVY_DATA_DIR/messages &&
   pytest --verbose -m "updater" --cov=src --exitfirst tests/ && rm -rf /tmp/ivy-ci-test-*
   """ }
 start-mosquitto = { shell = """
