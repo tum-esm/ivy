@@ -1,35 +1,12 @@
-import datetime
 import os
-import re
 import subprocess
 import time
-import psutil
 import pytest
 import tum_esm_utils
 
 import src
 from ...fixtures import provide_test_config
-
-
-def _version_is_running(version: tum_esm_utils.validators.Version) -> bool:
-    current_logs = tum_esm_utils.files.load_file(
-        os.path.join(
-            src.constants.ROOT_DIR,
-            version.as_identifier(),
-            "data",
-            "logs",
-            datetime.datetime.now().strftime("%Y-%m-%d.log"),
-        )
-    )
-    assert current_logs is not None
-    print(f"--- current logs ---\n{current_logs}")
-    pids = [
-        int(p[1])
-        for p in re.findall(r"- Starting (process|automation) with PID (\d+)\n", current_logs)
-    ]
-    print(pids)
-    assert len(pids) == 4, f"there is not exactly 4 pids, got {len(pids)}"
-    return all([psutil.pid_exists(pid) for pid in pids])
+from .utils import version_is_running, version_is_not_running
 
 
 def _replace_file_content(filepath: str, old: str, new: str) -> None:
@@ -118,9 +95,9 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
 
     subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True, env=env)
     time.sleep(5)
-    assert _version_is_running(from_v), "The 1.2.3 version is not running correctly"
+    assert version_is_running(from_v), "The 1.2.3 version is not running correctly"
     time.sleep(10)
-    assert _version_is_running(from_v), "The 1.2.3 version is not running correctly"
+    assert version_is_running(from_v), "The 1.2.3 version is not running correctly"
 
     # publish the same config -> no update
 
@@ -132,7 +109,13 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
         },
     )
 
-    # TODO: check whether logs contain "same revision, no update"
+    time.sleep(15)
+    assert version_is_running(
+        from_v,
+        expected_log_lines=[
+            f"Received config has same revision number as current config ({from_config.general.config_revision}) -> not updating"
+        ],
+    ), "The 1.2.3 version is not running correctly"
 
     # publish the new config -> update
 
@@ -143,23 +126,47 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
             "revision": to_config.general.config_revision,
         },
     )
+    tum_esm_utils.timing.wait_for_condition(
+        is_successful=lambda: version_is_not_running(from_v),
+        timeout=180,
+        timeout_message="The 1.2.3 version did not stop within 180 seconds",
+        check_interval_seconds=5,
+    )
 
     # check whether the update was successful
 
-    # TODO: check whether logs contain "updating now"
-    # TODO: check whether logs contain "download skipped"
-    # TODO: check whether logs contain "install"
-    # TODO: check whether logs contain "pytest"
-    # TODO: check whether logs contain "switch cli pointer"
-    # TODO: check whether logs contain "update successful exiting"
-    # TODO: check whether logs contain "finished mainloop teardown"
-    # TODO: check whether 1.2.3 has stopped
-    # TODO: check whether cli points to 4.5.6
+    assert version_is_not_running(
+        from_v,
+        expected_log_lines=[
+            f"Processing new config with revision {to_config.general.config_revision}",
+            f"Received config has different version ({to_config.general.software_version.as_identifier()})",
+            "Downloading new source code",
+            "Successfully downloaded source code",
+            f"Directory {to_dir} already exists, skipping download",
+            "Installing dependencies",
+            "Successfully installed dependencies",
+            "Dumping config file",
+            "Successfully dumped config file",
+            "Running pytests",
+            "Successfully ran pytests",
+            "Updating cli pointer",
+            "Successfully updated cli pointer",
+            f"Successfully updated to version {to_v.as_identifier()}, shutting down",
+            "finished teardown of the main loop",
+        ],
+    )
+
+    # check whether CLI points to new version
+
+    out = tum_esm_utils.shell.run_shell_command(
+        f"{src.constants.ROOT_DIR}/ivy-cli.sh info"
+    ).replace("/private/tmp/", "/tmp/")
+    assert f"Source code: {to_dir}" in out, f"CLI command had unexpected output: {out}"
 
     # start the 4.5.6 version
 
     subprocess.run(f"nohup {src.constants.ROOT_DIR}/ivy-cli.sh start &", shell=True, env=env)
     time.sleep(5)
-    assert _version_is_running(to_v), "The 4.5.6 version is not running correctly"
+    assert version_is_running(to_v), "The 4.5.6 version is not running correctly"
     time.sleep(10)
-    assert _version_is_running(to_v), "The 4.5.6 version is not running correctly"
+    assert version_is_running(to_v), "The 4.5.6 version is not running correctly"

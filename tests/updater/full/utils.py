@@ -32,13 +32,20 @@ def _thread_pids(current_logs: str) -> list[int]:
     return pids
 
 
-def version_is_running(version: tum_esm_utils.validators.Version) -> bool:
-    pids = _thread_pids(_thread_logs(version))
+def version_is_running(
+    version: tum_esm_utils.validators.Version,
+    expected_log_lines: list[str] = [],
+) -> bool:
+    current_logs = _thread_logs(version)
+    pids = _thread_pids(current_logs)
+    for line in expected_log_lines:
+        assert line in current_logs, f"Expected log line not found: {line}"
     return all([psutil.pid_exists(pid) for pid in pids])
 
 
 def version_is_not_running(
-    version: tum_esm_utils.validators.Version, expected_log_lines: list[str] = []
+    version: tum_esm_utils.validators.Version,
+    expected_log_lines: list[str] = [],
 ) -> bool:
     current_logs = _thread_logs(version)
     pids = _thread_pids(current_logs)
