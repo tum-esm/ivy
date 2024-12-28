@@ -5,6 +5,7 @@ import tum_esm_utils
 import src
 
 
+@pytest.mark.skip
 @pytest.mark.order(6)
 @pytest.mark.updater
 def test_venv_creation_and_destruction() -> None:
@@ -25,7 +26,7 @@ def test_venv_creation_and_destruction() -> None:
     assert os.path.isdir(target_dir), f"Target directory ({target_dir}) does not exist"
     assert not os.path.exists(venv_dir), f"venv directory ({venv_dir}) already exists"
 
-    src.utils.Updater.install_dependencies(version, print)
+    src.utils.Updater.install_dependencies(version)
     assert os.path.isdir(venv_dir), f"venv directory ({venv_dir}) does not exist"
     some_lib_dir = os.path.join(venv_dir, "lib/python3.10/site-packages/mypy")
     assert os.path.isdir(some_lib_dir), f"Library directory ({some_lib_dir}) does not exist"

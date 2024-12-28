@@ -91,7 +91,9 @@ def run(
             ]
         ):
             assert config.backend is not None
-            logger.info("Connecting to ThingsBoard backend")
+            logger.info(
+                f"Connecting to ThingsBoard backend with client id {config.backend.mqtt_connection.client_id}"
+            )
             thingsboard_client = paho.mqtt.client.Client(
                 callback_api_version=paho.mqtt.client.CallbackAPIVersion.VERSION2,
                 client_id=config.backend.mqtt_connection.client_id,

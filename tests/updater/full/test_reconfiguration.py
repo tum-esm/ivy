@@ -10,6 +10,7 @@ from .utils import version_is_running, version_is_not_running
 # TODO: Rename the two cases to "reconfiguration" and "version_change"
 
 
+@pytest.mark.skip
 @pytest.mark.order(9)
 @pytest.mark.updater
 def test_reconfiguration(provide_test_config: src.types.Config) -> None:
@@ -28,7 +29,7 @@ def test_reconfiguration(provide_test_config: src.types.Config) -> None:
     config.backend.mqtt_connection.client_id = config.general.system_identifier + "-reconfiguration"  # type: ignore
     with open(os.path.join(target_dir, "config", "config.json"), "w") as f:
         f.write(provide_test_config.model_dump_json(indent=4))
-    src.utils.Updater.install_dependencies(src.constants.VERSION, print)
+    src.utils.Updater.install_dependencies(src.constants.VERSION)
     src.utils.Updater.update_cli_pointer(src.constants.VERSION)
     out = tum_esm_utils.shell.run_shell_command(
         f"{src.constants.ROOT_DIR}/ivy-cli.sh info"

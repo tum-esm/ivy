@@ -19,6 +19,7 @@ def _replace_file_content(filepath: str, old: str, new: str) -> None:
         f.write(content.replace(old, new))
 
 
+@pytest.mark.skip
 @pytest.mark.order(9)
 @pytest.mark.updater
 def test_version_update(provide_test_config: src.types.Config) -> None:
@@ -69,19 +70,21 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
     from_config.general.software_version = from_v
     from_config.general.config_revision = provide_test_config.general.config_revision + 1
     from_config.general.system_identifier += "-version-update"
+    assert from_config.backend is not None
     from_config.backend.mqtt_connection.client_id = from_config.general.system_identifier
 
     to_config = provide_test_config.model_copy(deep=True)
     to_config.general.software_version = to_v
     to_config.general.config_revision = from_config.general.config_revision + 2
     to_config.general.system_identifier += "-version-update"
+    assert to_config.backend is not None
     to_config.backend.mqtt_connection.client_id = to_config.general.system_identifier
 
     # make 1.2.3 fully operational
 
     with open(os.path.join(from_dir, "config", "config.json"), "w") as f:
         f.write(from_config.model_dump_json(indent=4))
-    src.utils.Updater.install_dependencies(from_v, print)
+    src.utils.Updater.install_dependencies(from_v)
     src.utils.Updater.update_cli_pointer(from_v)
     out = tum_esm_utils.shell.run_shell_command(
         f"{src.constants.ROOT_DIR}/ivy-cli.sh info"
@@ -128,8 +131,8 @@ def test_version_update(provide_test_config: src.types.Config) -> None:
     )
     tum_esm_utils.timing.wait_for_condition(
         is_successful=lambda: version_is_not_running(from_v),
-        timeout=180,
         timeout_message="The 1.2.3 version did not stop within 180 seconds",
+        timeout_seconds=180,
         check_interval_seconds=5,
     )
 

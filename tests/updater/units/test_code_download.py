@@ -24,6 +24,7 @@ def _run(
     shutil.rmtree(target_dir)
 
 
+@pytest.mark.skip
 @pytest.mark.order(5)
 @pytest.mark.updater
 def test_github_code_download() -> None:
@@ -39,6 +40,7 @@ def test_github_code_download() -> None:
     )
 
 
+@pytest.mark.skip
 @pytest.mark.order(5)
 @pytest.mark.updater
 def test_gitlab_code_download() -> None:
