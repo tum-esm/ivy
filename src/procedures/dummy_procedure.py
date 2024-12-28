@@ -1,3 +1,5 @@
+import atexit
+import sys
 from typing import Any
 import random
 import signal
@@ -28,8 +30,8 @@ def run(config: src.types.Config, name: str) -> None:
     def teardown_handler(*args: Any) -> None:
         # possibly add your own teardown logic
         logger.debug("nothing to tear down")
+        sys.exit(0)
 
-    signal.signal(signal.SIGINT, teardown_handler)
     signal.signal(signal.SIGTERM, teardown_handler)
 
     # start procedure loop

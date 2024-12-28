@@ -141,41 +141,39 @@ class LifecycleManager:
 
         For procedures, the SIGKILL is sent after
         `src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN` seconds. For
-        backends, the SIGKILL is sent after `config.backend.max_drain_time + 120`
+        backends, the SIGKILL is sent after `config.backend.max_drain_time + 15`
         seconds."""
 
         self.logger.info(f"starting teardown of {self.variant}")
         if self.process is not None:
+            if not self.process.is_alive():
+                self.logger.debug("nothing to tear down, process is already stopped")
+                self.process = None
+                return
+
             graceful_shutdown_time: int
             if self.variant == "procedure":
                 graceful_shutdown_time = src.constants.SECONDS_PER_GRACEFUL_PROCEDURE_TEARDOWN
             else:
                 if self.config.backend is not None:
-                    graceful_shutdown_time = self.config.backend.max_drain_time + 120
+                    graceful_shutdown_time = self.config.backend.max_drain_time + 15
                 else:
                     graceful_shutdown_time = 10
-
-            # what to do if process does not tear down gracefully
-            def kill_process(*args: Any) -> None:
-                self.logger.error(
-                    f"process did not gracefully tear down in "
-                    + f"{graceful_shutdown_time} seconds, killing it forcefully"
-                )
-                if self.process is not None:
-                    self.process.kill()
-
-            # give process some time to tear down gracefully
-            # if it does not stop, kill it forcefully
-            signal.signal(signal.SIGALRM, kill_process)
-            signal.alarm(graceful_shutdown_time)
 
             if self.variant == "procedure":
                 self.process.terminate()
             else:
                 self.teardown_indicator.set()
-            self.process.join()
-            signal.alarm(0)
-
+            self.logger.info(
+                f"Waiting up to {graceful_shutdown_time} seconds for process to tear down on its own"
+            )
+            self.process.join(graceful_shutdown_time)
+            if self.process.is_alive():
+                self.logger.error(
+                    f"process did not gracefully tear down in "
+                    + f"{graceful_shutdown_time} seconds, killing it forcefully"
+                )
+                self.process.kill()
             self.process = None
             self.logger.info("teardown complete")
         else:

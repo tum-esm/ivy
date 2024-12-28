@@ -1,8 +1,9 @@
+import atexit
+import sys
 from typing import Any, Optional
 import multiprocessing.synchronize
 import signal
 import time
-import json
 import pydantic
 import tenta
 import tum_esm_utils
@@ -80,10 +81,11 @@ def run(
             if tenta_client is not None:
                 logger.debug("Tearing down the Tenta client")
                 tenta_client.teardown()
-            logger.debug("Finishing the teardown")
+            logger.debug("Finished the teardown")
+            atexit.unregister(teardown_handler)
+            sys.exit(0)
 
-        signal.signal(signal.SIGINT, teardown_handler)
-        signal.signal(signal.SIGTERM, teardown_handler)
+        atexit.register(teardown_handler)
 
         def connect() -> tuple[tenta.TentaClient, set[tuple[int, src.types.MessageQueueItem]]]:
             assert config.backend is not None
@@ -126,7 +128,7 @@ def run(
                 else:
                     if (time.time() - teardown_receipt_time) > config.backend.max_drain_time:
                         logger.debug("Max. drain time reached, stopping the Tenta backend")
-                        return
+                        sys.exit(0)
 
                 if not tenta_client.client.is_connected():
                     tenta_client.client.reconnect()
@@ -205,7 +207,7 @@ def run(
                 # exit the procedure if teardown has been issued and all messages have been sent
                 if (teardown_receipt_time is not None) and (len(active_messages) == 0):
                     logger.debug("Send out all messages, exiting the procedure")
-                    return
+                    sys.exit(0)
 
                 # sleep 5 seconds between message bursts
                 time.sleep(5)
@@ -227,7 +229,7 @@ def run(
                     sleep_seconds = exponential_backoff.sleep()
                     if sleep_seconds == exponential_backoff.buckets[-1]:
                         logger.debug("Fully tearing down the procedure")
-                        return
+                        sys.exit(0)
 
                 tum_esm_utils.timing.set_alarm(
                     20, "Could not reconnect to Tenta backend within 20 seconds"
@@ -237,4 +239,4 @@ def run(
 
     except Exception as e:
         logger.exception(e, "The Tenta backend encountered an exception")
-        return
+        sys.exit(0)

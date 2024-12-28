@@ -69,4 +69,5 @@ def provide_test_config() -> Generator[src.types.Config, None, None]:
     config.logging_verbosity.console_prints = None
     config.dummy_procedure.seconds_between_datapoints = 5
     config.system_checks.seconds_between_checks = 5
+    config.backend.max_drain_time = 2  # type: ignore
     yield config

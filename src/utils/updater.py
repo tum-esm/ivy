@@ -386,21 +386,26 @@ class Updater:
         log_progress("Removing all unused .venvs")
 
         venvs_to_be_removed: list[str] = []
-        for subdir in os.listdir(src.constants.ROOT_DIR):
-            try:
-                tum_esm_utils.validators.Version(subdir)
-            except pydantic.ValidationError:
-                continue
-            if subdir == current_version.as_identifier():
-                continue
-            venv_path = os.path.join(src.constants.ROOT_DIR, subdir, ".venv")
-            if os.path.isdir(venv_path):
-                venvs_to_be_removed.append(venv_path)
+        if not os.path.isdir(src.constants.ROOT_DIR):
+            log_progress(
+                f"ROOT_DIR {src.constants.ROOT_DIR} does not exist (skipping .venv removal)"
+            )
+        else:
+            for subdir in os.listdir(src.constants.ROOT_DIR):
+                try:
+                    tum_esm_utils.validators.Version(subdir)
+                except pydantic.ValidationError:
+                    continue
+                if subdir == current_version.as_identifier():
+                    continue
+                venv_path = os.path.join(src.constants.ROOT_DIR, subdir, ".venv")
+                if os.path.isdir(venv_path):
+                    venvs_to_be_removed.append(venv_path)
 
-        log_progress(
-            f"found {len(venvs_to_be_removed)} old .venvs to be removed: {venvs_to_be_removed}"
-        )
-        for v in venvs_to_be_removed:
-            shutil.rmtree(v)
+            log_progress(
+                f"found {len(venvs_to_be_removed)} old .venvs to be removed: {venvs_to_be_removed}"
+            )
+            for v in venvs_to_be_removed:
+                shutil.rmtree(v)
 
-        log_progress(f"successfully removed all old .venvs")
+            log_progress(f"successfully removed all old .venvs")

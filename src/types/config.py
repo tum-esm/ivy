@@ -126,7 +126,7 @@ class BackendConfig(pydantic.BaseModel):
     )
     max_drain_time: int = pydantic.Field(
         600,
-        ge=10,
+        ge=0,
         le=7200,
         description="When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages.",
     )
