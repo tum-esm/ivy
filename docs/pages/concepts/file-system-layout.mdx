@@ -2,7 +2,7 @@ import { Callout } from "nextra/components";
 
 # File System Layout
 
-You do not have to use Ivy with the software update feature! Hence you could just keep it inside a single `x.y.z` folder and `git pull` your changes.
+You do not have to use Ivy with the software update feature! Hence, you could just keep it inside a single `x.y.z` folder and `git pull` your changes.
 
 ## Local Directory layout
 
@@ -28,7 +28,7 @@ You do not have to use Ivy with the software update feature! Hence you could jus
 
 You can switch the name `ivy` to your DAS name in `src/constants.py` (the `NAME` constant), which will be used for all the paths described here.
 
-The file `ivy-cli.sh` will point to the currently active version of the DAS. You have to write it once when setting up the node, but after that, the update procedure will switch this pointer when a new version was accepted. It looks like this:
+The file `ivy-cli.sh` will point to the currently active version of the DAS. You have to write it once when setting up the node, but after that, the update procedure will switch this pointer when a new version is accepted. It looks like this:
 
 ```bash
 #!/bin/bash
@@ -39,7 +39,7 @@ set -o errexit
 
 ## Starting/Stopping Ivy Automatically
 
-To make sure, the automation starts up every time it is not running, add a crontab that starts it every minute:
+To make sure the automation starts up every time it is not running, add a crontab that starts it every minute:
 
 ```cron
 * * * * * ~/Documents/ivy/ivy-cli.sh start

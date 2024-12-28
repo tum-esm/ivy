@@ -43,9 +43,9 @@ logger = src.utils.Logger(config=..., origin="some-place")
 logger.info("CPU load is high", details="The CPU load was above 75% for the last 5 minutes.")
 ```
 
-## Local Message MessageArchive
+## Local Message Archive
 
-In case the backend is offline for a while or the connection between MQTT broker and server breaks, the messages are stored locally in `data/messages/`. There is one file `YYYY-MM-DD.csv"` per day and each line can be parsed using the schema below. The file name relates to the system date (not UTC date). The following script does just that:
+In case the backend is offline for a while or the connection between MQTT broker and server breaks, the messages are stored locally in `data/messages/`. There is one file `YYYY-MM-DD.csv"` per day, and each line can be parsed using the schema below. The file name relates to the system date (not UTC date). The following script does just that:
 
 ```python
 import src

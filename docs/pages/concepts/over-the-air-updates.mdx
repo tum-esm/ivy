@@ -6,12 +6,12 @@ The [previous section](/concepts/file-system-layout) describes where each versio
 
 ## "Config" vs. "Foreign Config"
 
-There is two types of configurations schemas:
+There are two types of configuration schemas:
 
 1. Config - the schema that the current version of your DAS requires to run: [see API reference](/api-reference/configuration#configjson)
 2. Foreign Config - the schema that is required by any configuration that the current DAS version should upgrade to.
 
-This means, you can change almost the entire structure of your config when developing a new DAS version - you only have to keep the fields `general.config_revision` and `general.software_version`.
+This means you can change almost the entire structure of your config when developing a new DAS version - you only have to keep the fields `general.config_revision` and `general.software_version`.
 
 ## Update Steps
 
@@ -48,9 +48,9 @@ The updater stops the automation when a new config has been accepted. Using the 
 
 The source code has to be hosted in a Git repository (can be public or private). We currently support GitLab and GitHub.
 
-The config object has a field `updater` (see [API reference](/api-reference/configuration)), which defines from where the updater will pull new source code. If the version you want to run on is `1.2.3`, please tag a commit with `v1.2.3` (with a `v` prefix) in your repository - you do not have to create a GitHub/GitLab release, just tag the commit.
+The config object has a field `updater` (see [API reference](/api-reference/configuration)), which defines from where the updater will pull new source code. If the version you want to run on is `1.2.3`, please tag a commit with `v1.2.3` (with a `v` prefix) in your repository - you do not have to create a GitHub/GitLab release; just tag the commit.
 
-There is a test case at `tests/integration/test_connection_to_repository.py`, that tests, whether the connection to the configured repository works.
+There is a test case at `tests/integration/test_connection_to_repository.py` that tests, whether the connection to the configured repository works.
 
 <Callout type="info">
 
