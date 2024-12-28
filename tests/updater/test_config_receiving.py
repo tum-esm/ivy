@@ -30,7 +30,7 @@ def test_connection_to_test_broker() -> None:
     assert not client.is_connected(), "Client is still connected"
 
 
-def _pub(topic: str, message: dict[Any, Any]) -> None:
+def _pub(topic: str, message: Any) -> None:
     exit_code = os.system(
         f"""mosquitto_pub -h localhost -p 1883 \\
         -u 'test_username' -P 'test_password' \\
@@ -74,10 +74,11 @@ def test_tenta_config_receiving(provide_test_config: src.types.Config) -> None:
         len(current_state.pending_configs) == 0
     ), f"There are pending configs in the state: {current_state.pending_configs}"
 
-    c = lambda rev: {
-        "configuration": {"general": {"software_version": f"0.0.{rev}"}},
-        "revision": rev,
-    }
+    def c(rev: int) -> dict[Any, Any]:
+        return {
+            "configuration": {"general": {"software_version": f"0.0.{rev}"}},
+            "revision": rev,
+        }
 
     try:
         # 1. send valid config to wrong topic
@@ -147,16 +148,17 @@ def test_thingsboard_config_receiving(provide_test_config: src.types.Config) -> 
         len(current_state.pending_configs) == 0
     ), f"There are pending configs in the state: {current_state.pending_configs}"
 
-    c = lambda rev: {
-        "shared": {
-            "configuration": {
-                "general": {
-                    "software_version": f"0.0.{rev}",
-                    "config_revision": rev,
+    def c(rev: int) -> dict[Any, Any]:
+        return {
+            "shared": {
+                "configuration": {
+                    "general": {
+                        "software_version": f"0.0.{rev}",
+                        "config_revision": rev,
+                    }
                 }
-            }
-        },
-    }
+            },
+        }
 
     try:
         # 1. send valid config to wrong topic

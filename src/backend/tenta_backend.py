@@ -48,7 +48,7 @@ def run(
         except (pydantic.ValidationError, AssertionError) as e:
             logger.error(
                 f"Config with revision {message.revision} is invalid",
-                details=e.json(indent=4),
+                details=e.json(indent=4) if isinstance(e, pydantic.ValidationError) else str(e),
             )
             messaging_agent.add_message(
                 src.types.ConfigMessageBody(

@@ -214,6 +214,7 @@ const CONFIG_SCHEMA: any = {
                             "type": "object"
                         },
                         "max_parallel_messages": {
+                            "default": 50,
                             "description": "How many messages that are not published yet should be passed to the backend at once",
                             "maximum": 10000,
                             "minimum": 1,
@@ -221,6 +222,7 @@ const CONFIG_SCHEMA: any = {
                             "type": "integer"
                         },
                         "max_drain_time": {
+                            "default": 600,
                             "description": "When the mainloop wants to shut down (after a config change, or an update), how many seconds should the backend be allowed to continue sending out unsent messages.",
                             "maximum": 7200,
                             "minimum": 10,
@@ -230,11 +232,9 @@ const CONFIG_SCHEMA: any = {
                     },
                     "required": [
                         "provider",
-                        "mqtt_connection",
-                        "max_parallel_messages",
-                        "max_drain_time"
+                        "mqtt_connection"
                     ],
-                    "title": "_BackendConfig",
+                    "title": "BackendConfig",
                     "type": "object"
                 },
                 {
