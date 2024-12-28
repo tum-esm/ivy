@@ -29,7 +29,9 @@ jobs:
         uses: pdm-project/setup-pdm@v4
 
       - name: Install dependencies
-        run: pdm sync --with=dev
+        run: |
+          pdm config python.use_venv False
+          pdm sync --with=dev
 
       - name: Install mosquitto dependencies
         run: |
