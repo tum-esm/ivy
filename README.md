@@ -9,24 +9,27 @@
   alt="GitHub Tag"
   src="https://img.shields.io/github/v/tag/tum-esm/ivy?sort=semver&style=flat&label=Latest%20Template%20Version&color=f43f5e&cacheSeconds=60&labelColor=0f172a"
   className="inline p-0 m-px mt-6"
-/><br/>
+/>
+<br />
 <img
   alt="GitHub License"
   src="https://img.shields.io/github/license/tum-esm/ivy?style=flat&label=License&labelColor=0f172a&color=4ade80&cacheSeconds=60"
-  className="inline p-0 m-px mt-6"
+  className="inline p-0 m-px"
 />
-[
+<a href="https://tum-esm-ivy.netlify.app/">
 <img
-  alt="Documentation Status"
-  src="https://img.shields.io/website?url=https%3A%2F%2Ftum-esm-ivy.netlify.app%2F&up_message=online&up_color=4ade80&down_message=unavailable&down_color=f87171&label=Documentation&labelColor=0f172a&cacheSeconds=60"
-  className="inline p-0 m-px mt-6"
-/>](https://tum-esm-ivy.netlify.app/)
-[
+    alt="Documentation Status"
+    src="https://img.shields.io/website?url=https%3A%2F%2Ftum-esm-ivy.netlify.app%2F&up_message=online&up_color=4ade80&down_message=unavailable&down_color=f87171&label=Documentation&labelColor=0f172a&cacheSeconds=60"
+    className="inline p-0 m-px"
+  />
+</a>
+<a href="https://doi.org/10.5281/zenodo.14562882">
 <img
-  alt="DOI"
-  src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.14562882-0ea5e9?labelColor=0f172a&color=0ea5e9&cacheSeconds=60"
-  className="inline p-0 m-px mt-6"
-/>](https://doi.org/10.5281/zenodo.14562882)
+    alt="DOI"
+    src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.14562882-0ea5e9?labelColor=0f172a&color=0ea5e9&cacheSeconds=60"
+    className="inline p-0 m-px"
+  />
+</a>
 
 A Python boilerplate for an IoT node data acquisition system (DAS) supporting remote configuration and software updates. An Ivy-based network is made up of many (remote) computers running autonomously - e.g., performing measurements, controlling actuators, etc. - and a central backend connecting these devices.
 
