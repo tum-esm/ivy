@@ -1,0 +1,19 @@
+authors:
+  - affiliation: Technical University of Munich
+    family-names: Makowski
+    given-names: Moritz
+    orcid: 0000-0002-2948-2993
+  - affiliation: Technical University of Munich
+    family-names: Chen
+    given-names: Jia
+    orcid: 0000-0002-6350-6610
+cff-version: 1.2.0
+date-released: "2024-12-29"
+doi: 10.5281/zenodo.14562882
+license:
+  - cc-by-4.0
+title:
+  "Ivy: A Data Acquisition System for Distributed Sensor Networks Supporting
+  Remote Configuration and Software Updates"
+type: software
+version: 1.0.0
