@@ -101,7 +101,7 @@
 }
 
 @article{Dietrich2021,
-    author = {Dietrich, F. and Chen, J. and Voggenreiter, B. and Aigner, P. and Nachtigall, N. and Reger, B.},
+    author = {Dietrich, Florian and Chen, Jia and Voggenreiter, Benno and Aigner, Patrick and Nachtigall, Nico and Reger, Björn},
     title = {MUCCnet: Munich Urban Carbon Column network},
     journal = {Atmospheric Measurement Techniques},
     volume = {14},
@@ -134,7 +134,7 @@
     volume = {8},
     number = {84},
     pages = {5131},
-    author = {Patrick Aigner and Moritz Makowski and Andreas Luther and Florian Dietrich and Jia Chen},
+    author = {Aigner, Patrick and Makowski, Moritz and Luther, Andreas and Dietrich, Florian and Chen, Jia},
     title = {Pyra: Automated EM27/SUN Greenhouse Gas Measurement Software},
     journal = {Journal of Open Source Software}
 }
@@ -194,7 +194,7 @@
 }
 
 @software{frostpythonclient,
-  author = {Jonathan Vogl},
+  author = {Vogl, Jonathan},
   title = {Python Client Library for FROST},
   howpublished = {\url{https://github.com/FraunhoferIOSB/FROST-Python-Client}},
   version = {1.1.45},
@@ -210,35 +210,11 @@
 }
 
 @software{hermes,
-  title = {{Professorship of Environmental Sensing and Modeling}},
+  author = {Aigner, Patrick and Böhm, Felix and Frölich, Lars and Makowski, Moritz and Schmitt, Adrian},
   title = {Hermes},
   url = {https://github.com/tum-esm/hermes},
   version = {1.0.1},
   date = {2024-10-14}
-}
-
-@software{tenta,
-  author = {Iterize},
-  title = {Tenta},
-  url = {https://github.com/iterize/tenta},
-  version = {0.1.0},
-  date = {2023-11-07}
-}
-
-@thesis{moritzthesis,
-   author = {Moritz Makowski},
-   city = {Munich},
-   institution = {Technical University of Munich},
-   title = {Remote and Real-Time Management of a City-Wide Greenhouse Gas Sensor Network: The Sensor System},
-   year = {2023},
-}
-
-@thesis{felixthesis,
-   author = {Felix Böhm},
-   city = {Munich},
-   institution = {Technical University of Munich},
-   title = {Remote and Real-Time Management of a City-Wide Greenhouse Gas Sensor Network: The Server},
-   year = {2023},
 }
 
 @incollection{IPCC_2021_WGI_SPM,
@@ -304,12 +280,12 @@
   date = {2024-10-15}
 }
 
-@software{thethingsstack,
-  author = {{The Things Network}},
-  title = {{The Things Stack}},
-  url = {https://github.com/TheThingsNetwork/lorawan-stack},
-  version = {3.32.1},
-  date = {2024-10-24}
+@software{acropolis-edge,
+  author = {Aigner, Patrick and Frölich, Lars},
+  title = {{ACROPOLIS-edge}},
+  url = {https://github.com/tum-esm/ACROPOLIS-edge},
+  version = {0.0.95},
+  date = {2025-04-04}
 }
 
 @software{mypy,
@@ -383,6 +359,13 @@
   urldate = {2024-11-15}
 }
 
+@online{thethingsstack,
+  title = {{The Things Stack}},
+  url = {https://www.thethingsindustries.com/stack/},
+  year = {2024},
+  urldate = {2024-11-15}
+}
+
 @online{paul,
   author = {{European Commission}},
   title = {Horizon 2020 - Pilot Application in Urban Landscapes},
@@ -392,9 +375,91 @@
   urldate = {2024-11-15}
 }
 
-@online{thethingsnetwork,
+@online{openremote,
   title = {{OpenRemote}},
   url = {https://github.com/openremote/openremote},
   year = {2024},
   urldate = {2024-11-15}
+}
+
+@inproceedings{midcost,
+	author = {Aigner, Patrick and Kühbacher, Daniel and Wenzel, Adrian and  Schmitt, Adrian and Böhm, Felix and Makowski, Moritz and Kürzinger, Klaus and Laurent, Olivier and Rubli, Pascal and Grange, Stuart and Emmenegger, Lukas and Chen, Jia},
+	title = {Advancing Urban Greenhouse Gas Monitoring: Development and Evaluation of a High-Density CO2 Sensor Network in Munich},
+	booktitle = {ICOS Science Conference 2024},
+	year = {2024},
+  url = {https://www.icos-cp.eu/news-and-events/science-conference/icos2024sc/all-abstracts},
+}
+
+@article{tenta,
+  title = {Tenta: Remote and Real-Time Sensor Network Management},
+  volume = {10},
+  ISSN = {2475-9066},
+  url = {http://dx.doi.org/10.21105/joss.07311},
+  DOI = {10.21105/joss.07311},
+  number = {105},
+  journal = {Journal of Open Source Software},
+  publisher = {The Open Journal},
+  author = {Böhm, Felix and Makowski, Moritz and Aigner, Patrick and Chen,  Jia},
+  year = {2025},
+  month = jan,
+  pages = {7311}
+}
+
+@misc{midcostl2data,
+  doi = {10.18160/B09J-YS2G},
+  url = {https://citymeta.icos-cp.eu/collections/gciax7x_xF8Q6r-PK2OjRjeE},
+  author = {Aigner, Patrick and Chen, Jia and Kürzinger,  Klaus},
+  keywords = {ACROPOLIS,  CO2,  Mid-Cost,  Munich,  Vaisala-GMP343,  dry air mole fraction,  low-mid-cost,  rooftop,  urban},
+  title = {ICOS Cities 2024-12 release mid-cost CO2 data from the Munich network ACROPOLIS},
+  publisher = {ICOS ERIC -- Carbon Portal},
+  year = {2024},
+  copyright = {CC BY 4.0}
+}
+
+@software{tumesmutils,
+author = {Makowski, Moritz and Klappenbach, Friedrich and Chen, Jia},
+doi = {10.5281/zenodo.14284949},
+license = {["gpl-3.0-or-later"]},
+month = jun,
+title = {{TUM ESM Python Utilities}},
+version = {2.8.0},
+year = {2025}
+}
+
+@inproceedings{ros1,
+  author = { Quigley, Morgan and Gerkey, Brian and Conley, Ken and Faust, Josh and Foote, Tully and Leibs, Jeremy and Berger, Eric and Wheeler, Rob and Ng, Andrew },
+  title = { ROS: an open-source Robot Operating System },
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation (ICRA), Workshop on Open Source Robotics },
+  month = may,
+  year = { 2009 },
+  address = {Kobe, Japan }
+}
+
+@article{ros2,
+  title = {Robot Operating System 2: Design, architecture, and uses in the wild},
+  volume = {7},
+  ISSN = {2470-9476},
+  url = {http://dx.doi.org/10.1126/scirobotics.abm6074},
+  DOI = {10.1126/scirobotics.abm6074},
+  number = {66},
+  journal = {Science Robotics},
+  publisher = {American Association for the Advancement of Science (AAAS)},
+  author = {Macenski, Steven and Foote, Tully and Gerkey, Brian and Lalancette, Chris and Woodall, William},
+  year = {2022},
+  month = may 
+}
+
+@article{Kandris2020,
+  title = {Applications of Wireless Sensor Networks: An Up-to-Date Survey},
+  volume = {3},
+  ISSN = {2571-5577},
+  url = {http://dx.doi.org/10.3390/asi3010014},
+  DOI = {10.3390/asi3010014},
+  number = {1},
+  journal = {Applied System Innovation},
+  publisher = {MDPI AG},
+  author = {Kandris,  Dionisis and Nakas,  Christos and Vomvas,  Dimitrios and Koulouras,  Grigorios},
+  year = {2020},
+  month = feb,
+  pages = {14}
 }

@@ -40,4 +40,4 @@ The idea of Ivy is that you can start building your own DAS based on Ivy instead
 🪽 The Ivy software template is based on the experience gained when realizing the [Hermes Project](https://github.com/tum-esm/hermes)<br/>
 🔨 Many utility functions from the [`tum-esm-utils` package](https://github.com/tum-esm/utils) are included here.<br/>
 🕷️ This client-side code connects to the following IoT platforms: [Tenta](https://github.com/iterize/tenta), [ThingsBoard](https://thingsboard.io/)<br/>
-🌤️ The software architecture of [Pyra](https://github.com/tum-esm/pyra) is quite similar to the Ivy template. If we were to start building Pyra again today, we would use the Ivy template and save a ton of time.
+🌤️ The software architecture of [Pyra](https://github.com/tum-esm/pyra) is quite similar to the Ivy template. If we were to start building Pyra again today, we could use the Ivy template and save time on developing a new reliable architecture.

@@ -1,7 +1,7 @@
 [project]
 name = "ivy"
 version = "1.0.0"
-description = "A Python boilerplate for an IoT node data acqusition system supporting remote configuration and software updates"
+description = "A Data Acquisition System for Distributed Sensor Networks Supporting Remote Configuration and Software Updates"
 requires-python = ">=3.10,<4.0"
 authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]
 dependencies = [
