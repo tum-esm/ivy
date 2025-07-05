@@ -35,6 +35,8 @@ A Python boilerplate for an IoT node data acquisition system (DAS) supporting re
 
 The idea of Ivy is that you can start building your own DAS based on Ivy instead of starting from scratch. You have full control over the codebase but do not have to rewrite all the logic that every autonomous DAS has to implement. In addition, Ivy provides you with a well-tested and proven way of upgrading your sensor nodes remotely.
 
+_This work is funded by the Horizon 2020 ICOS Cities PAUL Project under [grant no. 101037319](https://cordis.europa.eu/project/id/101037319), and the ERC Consolidator Grant CoSense4Climate under [grant no. 101089203](https://cordis.europa.eu/project/id/101089203)._
+
 **Related Projects:**
 
 🪽 The Ivy software template is based on the experience gained when realizing the [Hermes Project](https://github.com/tum-esm/hermes)<br/>

@@ -109,4 +109,8 @@ Since the boilerplate targets teams developing their own DAS, it includes an API
 
 MM: developed the sensor side of Hermes, wrote the Ivy boilerplate, wrote the manuscript, works on Pyra which operates MUCCnet; JC (PI): initialized, co-developed, and supervises the carbon dioxide sensor networks driven by Hermes and Pyra, helped with her expertise in environmental sensing applications, reviewed the manuscript.
 
+# Acknowledgement of Financial Support
+
+This work is funded by the Horizon 2020 ICOS Cities PAUL Project under [grant no. 101037319](https://cordis.europa.eu/project/id/101037319), and the ERC Consolidator Grant CoSense4Climate under [grant no. 101089203](https://cordis.europa.eu/project/id/101089203).
+
 # References
