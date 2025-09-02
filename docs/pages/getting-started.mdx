@@ -1,26 +1,28 @@
 # Getting Started
 
+## Development
+
 **1. Use the Ivy repository as a template to create a new repository for your own DAS**
 
 <img src="/use-template-button.png" class="mt-2" />
 
 **2. Clone your repository to your local machine**
     
-    Replace `myorg`, `myivy`, and `1.0.0` with your GitHub organization/user name, repository name, and the version you want to start with.
+Replace `myorg`, `myivy`, and `1.0.0` with your GitHub organization/user name, repository name, and the version you want to start with.
 
-    ```bash
-    git clone https://github.com/myorg/myivy ~/Documents/myivy/1.0.0
-    ```
+```bash
+git clone https://github.com/myorg/myivy ~/Documents/myivy/1.0.0
+```
 
-    Also update these values in `config/config.template.json` and `src/constants.py`.
+Also update these values in `config/config.template.json` and `src/constants.py`.
 
 **3. Navigate to the cloned directory and set up a virtual environment**
 
-    ```bash
-    cd ~/Documents/myivy/1.0.0
-    python3.12 -m venv .venv
-    source .venv/bin/activate
-    ```
+```bash
+cd ~/Documents/myivy/1.0.0
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
 
 **4. Install the project dev dependencies**
 
@@ -46,7 +48,7 @@ cp config/config.template.json config/config.json
 
 **6. Run the pytest cases to check your Setup**
 
-```python
+```bash
 # check the tool in general
 pytest tests -m quick
 
@@ -102,3 +104,90 @@ The static build is contained in `docs/out`.
 Get yourself familiar with the documentation on the [core concepts of Ivy](https://tum-esm-ivy.netlify.app/concepts/file-system-layout), [its interfaces](https://tum-esm-ivy.netlify.app/interfaces/configuration), and how it connects to [IoT Backends](https://tum-esm-ivy.netlify.app/backends/general). You can start with the [overview section](https://tum-esm-ivy.netlify.app/overview) giving you a brief description of the different components of Ivy. 
 
 Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/). We are happy to include your additions to the Ivy template - and of course list you as a contributor.
+
+**10. Test a new version of your DAS**
+
+Make sure that all tests are passing. In the GitHub Actions CI, everything is already set up, so we recommend to use it. You can still run the tests locally though.
+
+```bash
+# start local MQTT server (you need to have mosquitto installed)
+bun run start-mosquitto
+
+# run quick tests (static types, docs, etc.)
+pytest tests -m quick
+
+# run the updater tests
+pytest tests -m updater
+
+# stop local MQTT server
+bun run stop-mosquitto
+```
+
+For these updater tests to work, your Ivy root directory (`~/Documents/myivy`) has to be empty to ensure that nothing is overwritten – this is why we recommend just running these tests in the CI environment. The updater test will set up the current setup twice under `~/Documents/myivy/myivy/1.2.3` and `~/Documents/myivy/myivy/4.5.6`, run the first version regularly and try to update it to the second version. This proves that the current codebase can be updated *from* and *to*.
+
+**11. Publish a new release**
+
+```bash
+git tag v0.3.4
+git push origin v0.3.4
+```
+
+## Set up a new Production System
+
+**1. Set up a the computer running the DAS (e.g. a Raspberry Pi)**
+
+Use a Unix operating system and install [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/).
+
+**2. Download a published version of your DAS**
+
+```bash
+mkdir -p ~/Documents/myivy
+cd ~/Documents/myivy
+wget https://github.com/myorg/myivy/archive/refs/tags/v1.0.0.tar.gz
+tar -xvf v1.0.0.tar.gz
+mv myivy-1.0.0 1.0.0
+```
+
+**3. Install the project dependencies**
+
+```bash
+cd ~/Documents/myivy/1.0.0
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install "."
+```
+
+**4. Configure your local DAS**
+
+```bash
+cp someusbstick/config-system-xx.json ~/Documents/myivy/1.0.0/config/config.json
+# or
+cp ~/Documents/myivy/1.0.0/config/config.template.json ~/Documents/myivy/1.0.0/config/config.json
+```
+
+Make sure to set the correct `config.general.software_version` and `config.general.system_identifier`.
+
+**5. Point the fixed CLI endpoint to the desired Ivy version**
+
+```bash
+cat << 'EOF' > ~/Documents/myivy/myivy-cli.sh
+#!/bin/bash
+set -o errexit
+ 
+~/Documents/myivy/1.0.0/.venv/bin/python ~/Documents/myivy/1.0.0/cli.py $*
+EOF
+```
+
+Now, running `~/Documents/myivy/myivy-cli.sh` will always call the currently active DAS version.
+
+**6. Make your DAS start automatically whenever it is not running**
+
+Add the following line to your crontab (edit it using `crontab -e`):
+
+```crontab
+* * * * * ~/Documents/ivy/ivy-cli.sh start
+```
+
+This will restart the DAS after any crash or system reboot, or after any software update or configuration change of your DAS.
+
+
