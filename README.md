@@ -5,17 +5,21 @@
   src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Ftum-esm%2Fivy%2Fmain%2Fpyproject.toml&label=Supported%20Python%20Versions&labelColor=0f172a&color=f43f5e"
   className="inline p-0 m-px mt-6"
 />
+<a href="https://github.com/tum-esm/ivy/releases">
 <img
   alt="GitHub Tag"
   src="https://img.shields.io/github/v/tag/tum-esm/ivy?sort=semver&style=flat&label=Latest%20Template%20Version&color=f43f5e&cacheSeconds=60&labelColor=0f172a"
   className="inline p-0 m-px mt-6"
 />
+</a>
 <br />
+<a href="https://github.com/tum-esm/ivy/blob/main/LICENSE">
 <img
   alt="GitHub License"
   src="https://img.shields.io/github/license/tum-esm/ivy?style=flat&label=License&labelColor=0f172a&color=4ade80&cacheSeconds=60"
   className="inline p-0 m-px"
 />
+</a>
 <a href="https://tum-esm-ivy.netlify.app/">
 <img
     alt="Documentation Status"
