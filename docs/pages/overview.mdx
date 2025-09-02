@@ -41,15 +41,3 @@ The `config.json` file described above can be changed remotely. The backend can 
 A change of configuration can either be a "reconfiguration" or a "version change". Ivy runs a suite of pytests on the local machine before switching to a new config/version. In case of a version change, it will download the required source code, install the new dependencies, and remove old dependencies after a successful change.
 
 Read more about OTA updates [here](/concepts/over-the-air-updates).
-
-## How to Use This Template
-
-Create your own repository by using Ivy as a "template" on GitHub.
-
-<img src="/use-template-button.png" class="mt-2 -mb-4" />
-
-Make yourself familiar with the documentation and the codebase. Once you roughly know how Ivy works, you can write your own procedures, extend the shared state, add your own backend connectors, extend the test suite, and so on.
-
-Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/).
-
-We are happy to include your additions to the Ivy template - and of course list you as a contributor.

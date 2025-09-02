@@ -1,0 +1,104 @@
+# Getting Started
+
+**1. Use the Ivy repository as a template to create a new repository for your own DAS**
+
+<img src="/use-template-button.png" class="mt-2" />
+
+**2. Clone your repository to your local machine**
+    
+    Replace `myorg`, `myivy`, and `1.0.0` with your GitHub organization/user name, repository name, and the version you want to start with.
+
+    ```bash
+    git clone https://github.com/myorg/myivy ~/Documents/myivy/1.0.0
+    ```
+
+    Also update these values in `config/config.template.json` and `src/constants.py`.
+
+**3. Navigate to the cloned directory and set up a virtual environment**
+
+    ```bash
+    cd ~/Documents/myivy/1.0.0
+    python3.12 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+**4. Install the project dev dependencies**
+
+```bash
+# using pip
+pip install ".[dev]"
+
+# or pdm
+pdm sync --with dev
+
+# or uv
+uv sync --extra dev
+```
+
+**5. Configure your local DAS**
+
+Use the `config/config.template.json` file as a starting point to create your own `config/config.json` file. Use https://tum-esm-ivy.netlify.app/api-reference/configuration as a reference to see all available configuration options.
+
+```bash
+cp config/config.template.json config/config.json
+# now edit config/config.json
+```
+
+**6. Run the pytest cases to check your Setup**
+
+```python
+# check the tool in general
+pytest tests -m quick
+
+# check the connection to the backend, to the repository and the local config
+pytest tests -m integration
+```
+
+**6. Run the local DAS**
+
+```bash
+# in the foreground
+python run.py
+
+# or the background
+python cli.py start
+```
+
+**7. Observe the outputs of the system**
+
+You can see the output of your DAS in `data/logs` and `data/messages`.
+
+If you have set up a backend then you can observe the data and logs being published to the MQTT server:
+
+* For Tenta: `logs/{system_identifier}` and `measurements/{system_identifier}`
+* For ThingsBoard: `v1/devices/me/telemetry`
+
+This page describes how to set up one of these backends: https://tum-esm-ivy.netlify.app/backends/general
+
+**8. Update and build the documentation**
+
+The documentation is located in `docs`, organized using [Nextra](https://nextra.site/) and set up using [Bun](https://bun.sh/).
+
+```bash
+cd docs
+
+# install dependencies (`npm install` also works)
+bun install
+
+# start a local development server
+bun run dev
+```
+
+Build and publish the documentation on a static site hosting service:
+
+```bash
+bun run build
+```
+
+The static build is contained in `docs/out`.
+
+**9. Add your sensor-network specific code to the DAS**
+
+Get yourself familiar with the documentation on the [core concepts of Ivy](https://tum-esm-ivy.netlify.app/concepts/file-system-layout), [its interfaces](https://tum-esm-ivy.netlify.app/interfaces/configuration), and how it connects to [IoT Backends](https://tum-esm-ivy.netlify.app/backends/general). You can start with the [overview section](https://tum-esm-ivy.netlify.app/overview) giving you a brief description of the different components of Ivy. 
+
+Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/). We are happy to include your additions to the Ivy template - and of course list you as a contributor.
