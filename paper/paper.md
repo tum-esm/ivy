@@ -49,7 +49,7 @@ Since the software architecture of a DAS is independent of a specific sensor net
 
 The architecture of Ivy shown in \autoref{fig:architecture1} results from many iterations of the sensor networks our research group has built and operated [@Dietrich2021;@hermes;@Aigner2023]. This publication aims to share a reference architecture of how a reliable DAS can be built, not claiming that Ivy is the only architecture for this use case.
 
-\vspace{10mm}
+\pagebreak
 
 # Statement of Need and Similar Efforts
 
@@ -61,7 +61,9 @@ Many backends support collecting data from distributed sensor nodes. The FROST S
 
 Backends often provide client libraries [@frostpythonclient;@thingsboardclientsdk;@tentapythonclient], but the complete code autonomously operating a specific network's sensor nodes is rarely published. This lack of open-sourced architectures makes it hard to assess how systems like this are built. Wireless Sensor Networks (WSNs), which have been widely studied [@Kandris2020], consist of a "base station" communicating with many distributed "motes". However, Ivy focuses on the architecture of many distributed autonomous base stations, not motes. Basing a DAS on the Robot Operating System (ROS) [@ros1;@ros2] is a reasonable choice for environmental sensing applications. However, one still has to write the operational logic of the DAS because ROS only comes with the communication infrastructure. Both WSNs and ROS are complementary to Ivy since Ivy can operate a base station of a WSN or run inside a ROS node.
 
-The Hermes software driving the Acropolis network has been open-sourced [@hermes] and used from early 2023 to early 2025 [@midcostl2data], enabling our group to deploy 38 software updates to the network. By now, this sensor network uses a modified variant of Hermes, Acropolis-Edge [@acropolis-edge], that runs the DAS inside a container and separates the DAS from the updater. However, both Hermes and Acropolis-Edge are not directly reusable for similar networks since they are tailored to the Acropolis network. Ivy refines the DAS architecture of Hermes [@hermes] and Pyra [@Aigner2023] and makes it reusable for other sensor networks.
+The Hermes software [@hermes] driving the Acropolis network has been open-sourced[^1] and used from early 2023 to early 2025, enabling our group to deploy 38 software updates to the network. By now, this sensor network uses a modified variant of Hermes, Acropolis-Edge [@acropolis-edge], that runs the DAS inside a container and separates the DAS from the updater. However, both Hermes and Acropolis-Edge are not directly reusable for similar networks since they are tailored to the Acropolis network. Ivy refines the DAS architecture of Hermes and Pyra [@Dietrich2021;@Aigner2023] and makes it reusable for other sensor networks.
+
+[^1]: https://github.com/tum-esm/hermes
 
 # General System Design
 
@@ -69,11 +71,11 @@ Ivy uses a `config.json` file to store its active configuration. It can receive 
 
 ![The software update process of Ivy.\label{fig:architecture2}](figures/ivy-architecture-fig-2.png){ width=100% }
 
-Ivy comes with connectors for two backends out of the box – Thingsboard [@thingsboard] and Tenta [@tenta] – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility prevents vendor lock-in and makes the boilerplate more reusable. We are happy to support more backends out of the box in the future, like Strapi [@strapi], Kuzzle [@kuzzle], or FROST [@frost-server]. Furthermore, many utility functions have been moved to the `tum-esm-utils` Python package [@tumesmutils].
+Ivy comes with connectors for two backends out of the box – Thingsboard and Tenta – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility prevents vendor lock-in and makes the boilerplate more reusable. We are happy to support more backends out of the box in the future, like Strapi [@strapi], Kuzzle [@kuzzle], or FROST. Furthermore, many utility functions have been moved to the `tum-esm-utils` Python package [@tumesmutils].
 
 ## Evolution of the Runtime Model
 
-Whereas Hermes [@hermes], Acropolis-Edge [@acropolis-edge], and earlier versions of Pyra [@Aigner2023] run much of the logic on a single thread, Ivy uses a fully parallel architecture, eliminating the possibility of one faulty component blocking other components. Each block of functionality running in an infinite loop is packaged into a "procedure". The "mainloop" is only responsible for managing procedure lifecycles and handling configuration changes. Starting with Pyra version 4.2, Pyra follows this parallel architecture of Ivy. \autoref{fig:architecture3} shows the communication structure within Ivy.
+Whereas Hermes, Acropolis-Edge, and earlier versions of Pyra run much of the logic on a single thread, Ivy uses a fully parallel architecture, eliminating the possibility of one faulty component blocking other components. Each block of functionality running in an infinite loop is packaged into a "procedure". The "mainloop" is only responsible for managing procedure lifecycles and handling configuration changes. Starting with Pyra version 4.2, Pyra follows this parallel architecture of Ivy. \autoref{fig:architecture3} shows the communication structure within Ivy.
 
 ![The communication between Ivy procedures.\label{fig:architecture3}](figures/ivy-architecture-fig-3.png){ width=100% }
 
