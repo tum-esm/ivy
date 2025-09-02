@@ -70,7 +70,7 @@ python cli.py start
 
 You can see the output of your DAS in `data/logs` and `data/messages`.
 
-If you have set up a backend then you can observe the data and logs being published to the MQTT server:
+If you have set up a backend, then you can observe the data and logs being published to the MQTT server:
 
 * For Tenta: `logs/{system_identifier}` and `measurements/{system_identifier}`
 * For ThingsBoard: `v1/devices/me/telemetry`
@@ -101,13 +101,13 @@ The static build is contained in `docs/out`.
 
 **9. Add your sensor-network specific code to the DAS**
 
-Get yourself familiar with the documentation on the [core concepts of Ivy](https://tum-esm-ivy.netlify.app/concepts/file-system-layout), [its interfaces](https://tum-esm-ivy.netlify.app/interfaces/configuration), and how it connects to [IoT Backends](https://tum-esm-ivy.netlify.app/backends/general). You can start with the [overview section](https://tum-esm-ivy.netlify.app/overview) giving you a brief description of the different components of Ivy. 
+Get yourself familiar with the documentation on the [core concepts of Ivy](https://tum-esm-ivy.netlify.app/concepts/file-system-layout), [its interfaces](https://tum-esm-ivy.netlify.app/interfaces/configuration), and how it connects to [IoT Backends](https://tum-esm-ivy.netlify.app/backends/general). You can start with the [overview section](https://tum-esm-ivy.netlify.app/overview), giving you a brief description of the different components of Ivy. 
 
-Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/). We are happy to include your additions to the Ivy template - and of course list you as a contributor.
+Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/). We are happy to include your additions to the Ivy template - and of course, list you as a contributor.
 
 **10. Test a new version of your DAS**
 
-Make sure that all tests are passing. In the GitHub Actions CI, everything is already set up, so we recommend to use it. You can still run the tests locally though.
+Make sure that all tests are passing. In the GitHub Actions CI, everything is already set up, so we recommend using it. You can still run the tests locally, though.
 
 ```bash
 # start local MQTT server (you need to have mosquitto installed)
@@ -123,7 +123,7 @@ pytest tests -m updater
 bun run stop-mosquitto
 ```
 
-For these updater tests to work, your Ivy root directory (`~/Documents/myivy`) has to be empty to ensure that nothing is overwritten – this is why we recommend just running these tests in the CI environment. The updater test will set up the current setup twice under `~/Documents/myivy/myivy/1.2.3` and `~/Documents/myivy/myivy/4.5.6`, run the first version regularly and try to update it to the second version. This proves that the current codebase can be updated *from* and *to*.
+For these updater tests to work, your Ivy root directory (`~/Documents/myivy`) has to be empty to ensure that nothing is overwritten – this is why we recommend just running these tests in the CI environment. The updater test will set up the current setup twice under `~/Documents/myivy/myivy/1.2.3` and `~/Documents/myivy/myivy/4.5.6`, run the first version regularly, and try to update it to the second version. This proves that the current codebase can be updated *from* and *to*.
 
 **11. Publish a new release**
 
@@ -134,7 +134,7 @@ git push origin v0.3.4
 
 ## Set up a new Production System
 
-**1. Set up a the computer running the DAS (e.g. a Raspberry Pi)**
+**1. Set up the computer running the DAS (e.g., a Raspberry Pi)**
 
 Use a Unix operating system and install [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/).
 
@@ -188,6 +188,6 @@ Add the following line to your crontab (edit it using `crontab -e`):
 * * * * * ~/Documents/ivy/ivy-cli.sh start
 ```
 
-This will restart the DAS after any crash or system reboot, or after any software update or configuration change of your DAS.
+This will restart the DAS after any crash, system reboot, or any software update or configuration change of your DAS.
 
 

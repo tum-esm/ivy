@@ -92,10 +92,6 @@ export default {
       }
     },
   },
-  banner: {
-    key: "v1.0.0",
-    text: "🪴 The Ivy template 1.0.0 has been released",
-  },
   toc: {
     float: true,
   },
