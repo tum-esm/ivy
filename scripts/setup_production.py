@@ -1,5 +1,6 @@
 #!/bin/python3
 
+from typing import Generator
 import contextlib
 import json
 import os
@@ -7,7 +8,6 @@ import re
 import shutil
 import sys
 import tarfile
-from typing import Generator
 import urllib.request
 
 BOLD_CODE = "\033[1m"

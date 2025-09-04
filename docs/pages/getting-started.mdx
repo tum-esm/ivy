@@ -138,56 +138,24 @@ git push origin v0.3.4
 
 Use a Unix operating system and install [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/).
 
-**2. Download a published version of your DAS**
+**2. Run the production setup script**
+
+Define your environment:
 
 ```bash
-mkdir -p ~/Documents/myivy
-cd ~/Documents/myivy
-wget https://github.com/myorg/myivy/archive/refs/tags/v1.0.0.tar.gz
-tar -xvf v1.0.0.tar.gz
-mv myivy-1.0.0 1.0.0
+export IVY_PROJECT_NAME="myivy"
+export IVY_GIT_REPOSITORY="https://github.com/myorg/myivy"
+export IVY_GIT_PROVIDER="github"  # or "gitlab"
+export IVY_VERSION="1.0.0"
+export IVY_SYSTEM_IDENTIFIER="my-das-node-076"
+export IVY_CONFIG_FILEPATH="/someusbstick/config-system-076.json"
+export IVY_PACKAGE_MANAGER="pdm"
 ```
 
-**3. Install the project dependencies**
+Setup the production node:
 
 ```bash
-cd ~/Documents/myivy/1.0.0
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install "."
+curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py | python3.12
 ```
 
-**4. Configure your local DAS**
-
-```bash
-cp someusbstick/config-system-xx.json ~/Documents/myivy/1.0.0/config/config.json
-# or
-cp ~/Documents/myivy/1.0.0/config/config.template.json ~/Documents/myivy/1.0.0/config/config.json
-```
-
-Make sure to set the correct `config.general.software_version` and `config.general.system_identifier`.
-
-**5. Point the fixed CLI endpoint to the desired Ivy version**
-
-```bash
-cat << 'EOF' > ~/Documents/myivy/myivy-cli.sh
-#!/bin/bash
-set -o errexit
- 
-~/Documents/myivy/1.0.0/.venv/bin/python ~/Documents/myivy/1.0.0/cli.py $*
-EOF
-```
-
-Now, running `~/Documents/myivy/myivy-cli.sh` will always call the currently active DAS version.
-
-**6. Make your DAS start automatically whenever it is not running**
-
-Add the following line to your crontab (edit it using `crontab -e`):
-
-```crontab
-* * * * * ~/Documents/ivy/ivy-cli.sh start
-```
-
-This will restart the DAS after any crash, system reboot, or any software update or configuration change of your DAS.
-
-
+The script will print a line like `* * * ... -cli.sh` to be added to the crontab. This will restart the DAS after any crash, system reboot, or any software update or configuration change of your DAS. Then DAS will start running in the background in the next minute.
