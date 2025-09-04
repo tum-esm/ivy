@@ -1,14 +1,14 @@
-name: "test-development-setup"
+name: "test-production-setup"
 on:
   push:
     branches:
-      - skipped-for-now-main
+      - main
   pull_request:
     branches:
-      - skipped-for-now-main
+      - main
 
 jobs:
-  test-development-setup:
+  test-production-setup:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -25,19 +25,31 @@ jobs:
           python-version: ${{ matrix.python_version }}
           cache: "pip"
 
+      - name: Get version from config
+        id: get-version
+        run: echo "version=$(cat config/config.template.json | jq -r '.general.software_version')" >> $GITHUB_OUTPUT
+
+      - name: Print version
+        run: echo "Version is ${{ steps.get-version.outputs.version }}"
+
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
+
+      - name: Copy the current codebase to /tmp (excluding .git)
+        run: |
+          cp -r . /tmp/latest-ivy-codebase
+          rm -rf /tmp/latest-ivy-codebase/.git
 
       - name: Run development setup script
         env:
           IVY_PROJECT_NAME: ${{ github.event.repository.name }}
           IVY_GIT_REPOSITORY: https://github.com/${{ github.repository }}
-          IVY_BRANCH_NAME: ${{ github.head_ref }}
+          IVY_GIT_PROVIDER: github
+          IVY_VERSION: /tmp/latest-ivy-codebase
           IVY_PACKAGE_MANAGER: pdm
           IVY_SYSTEM_IDENTIFIER: github-actions-node-development
-          IVY_CONFIGURE_BACKEND: yes
-          IVY_PROCEED: yes
-        run: curl -s https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.head_ref }}/scripts/setup_development.py | python3.10
+          IVY_CONFIG_FILEPATH: ${{ github.workspace }}/config/config.json
+        run: curl -s https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.head_ref }}/scripts/setup_production.py | python3.10
 
       - name: Install mosquitto dependencies
         run: |
@@ -46,13 +58,13 @@ jobs:
           sudo apt-get install -y mosquitto-clients mosquitto
 
       - name: Start mosquitto broker
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/${{ steps.get-version.outputs.version }}
         run: ./scripts/mosquitto_start.sh
 
       - name: Test whether broker is running
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/${{ steps.get-version.outputs.version }}
         run: sleep 5 && ./scripts/mosquitto_test.sh
 
       - name: Run integration tests
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/${{ steps.get-version.outputs.version }}
         run: ./scripts/run_tests_integration.sh

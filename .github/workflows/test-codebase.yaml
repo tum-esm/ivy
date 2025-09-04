@@ -8,7 +8,7 @@ on:
       - skipped-for-now-main
 
 jobs:
-  test:
+  test-codebase:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
