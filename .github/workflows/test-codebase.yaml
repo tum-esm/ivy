@@ -2,10 +2,10 @@ name: "test-codebase"
 on:
   push:
     branches:
-      - skipped-for-now-main
+      - main
   pull_request:
     branches:
-      - skipped-for-now-main
+      - main
 
 jobs:
   test-codebase:
@@ -34,16 +34,11 @@ jobs:
 
       - name: Start mosquitto broker
         if: matrix.python_version == '3.10'
-        run: |
-          mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password
-          echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > $PWD/tests/updater/data/mosquitto.conf
-          mosquitto -d -c tests/updater/data/mosquitto.conf
+        run: ./scripts/mosquitto_start.sh
 
       - name: Test whether broker is running
         if: matrix.python_version == '3.10'
-        run: |
-          sleep 5
-          mosquitto_pub -h localhost -p 1883 -t test/topic -u test_username -P test_password -m "hello"
+        run: sleep 5 && ./scripts/mosquitto_test.sh
 
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
@@ -71,3 +66,7 @@ jobs:
           mkdir $IVY_ROOT_DIR
           source .venv/bin/activate
           pytest --verbose -m "quick or updater" --cov=$PWD/src --exitfirst tests/
+
+      - name: Stop mosquitto broker
+        if: matrix.python_version == '3.10'
+        run: ./scripts/mosquitto_stop.sh

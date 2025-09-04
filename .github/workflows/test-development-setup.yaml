@@ -2,10 +2,10 @@ name: "test-development-setup"
 on:
   push:
     branches:
-      - skipped-for-now-main
+      - main
   pull_request:
     branches:
-      - skipped-for-now-main
+      - main
 
 jobs:
   test-development-setup:
@@ -56,3 +56,7 @@ jobs:
       - name: Run integration tests
         working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
         run: ./scripts/run_tests_integration.sh
+
+      - name: Stop mosquitto broker
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        run: ./scripts/mosquitto_stop.sh

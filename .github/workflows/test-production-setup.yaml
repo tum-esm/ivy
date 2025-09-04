@@ -40,7 +40,7 @@ jobs:
           cp -r . /tmp/latest-ivy-codebase
           rm -rf /tmp/latest-ivy-codebase/.git
 
-      - name: Run development setup script
+      - name: Run production setup script
         env:
           IVY_PROJECT_NAME: ${{ github.event.repository.name }}
           IVY_GIT_REPOSITORY: https://github.com/${{ github.repository }}
@@ -68,3 +68,7 @@ jobs:
       - name: Run integration tests
         working-directory: /home/runner/Documents/${{ github.event.repository.name }}/${{ steps.get-version.outputs.version }}
         run: ./scripts/run_tests_integration.sh
+
+      - name: Stop mosquitto broker
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        run: ./scripts/mosquitto_stop.sh
