@@ -37,7 +37,19 @@ def format_warning(message: str) -> str:
 def get_validated_input(
     prompt: str,
     conditions: list[tuple[Callable[[str], bool], str]],
+    env_var: str,
 ) -> str:
+    # Check environment variable first
+    if env_var in os.environ:
+        env_value = os.environ[env_var].strip()
+        # Validate environment variable value
+        for condition, message in conditions:
+            if not condition(env_value):
+                error(f"Environment variable {env_var}='{env_value}' is invalid: {message}")
+        print(f"{BOLD_CODE}{prompt}{RESET_CODE} (from {env_var}): {env_value}")
+        return env_value
+
+    # Fall back to interactive input
     while True:
         output = input(f"{BOLD_CODE}{prompt}\n>{RESET_CODE} ").strip("\t\n ")
         valid_output: bool = True
@@ -57,6 +69,7 @@ PROJECT_NAME = get_validated_input(
     conditions=[
         (lambda s: len(s) > 0, "Project name cannot be empty"),
     ],
+    env_var="IVY_PROJECT_NAME",
 )
 
 GIT_REPOSITORY = get_validated_input(
@@ -67,6 +80,7 @@ GIT_REPOSITORY = get_validated_input(
             "Git repository must start with 'https://' or 'git@'",
         ),
     ],
+    env_var="IVY_GIT_REPOSITORY",
 )
 
 PACKAGE_MANAGER = get_validated_input(
@@ -74,6 +88,7 @@ PACKAGE_MANAGER = get_validated_input(
     conditions=[
         (lambda s: s in ["pip", "pdm", "uv"], "Must be one of 'pip', 'pdm', or 'uv'"),
     ],
+    env_var="IVY_PACKAGE_MANAGER",
 )
 
 HOSTNAME = socket.gethostname().replace("_", "-").replace(" ", "-").lower()
@@ -86,6 +101,7 @@ SYSTEM_IDENTIFIER = get_validated_input(
             "Only lowercase letters, numbers, and hyphens are allowed",
         ),
     ],
+    env_var="IVY_SYSTEM_IDENTIFIER",
 )
 if SYSTEM_IDENTIFIER == "":
     SYSTEM_IDENTIFIER = HOSTNAME
@@ -99,6 +115,7 @@ CONFIGURE_BACKEND = (
                 "Must be 'yes'/'y' or 'no'/'n'",
             ),
         ],
+        env_var="IVY_CONFIGURE_BACKEND",
     )
     .lower()
     .startswith("y")
@@ -124,6 +141,7 @@ PROCEED = (
                 "Must be 'yes'/'y' or 'no'/'n'",
             ),
         ],
+        env_var="IVY_PROCEED",
     )
     .lower()
     .startswith("y")
@@ -241,5 +259,5 @@ with section("Running quick tests to verify the installation"):
 # fmt: off
 print(f"\n{BOLD_CODE}🎉 Setup complete! 🎉\n\nNext steps:{RESET_CODE}")
 print(f'  > Navigate to "{version_dir}"" where the local dev environment has been set up.')
-print(f'  > Continue with steps 7 of the "Getting Started" guide (https://tum-esm-ivy.netlify.app/getting-started)')
+print(f'  > Continue with steps 6 of the "Getting Started" guide (https://tum-esm-ivy.netlify.app/getting-started)')
 # fmt: on
