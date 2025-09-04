@@ -18,11 +18,9 @@ RESET_CODE = "\033[0m"
 
 @contextlib.contextmanager
 def section(label: str) -> Generator[Callable[[str], None], None, None]:
-    print(f"{BOLD_CODE}{label}: Starting{RESET_CODE}")
-    print(GRAY_CODE)
+    print(f"{BOLD_CODE}{label}: Starting{RESET_CODE}{GRAY_CODE}")
     yield lambda message: print(f"{RESET_CODE}{message}{GRAY_CODE}")
-    print(RESET_CODE)
-    print(f"{GREEN_CODE}{label}: Finished{RESET_CODE}")
+    print(f"{RESET_CODE}{GREEN_CODE}{label}: Finished{RESET_CODE}")
 
 
 def error(message: str) -> None:
@@ -95,7 +93,7 @@ HOSTNAME = socket.gethostname().replace("_", "-").replace(" ", "-").lower()
 SYSTEM_IDENTIFIER = get_validated_input(
     f'How do you want to name this computer? (if empty, uses "{HOSTNAME}")',
     conditions=[
-        (lambda s: len(s) <= 512, "System identifier cannot be empty"),
+        (lambda s: len(s) <= 512, "System identifier has to be at most 512 characters"),
         (
             lambda s: re.match(r"^[a-z0-9-]+$", s) is not None,
             "Only lowercase letters, numbers, and hyphens are allowed",
@@ -105,6 +103,22 @@ SYSTEM_IDENTIFIER = get_validated_input(
 )
 if SYSTEM_IDENTIFIER == "":
     SYSTEM_IDENTIFIER = HOSTNAME
+
+DEFAULT_BRANCH_NAME = "main"
+BRANCH_NAME = get_validated_input(
+    f'Which branch of the repository do you work on? (if empty, uses "{DEFAULT_BRANCH_NAME}")',
+    conditions=[
+        (lambda s: len(s) <= 512, "Branch name cannot be empty"),
+        (
+            lambda s: re.match(r"^[a-z0-9-_]+$", s) is not None,
+            "Only lowercase letters, numbers, hyphens and underscores are allowed",
+        ),
+    ],
+    env_var="IVY_BRANCH_NAME",
+)
+if BRANCH_NAME == "":
+    BRANCH_NAME = DEFAULT_BRANCH_NAME
+
 
 CONFIGURE_BACKEND = (
     get_validated_input(
@@ -125,6 +139,7 @@ CONFIGURE_BACKEND = (
 print(f"{BOLD_CODE}Setting up your DAS with the following configuration:{RESET_CODE}")
 print(f"  Project name:            {PROJECT_NAME}")
 print(f"  Git repository:          {GIT_REPOSITORY}")
+print(f"  Branch name:             {BRANCH_NAME}")
 print(f"  Package manager:         {PACKAGE_MANAGER}")
 print(f"  System identifier:       {SYSTEM_IDENTIFIER}")
 print(f"  Configure MQTT broker:   {'yes' if CONFIGURE_BACKEND else 'no'}\n")
@@ -172,6 +187,7 @@ with section("Setting up directories") as localprint:
 
 with section("Cloning repository") as localprint:
     assert os.system(f"git clone {GIT_REPOSITORY} {version_dir}") == 0
+    assert os.system(f"cd {version_dir} && git checkout {BRANCH_NAME}") == 0
     localprint(f"Cloned repository to {version_dir}")
 
 # SET UP VENV
@@ -184,7 +200,7 @@ with section("Setting up virtual environment") as localprint:
 # INSTALL DEPENDENCIES
 
 with section(f"Installing dependencies using {PACKAGE_MANAGER}"):
-    common = f"cd {version_dir} && source .venv/bin/activate"
+    common = f"cd {version_dir} && . .venv/bin/activate"
     if PACKAGE_MANAGER == "pip":
         assert os.system(f'{common} && pip install ".[dev]"') == 0
     elif PACKAGE_MANAGER == "pdm":
@@ -199,7 +215,6 @@ with section("Setting up configuration file") as localprint:
         config = json.load(f)
 
     config["general"]["system_identifier"] = SYSTEM_IDENTIFIER
-    config["general"]["software_version"] = "0.0.0"
 
     GIT_PROVIDER: Optional[str] = None
     if "github" in GIT_REPOSITORY:
@@ -252,7 +267,7 @@ with section("Setting up configuration file") as localprint:
 # RUNNING THE QUICK PYTESTS
 
 with section("Running quick tests to verify the installation"):
-    assert os.system(f"cd {version_dir} && source .venv/bin/activate && pytest tests -m quick") == 0
+    assert os.system(f"cd {version_dir} && . .venv/bin/activate && pytest tests -m quick") == 0
 
 # DONE
 

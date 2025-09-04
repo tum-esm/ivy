@@ -168,6 +168,7 @@ if __name__ == "__main__":
 
     env_vars = load_env_vars()
     documents_dir, project_dir, version_dir = setup_directories(env_vars)
+    cli_pointer = os.path.join(project_dir, f"{env_vars['project_name']}-cli.sh")
     download_and_codebase(env_vars, version_dir)
     setup_virtual_environment(env_vars, version_dir)
     setup_configuration(env_vars, version_dir)
@@ -175,7 +176,7 @@ if __name__ == "__main__":
 
     print("🎉 Production setup complete! 🎉")
     print(f"\nYour DAS has been set up at: {version_dir}")
-    print(f"CLI pointer: {os.path.join(project_dir, f'{env_vars['project_name']}-cli.sh')}")
+    print(f"CLI pointer: {cli_pointer}")
 
     cli_script_path = os.path.join(project_dir, f"{env_vars['project_name']}-cli.sh")
     cron_line = f"* * * * * {cli_script_path} start"

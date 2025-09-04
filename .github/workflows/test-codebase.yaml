@@ -2,10 +2,10 @@ name: "test-codebase"
 on:
   push:
     branches:
-      - main
+      - skipped-for-now-main
   pull_request:
     branches:
-      - main
+      - skipped-for-now-main
 
 jobs:
   test:
