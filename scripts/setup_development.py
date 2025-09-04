@@ -118,7 +118,7 @@ BRANCH_NAME = get_validated_input(
     conditions=[
         (lambda s: len(s) <= 512, "Branch name cannot be empty"),
         (
-            lambda s: re.match(r"^[a-z0-9-_]+$", s) is not None,
+            lambda s: re.match(r"^[a-z0-9-_]*$", s) is not None,
             "Only lowercase letters, numbers, hyphens and underscores are allowed",
         ),
     ],
