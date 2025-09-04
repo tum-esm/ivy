@@ -67,12 +67,6 @@ markers = [
 ]
 
 [tool.pdm.scripts]
-start-mosquitto = { shell = """
-  mosquitto_passwd -c -b $PWD/tests/updater/data/mosquitto.passwords test_username test_password &&
-  echo "listener 1883\\nallow_anonymous false\\npassword_file $PWD/tests/updater/data/mosquitto.passwords" > $PWD/tests/updater/data/mosquitto.conf &&
-  mosquitto -d -c tests/updater/data/mosquitto.conf
-  """ }
-stop-mosquitto = { shell = 'pkill -f "mosquitto -d"' }
 stop-python = { shell = 'pkill -f "Python"' }
 run-thingsboard = { shell = """
   docker rm -f mytb > /dev/null 2>&1 &&
