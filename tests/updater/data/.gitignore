@@ -1,0 +1,5 @@
+mosquitto.conf
+mosquitto.passwords
+local_tb_data/*
+local_tb_logs/*
+!.gitkeep

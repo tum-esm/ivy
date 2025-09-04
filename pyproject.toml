@@ -65,13 +65,3 @@ markers = [
   "integration: can only be run on a configured system (< 10s)",
   "version_change: will run before switching to a new version",
 ]
-
-[tool.pdm.scripts]
-stop-python = { shell = 'pkill -f "Python"' }
-run-thingsboard = { shell = """
-  docker rm -f mytb > /dev/null 2>&1 &&
-  docker run -it --name mytb --restart always \
-      -p 9090:9090 -p 1883:1883 -p 7070:7070 -p 5683-5688:5683-5688/udp \
-      -v ~/.mytb-data:/data -v ~/.mytb-logs:/var/log/thingsboard \
-      thingsboard/tb-postgres:3.7.0
-  """ }
