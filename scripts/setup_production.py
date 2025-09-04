@@ -19,11 +19,9 @@ RESET_CODE = "\033[0m"
 
 @contextlib.contextmanager
 def section(label: str) -> Generator[None, None, None]:
-    print(f"{BOLD_CODE}{label}: Starting{RESET_CODE}")
-    print(GRAY_CODE)
+    print(f"{BOLD_CODE}{label}: Starting{RESET_CODE}{GRAY_CODE}")
     yield
-    print(RESET_CODE)
-    print(f"{GREEN_CODE}{label}: Finished{RESET_CODE}")
+    print(f"{RESET_CODE}{GREEN_CODE}{label}: Finished{RESET_CODE}")
 
 
 def error(message: str) -> None:
@@ -61,7 +59,7 @@ def load_config() -> dict[str, str]:
         if not env_vars["git_provider"] in ["github", "gitlab"]:
             error("Git repository must be from either 'github' or 'gitlab'")
 
-        if not (re.match(r"^\d+\.") or env_vars["version"].startswith("/")):
+        if not (re.match(r"^\d+\.", env_vars["version"]) or env_vars["version"].startswith("/")):
             error("Version must either start with a number (e.g. '1.0.0') or be a an absolute path")
 
         if not re.match(r"^[a-z0-9-]+$", env_vars["system_identifier"]):
@@ -89,8 +87,12 @@ def setup_directories(config: dict[str, str]) -> tuple[str, str, str]:
         documents_dir = os.path.join(os.path.expanduser("~"), "Documents")
         project_dir = os.path.join(documents_dir, config["project_name"])
         version_dir: str = "/tmp/thisdoesdefinitelyhopefullynotexist"
-        if not config["version"].startswith("v/"):
-            version_dir = os.path.join(project_dir, config["version"].lstrip("v"))
+        if not config["version"].startswith("/"):
+            version_dir = os.path.join(project_dir, config["version"])
+
+        print(f"documents_dir = {documents_dir}")
+        print(f"project_dir = {project_dir}")
+        print(f"version_dir = {version_dir}")
 
         for path in [documents_dir, project_dir, version_dir]:
             if os.path.isfile(path):
@@ -110,7 +112,7 @@ def download_codebase(config: dict[str, str], project_dir: str) -> Optional[str]
         )
         assert os.path.isdir(config["version"])
         with open(os.path.join(config["version"], "config", "config.template.json"), "r") as f:
-            version = json.load(f)["general"]["software_version"]
+            version = str(json.load(f)["general"]["software_version"])
         version_dir = os.path.join(project_dir, version)
         os.rename(config["version"], version_dir)
         return version
@@ -149,14 +151,15 @@ def setup_virtual_environment(config: dict[str, str], version_dir: str) -> None:
     with section("Setting up virtual environment"):
         assert os.system(f"cd {version_dir} && {sys.executable} -m venv .venv") == 0
 
+        common = f"cd {version_dir} && . .venv/bin/activate"
         if config["package_manager"] == "pip":
-            assert os.system(f"cd {version_dir} && source .venv/bin/activate && pip install .") == 0
+            assert os.system(f"{common} && pip install .") == 0
 
         elif config["package_manager"] == "pdm":
-            assert os.system(f"cd {version_dir} && source .venv/bin/activate && pdm sync") == 0
+            assert os.system(f"{common} && pdm sync") == 0
 
         elif config["package_manager"] == "uv":
-            assert os.system(f"cd {version_dir} && source .venv/bin/activate && uv sync") == 0
+            assert os.system(f"{common} && uv sync") == 0
 
 
 def setup_configuration(config: dict[str, str], version_dir: str) -> None:

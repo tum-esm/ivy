@@ -48,7 +48,7 @@ jobs:
           IVY_VERSION: /tmp/latest-ivy-codebase
           IVY_PACKAGE_MANAGER: pdm
           IVY_SYSTEM_IDENTIFIER: github-actions-node-development
-          IVY_CONFIG_FILEPATH: ${{ github.workspace }}/config/config.json
+          IVY_CONFIG_FILEPATH: ${{ github.workspace }}/config/config.template.json
         run: curl -s https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.head_ref }}/scripts/setup_production.py | python3.10
 
       - name: Install mosquitto dependencies
