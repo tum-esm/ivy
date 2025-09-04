@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fail on first error
+set -e errexit
+
 # tests will run in a temporary directory to not interfere with the local dev environment
 export TS="$(date +%s)"
 export IVY_ROOT_DIR="/tmp/ci-tests-ivy-root-dir-$TS"

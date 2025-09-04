@@ -75,6 +75,9 @@ If a backend is configured, you need to connecting to an MQTT broker running loc
 # start local MQTT server (you need to have mosquitto installed)
 scripts/mosquitto_start.sh
 
+# test whether the broker is running
+scripts/mosquitto_test.sh
+
 # stop local MQTT server
 scripts/mosquitto_stop.sh
 
@@ -144,6 +147,9 @@ Make sure that all tests are passing. In the GitHub Actions CI, everything is al
 ```bash
 # start local MQTT server which is required for the CI tests have
 scripts/mosquitto_start.sh
+
+# test whether the broker is running
+scripts/mosquitto_test.sh
 
 # run all non-integration tests
 scripts/run_tests_ci.sh
