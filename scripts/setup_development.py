@@ -241,5 +241,5 @@ with section("Running quick tests to verify the installation"):
 # fmt: off
 print(f"\n{BOLD_CODE}🎉 Setup complete! 🎉\n\nNext steps:{RESET_CODE}")
 print(f'  > Navigate to "{version_dir}"" where the local dev environment has been set up.')
-print(f'  > Continue with steps 6 of the "Getting Started" guide (https://tum-esm-ivy.netlify.app/getting-started)')
+print(f'  > Continue with steps 7 of the "Getting Started" guide (https://tum-esm-ivy.netlify.app/getting-started)')
 # fmt: on
