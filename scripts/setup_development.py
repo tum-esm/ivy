@@ -97,7 +97,7 @@ SYSTEM_IDENTIFIER = get_validated_input(
     conditions=[
         (lambda s: len(s) <= 512, "System identifier cannot be empty"),
         (
-            lambda s: re.match(r"^[a-z0-9-]+$", s),
+            lambda s: re.match(r"^[a-z0-9-]+$", s) is not None,
             "Only lowercase letters, numbers, and hyphens are allowed",
         ),
     ],

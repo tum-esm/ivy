@@ -37,6 +37,7 @@ def get_required_env_var(var_name: str) -> str:
     value = os.getenv(var_name)
     if value is None:
         error(f"Required environment variable {var_name} is not set")
+    assert value is not None
     return value.strip()
 
 
