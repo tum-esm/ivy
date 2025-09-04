@@ -70,6 +70,14 @@ PROJECT_NAME = get_validated_input(
     env_var="IVY_PROJECT_NAME",
 )
 
+PROJECT_DIR = get_validated_input(
+    f"Where do you want to set up your dev repository? (if empty, uses `~/Documents/{PROJECT_NAME}/dev`)",
+    conditions=[],
+    env_var="IVY_PROJECT_DIR",
+)
+if PROJECT_DIR == "":
+    PROJECT_DIR = os.path.join(os.path.expanduser("~"), "Documents", PROJECT_NAME, "dev")
+
 GIT_REPOSITORY = get_validated_input(
     "Where is your git repository hosted? (instead of `https://github.com/tum-esm/ivy`)",
     conditions=[
@@ -144,7 +152,7 @@ print(f"  Package manager:         {PACKAGE_MANAGER}")
 print(f"  System identifier:       {SYSTEM_IDENTIFIER}")
 print(f"  Configure MQTT broker:   {'yes' if CONFIGURE_BACKEND else 'no'}\n")
 print(f"  Python Interpreter:      {sys.executable}")
-print(f"  Installation Location:   {os.path.join(os.path.expanduser('~'), 'Documents', PROJECT_NAME, 'dev')}\n")
+print(f"  Installation Location:   {PROJECT_DIR}\n")
 # fmt: on
 
 PROCEED = (
@@ -168,39 +176,32 @@ if not PROCEED:
 # CREATE DIRECTORIES
 
 with section("Setting up directories") as localprint:
-    documents_dir = os.path.join(os.path.expanduser("~"), "Documents")
-    project_dir = os.path.join(documents_dir, PROJECT_NAME)
-    version_dir = os.path.join(project_dir, "dev")
+    if os.path.isfile(PROJECT_DIR):
+        error(f"{PROJECT_DIR} is a file, not a directory. Please remove it.")
 
-    for d in [documents_dir, project_dir, version_dir]:
-        if os.path.isfile(d):
-            error(f"{d} is a file, not a directory. Please remove it.")
+    if os.path.isdir(PROJECT_DIR):
+        error(f"{PROJECT_DIR} already exists. Remove it if you want to run the setup again.")
 
-    if os.path.isdir(version_dir):
-        error(f"{version_dir} already exists. Remove it if you want to run the setup again.")
-
-    if not os.path.isdir(project_dir):
-        os.makedirs(project_dir, exist_ok=True)
-        localprint(f"Created directory {project_dir}")
+    os.makedirs(os.path.basename(PROJECT_DIR), exist_ok=True)
 
 # CLONE REPOSITORY
 
 with section("Cloning repository") as localprint:
-    assert os.system(f"git clone {GIT_REPOSITORY} {version_dir}") == 0
-    assert os.system(f"cd {version_dir} && git checkout {BRANCH_NAME}") == 0
-    localprint(f"Cloned repository to {version_dir}")
+    assert os.system(f"git clone {GIT_REPOSITORY} {PROJECT_DIR}") == 0
+    assert os.system(f"cd {PROJECT_DIR} && git checkout {BRANCH_NAME}") == 0
+    localprint(f"Cloned repository to {PROJECT_DIR}")
 
 # SET UP VENV
 
 with section("Setting up virtual environment") as localprint:
-    venv_path = os.path.join(version_dir, ".venv")
+    venv_path = os.path.join(PROJECT_DIR, ".venv")
     assert os.system(f"{sys.executable} -m venv {venv_path}") == 0
     localprint(f"Created virtual environment at {venv_path}")
 
 # INSTALL DEPENDENCIES
 
 with section(f"Installing dependencies using {PACKAGE_MANAGER}"):
-    common = f"cd {version_dir} && . .venv/bin/activate"
+    common = f"cd {PROJECT_DIR} && . .venv/bin/activate"
     if PACKAGE_MANAGER == "pip":
         assert os.system(f'{common} && pip install ".[dev]"') == 0
     elif PACKAGE_MANAGER == "pdm":
@@ -211,7 +212,7 @@ with section(f"Installing dependencies using {PACKAGE_MANAGER}"):
 # SET UP CONFIG FILE
 
 with section("Setting up configuration file") as localprint:
-    with open(os.path.join(version_dir, "config", "config.template.json"), "r") as f:
+    with open(os.path.join(PROJECT_DIR, "config", "config.template.json"), "r") as f:
         config = json.load(f)
 
     config["general"]["system_identifier"] = SYSTEM_IDENTIFIER
@@ -258,8 +259,8 @@ with section("Setting up configuration file") as localprint:
             + "Update `config.backend` if you want to use a different broker."
         )
 
-    config_path = os.path.join(version_dir, "config", "config.json")
-    with open(os.path.join(version_dir, "config", "config.json"), "w") as f:
+    config_path = os.path.join(PROJECT_DIR, "config", "config.json")
+    with open(os.path.join(PROJECT_DIR, "config", "config.json"), "w") as f:
         json.dump(config, f, indent=4)
     localprint(f"Wrote configuration to {config_path}")
 
@@ -267,12 +268,12 @@ with section("Setting up configuration file") as localprint:
 # RUNNING THE QUICK PYTESTS
 
 with section("Running quick tests to verify the installation"):
-    assert os.system(f"cd {version_dir} && . .venv/bin/activate && pytest tests -m quick") == 0
+    assert os.system(f"cd {PROJECT_DIR} && . .venv/bin/activate && pytest tests -m quick") == 0
 
 # DONE
 
 # fmt: off
 print(f"\n{BOLD_CODE}🎉 Setup complete! 🎉\n\nNext steps:{RESET_CODE}")
-print(f'  > Navigate to "{version_dir}"" where the local dev environment has been set up.')
+print(f'  > Navigate to "{PROJECT_DIR}"" where the local dev environment has been set up.')
 print(f'  > Continue with steps 6 of the "Getting Started" guide (https://tum-esm-ivy.netlify.app/getting-started)')
 # fmt: on

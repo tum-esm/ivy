@@ -31,6 +31,7 @@ jobs:
       - name: Run development setup script
         env:
           IVY_PROJECT_NAME: ${{ github.event.repository.name }}
+          IVY_PROJECT_DIR: /home/runner/Documents/${{ github.event.repository.name }}/ci-dev
           IVY_GIT_REPOSITORY: https://github.com/${{ github.repository }}
           IVY_BRANCH_NAME: ${{ github.head_ref }}
           IVY_PACKAGE_MANAGER: pdm
@@ -46,17 +47,17 @@ jobs:
           sudo apt-get install -y mosquitto-clients mosquitto
 
       - name: Start mosquitto broker
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/ci-dev
         run: ./scripts/mosquitto_start.sh
 
       - name: Test whether broker is running
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/ci-dev
         run: sleep 5 && ./scripts/mosquitto_test.sh
 
       - name: Run integration tests
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/ci-dev
         run: ./scripts/run_tests_integration.sh
 
       - name: Stop mosquitto broker
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/ci-dev
         run: ./scripts/mosquitto_stop.sh
