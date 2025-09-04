@@ -38,7 +38,7 @@ jobs:
           IVY_SYSTEM_IDENTIFIER: github-actions-node-development
           IVY_CONFIGURE_BACKEND: yes
           IVY_PROCEED: yes
-        run: curl -s https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.head_ref }}/scripts/setup_development.py | python3.10
+        run: curl -s https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/scripts/setup_development.py | python3.10
 
       - name: Install mosquitto dependencies
         run: |
