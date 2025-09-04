@@ -70,5 +70,5 @@ jobs:
         run: ./scripts/run_tests_integration.sh
 
       - name: Stop mosquitto broker
-        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/dev
+        working-directory: /home/runner/Documents/${{ github.event.repository.name }}/${{ steps.get-version.outputs.version }}
         run: ./scripts/mosquitto_stop.sh
