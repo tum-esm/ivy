@@ -4,21 +4,22 @@ import { Callout } from "nextra/components";
 
 ## Development
 
-**1. Use the Ivy repository as a template to create a new repository for your own DAS**
+You need to have [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/) installed on your machine. We officially only support Unix operating systems. Use the "Use this template" button on the [Ivy Repository](https://github.com/tum-esm/ivy) to start your own DAS repository:
 
 <img src="/use-template-button.png" class="mt-2" />
 
 <Callout type="info">
 
-Steps 2 through 6 of the development setup have been automated by running the following command. It will ask you for the necessary inputs:
+Steps 1 through 5 of the development setup have been automated by running the following command. It will ask you for the necessary inputs:
 
 ```bash
+# optional: change the Python interpreter to the one you want your DAS to run with
 curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_development.py | python3.12
 ```
 
 </Callout>
 
-**2. Clone your repository to your local machine**
+**1. Clone your repository to your local machine**
 
 Replace `myorg` and `myivy` with your GitHub organization/user name, repository name, and the version you want to start with.
 
@@ -28,7 +29,7 @@ git clone https://github.com/myorg/myivy ~/Documents/myivy/dev
 
 Also update these values in `config/config.template.json` and `src/constants.py`.
 
-**3. Navigate to the cloned directory and set up a virtual environment**
+**2. Navigate to the cloned directory and set up a virtual environment**
 
 ```bash
 cd ~/Documents/myivy/dev
@@ -36,7 +37,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 ```
 
-**4. Install the project dev dependencies**
+**3. Install the project dev dependencies**
 
 ```bash
 # using pip
@@ -49,7 +50,7 @@ pdm sync --with dev
 uv sync --extra dev
 ```
 
-**5. Configure your local DAS**
+**4. Configure your local DAS**
 
 Use the `config/config.template.json` file as a starting point to create your own `config/config.json` file. Use https://tum-esm-ivy.netlify.app/api-reference/configuration as a reference to see all available configuration options.
 
@@ -58,7 +59,7 @@ cp config/config.template.json config/config.json
 # now edit config/config.json
 ```
 
-**6. Run the quick tests to check your setup**
+**5. Run the quick tests to check your setup**
 
 Check the tool in general (static types, docs, unit tests, etc.):
 
@@ -66,7 +67,7 @@ Check the tool in general (static types, docs, unit tests, etc.):
 scripts/run_tests_quick.sh
 ```
 
-**7. Run the integration tests to fully validate your setup**
+**6. Run the integration tests to fully validate your setup**
 
 If a backend is configured, you need to connecting to an MQTT broker running locally or in the cloud. The default backend config points to the local MQTT broker. Available scripts:
 
@@ -87,7 +88,7 @@ Check the integrity of the local setup (the local config, connection to the conf
 scripts/run_tests_integration.sh
 ```
 
-**8. Run the local DAS**
+**7. Run the local DAS**
 
 ```bash
 # in the foreground
@@ -97,7 +98,7 @@ python run.py
 python cli.py start
 ```
 
-**9. Observe the outputs of the system**
+**8. Observe the outputs of the system**
 
 You can see the output of your DAS in `data/logs` and `data/messages`.
 
@@ -108,7 +109,7 @@ If you have set up a backend, then you can observe the data and logs being publi
 
 This page describes how to set up one of these backends: https://tum-esm-ivy.netlify.app/backends/general
 
-**10. Update and build the documentation**
+**9. Update and build the documentation**
 
 The documentation is located in `docs`, organized using [Nextra](https://nextra.site/) and set up using [Bun](https://bun.sh/).
 
@@ -130,13 +131,13 @@ bun run build
 
 The static build is contained in `docs/out`.
 
-**11. Add your sensor-network specific code to the DAS**
+**10. Add your sensor-network specific code to the DAS**
 
 Get yourself familiar with the documentation on the [core concepts of Ivy](https://tum-esm-ivy.netlify.app/concepts/file-system-layout), [its interfaces](https://tum-esm-ivy.netlify.app/interfaces/configuration), and how it connects to [IoT Backends](https://tum-esm-ivy.netlify.app/backends/general). You can start with the [overview section](https://tum-esm-ivy.netlify.app/overview), giving you a brief description of the different components of Ivy.
 
 Ivy is made to be owned, so feel free to strip away everything you don't use. You can remove the Ivy-specific parts of the documentation and just link to the central Ivy documentation (https://tum-esm-ivy.netlify.app/). We are happy to include your additions to the Ivy template - and of course, list you as a contributor.
 
-**12. Test a new version of your DAS**
+**11. Test a new version of your DAS**
 
 Make sure that all tests are passing. In the GitHub Actions CI, everything is already set up, so we recommend using it. You can still run the tests locally, if you have installed mosquitto on your system:
 
@@ -153,7 +154,7 @@ scripts/mosquitto_stop.sh
 
 For these updater tests to work, your Ivy root directory (`~/Documents/myivy`) has to be empty to ensure that nothing is overwritten – this is why we recommend just running these tests in the CI environment. The updater test will set up the current setup twice under `~/Documents/myivy/myivy/1.2.3` and `~/Documents/myivy/myivy/4.5.6`, run the first version regularly, and try to update it to the second version. This proves that the current codebase can be updated _from_ and _to_.
 
-**13. Publish a new release**
+**12. Publish a new release**
 
 ```bash
 git tag v0.3.4
@@ -183,6 +184,7 @@ export IVY_PACKAGE_MANAGER="pdm"
 Setup the production node:
 
 ```bash
+# optional: change the Python interpreter to the one you want your DAS to run with
 curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py | python3.12
 ```
 
