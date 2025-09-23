@@ -18,10 +18,14 @@ VERSION: Annotated[
 
 NAME: Annotated[str, "The name of the project"] = "ivy"
 
+DEFAULT_ROOT_DIR: Annotated[
+    str, "The default root directory on a production system = `~/Documents/{NAME}`"
+] = os.path.join(os.path.expanduser("~"), "Documents", NAME)
+
 ROOT_DIR: Annotated[
     str,
-    "The root directory of the project on a production system = `~/Documents/{NAME}` or the value of the environment variable `IVY_ROOT_DIR` (if set)",
-] = os.environ.get("IVY_ROOT_DIR", os.path.join(os.path.expanduser("~"), "Documents", NAME))
+    "The default root directory on a production system or the value of the environment variable `IVY_ROOT_DIR` (if set)",
+] = os.environ.get("IVY_ROOT_DIR", DEFAULT_ROOT_DIR)
 
 LOGGING_LEVEL_PRIORITIES: Annotated[
     dict[

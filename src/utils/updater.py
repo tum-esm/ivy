@@ -50,6 +50,17 @@ class Updater:
             foreign_config: The received foreign config object
         """
 
+        if src.constants.ROOT_DIR.startswith("/tmp/ci-tests-ivy-root-dir-"):
+            self.logger.info("Detected CI test environment, allowing updates")
+        elif src.constants.ROOT_DIR == src.constants.DEFAULT_ROOT_DIR:
+            self.logger.info("Detected production root dir, allowing updates")
+        else:
+            self.logger.warning(
+                f"ROOT_DIR is set to {src.constants.ROOT_DIR}, which is not the default "
+                + f"root dir ({src.constants.DEFAULT_ROOT_DIR}). Skipping update process."
+            )
+            return
+
         if foreign_config.general.config_revision <= self.config.general.config_revision:
             self.logger.info(
                 f"Received config has "

@@ -47,10 +47,16 @@ NAME: str
 The name of the project
 
 ```python
+DEFAULT_ROOT_DIR: str
+```
+
+The default root directory on a production system = `~/Documents/{NAME}`
+
+```python
 ROOT_DIR: str
 ```
 
-The root directory of the project on a production system = `~/Documents/{NAME}` or the value of the environment variable `IVY_ROOT_DIR` (if set)
+The default root directory on a production system or the value of the environment variable `IVY_ROOT_DIR` (if set)
 
 ```python
 LOGGING_LEVEL_PRIORITIES: dict[typing.Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'EXCEPTION'], int]
