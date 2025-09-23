@@ -2,17 +2,18 @@
   "index": "🌱  Introduction",
   "getting-started": "🪴  Getting Started",
   "overview": "🌳  Overview",
+  "faq": "❓  FAQ",
   "--- 1": {
     "type": "separator"
   },
   "concepts": "🕯️  Core Concepts",
   "interfaces": "💾  Interfaces",
   "backends": "🦑  IoT Backends",
+  "contributing": "🪢  Contributing",
   "--- 2": {
     "type": "separator"
   },
   "api-reference": "⚙️  API Reference",
-  "faq": "❓  FAQ",
   "Versions": {
     "title": "Version 1.0",
     "type": "menu",
