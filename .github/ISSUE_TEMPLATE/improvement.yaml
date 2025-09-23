@@ -10,4 +10,4 @@ body:
       label: Describe your idea
   - type: markdown
     attributes:
-      value: "🐝 Thank you for submitting this proposal!"
+      value: "🐝 Thank you for sharing this improvement!"
