@@ -4,7 +4,7 @@ import { Callout } from "nextra/components";
 
 ## Development
 
-You need to have [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/) installed on your machine. We officially only support Unix operating systems. Use the "Use this template" button on the [Ivy Repository](https://github.com/tum-esm/ivy) to start your own DAS repository:
+You need to have [Python](https://www.python.org/) version 3.10 or higher and [git](https://git-scm.com/) installed on your machine. We officially only support Unix operating systems. Click on the "Use this template" button on the [Ivy Repository](https://github.com/tum-esm/ivy) to start your own DAS repository:
 
 <img src="/use-template-button.png" class="mt-2" />
 
@@ -14,7 +14,7 @@ Steps 1 through 5 of the development setup have been automated by running the fo
 
 ```bash
 # optional: change the Python interpreter to the one you want your DAS to run with
-curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_development.py | python3.12
+curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_development.py | python3
 ```
 
 </Callout>
@@ -33,7 +33,7 @@ Also update these values in `config/config.template.json` and `src/constants.py`
 
 ```bash
 cd ~/Documents/myivy/dev
-python3.12 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -171,7 +171,7 @@ git push origin v0.3.4
 
 **1. Set up the computer running the DAS (e.g., a Raspberry Pi)**
 
-Use a Unix operating system and install [Python3.10](https://www.python.org/) or higher and [git](https://git-scm.com/).
+Use a Unix operating system and install [Python](https://www.python.org/) version 3.10 or higher and [git](https://git-scm.com/).
 
 **2. Run the production setup script**
 
@@ -191,7 +191,7 @@ Setup the production node:
 
 ```bash
 # optional: change the Python interpreter to the one you want your DAS to run with
-curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py | python3.12
+curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py | python3
 ```
 
 The script will print a line like `* * * ... -cli.sh` to be added to the crontab. This will restart the DAS after any crash, system reboot, or any software update or configuration change of your DAS. Then DAS will start running in the background in the next minute.
