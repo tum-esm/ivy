@@ -101,13 +101,62 @@ PACKAGE_MANAGER = get_validated_input(
     env_var="IVY_PACKAGE_MANAGER",
 )
 
-HOSTNAME = socket.gethostname().replace("_", "-").replace(" ", "-").lower()
+HOSTNAME = socket.gethostname().lower()
+for from_str, to_str in {
+    "@": "-at-",
+    ".": "-",
+    "_": "-",
+    " ": "-",
+    "ö": "oe",
+    "ø": "o",
+    "ä": "ae",
+    "å": "a",
+    "ü": "ue",
+    "ß": "ss",
+    ",": "",
+    "é": "e",
+    "ë": "e",
+    ":": "-",
+    "(": "-",
+    ")": "-",
+    "š": "s",
+    ".": "-",
+    "/": "-",
+    "ó": "o",
+    "ð": "d",
+    "á": "a",
+    "–": "-",
+    "ł": "l",
+    "‐": "-",
+    "’": "",
+    "'": "",
+    "?": "-",
+    "!": "-",
+    "ò": "o",
+    "&": "-and-",
+    "ñ": "n",
+    "δ": "d",
+    "í": "i",
+    "ř": "r",
+    "è": "e",
+    "ç": "c",
+    "ú": "u",
+    "“": "-",
+    "”": "-",
+    "∆": "d",
+}.items():
+    HOSTNAME = HOSTNAME.replace(from_str, to_str)
+while "--" in HOSTNAME:
+    HOSTNAME = HOSTNAME.replace("--", "-")
+HOSTNAME = HOSTNAME.strip("-")
+HOSTNAME = "".join(c for c in HOSTNAME if c.isalnum() or c == "-")
+
 SYSTEM_IDENTIFIER = get_validated_input(
     f'How do you want to name this computer? (if empty, uses "{HOSTNAME}")',
     conditions=[
         (lambda s: len(s) <= 512, "System identifier has to be at most 512 characters"),
         (
-            lambda s: re.match(r"^[a-z0-9-]+$", s) is not None,
+            lambda s: re.match(r"^[a-z0-9-]*$", s) is not None,
             "Only lowercase letters, numbers, and hyphens are allowed",
         ),
     ],
