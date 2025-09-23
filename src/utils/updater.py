@@ -52,12 +52,20 @@ class Updater:
 
         if src.constants.ROOT_DIR.startswith("/tmp/ci-tests-ivy-root-dir-"):
             self.logger.info("Detected CI test environment, allowing updates")
+        elif src.constants.ROOT_DIR.endswith(f"/{src.constants.NAME}/dev"):
+            self.logger.info(
+                f"Detected valid root dir (`.../{src.constants.NAME}/dev`), allowing updates"
+            )
         elif src.constants.ROOT_DIR == src.constants.DEFAULT_ROOT_DIR:
-            self.logger.info("Detected production root dir, allowing updates")
+            self.logger.info(
+                f"Detected valid root dir (`{src.constants.DEFAULT_ROOT_DIR}`), allowing updates"
+            )
         else:
+            # to ensure no user files are deleted
             self.logger.warning(
-                f"ROOT_DIR is set to {src.constants.ROOT_DIR}, which is not the default "
-                + f"root dir ({src.constants.DEFAULT_ROOT_DIR}). Skipping update process."
+                f"ROOT_DIR is not set to `.../{src.constants.NAME}/dev` or "
+                + f"`{src.constants.DEFAULT_ROOT_DIR}` (it is set to "
+                + f"{src.constants.ROOT_DIR}) -> skipping update"
             )
             return
 
