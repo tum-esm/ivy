@@ -2,7 +2,7 @@
 
 We are glad that you want to bring your improvements back to the Ivy repository! Let it be more utility functions, a new backend connector, more stylish or usable documentation – we are happy to include everything that is reusable for other sensor networks in the Ivy boilerplate. Contributors must adhere to the [Code of Conduct](/contributing/code-of-conduct).
 
-The [Getting Started Guide] mentions, how to set up a working dev environment, test your code, and tag new releases.
+The [Getting Started Guide](https://tum-esm-ivy.netlify.app/getting-started) mentions, how to set up a working dev environment, test your code, and tag new releases.
 
 ## Ways of Interaction
 
@@ -10,7 +10,7 @@ The [Getting Started Guide] mentions, how to set up a working dev environment, t
 **Concrete improvements:** Please open an [issue](https://github.com/tum-esm/ivy/issues/new?template=improvement.yaml) describing your idea.<br/>
 **General communication:** If you want to discuss a feature idea, brainstorm how to solve a certain sensor network issue, or have questions about how to use Ivy, feel free to open up a [discussion](github.com/tum-esm/ivy/discussions).
 
-Please check whether the issue/topic already exists before opening up a new one. If we don't react within 1-2 weeks, please ping @dostuffthatmatters or email us at [moritz.makowski@tum.de](mailto:moritz.makowski@tum.de).
+Please check whether the issue/topic already exists before opening up a new one. If we don't react within 1-2 weeks, please ping @dostuffthatmatters or send an email to [moritz.makowski@tum.de](mailto:moritz.makowski@tum.de).
 
 ## Hardware-Specific Code
 
@@ -20,7 +20,7 @@ We are open to including hardware-specific code in an [issue](https://github.com
 
 Please open an issue before submitting a pull request. Mention the issue in the pull request. Mention an issue that you are addressing in the commit message:
 
-```txt
+```
 #7 Issue Title
 
 description of this commit
