@@ -20,7 +20,7 @@ Steps 1 through 5 of the development setup have been automated by running the fo
 
 ```bash
 # optional: change the Python interpreter to the one you want your DAS to run with
-curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_development.py | python3
+curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_development.py > /tmp/ivy_setup_development.py && python3 /tmp/ivy_setup_development.py
 ```
 
 </Callout>
@@ -197,7 +197,7 @@ Setup the production node:
 
 ```bash
 # optional: change the Python interpreter to the one you want your DAS to run with
-curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py | python3
+curl -s https://raw.githubusercontent.com/tum-esm/ivy/refs/heads/main/scripts/setup_production.py > /tmp/ivy_setup_production.py && python3 /tmp/ivy_setup_production.py
 ```
 
 The script will print a line like `* * * ... -cli.sh` to be added to the crontab. This will restart the DAS after any crash, system reboot, or any software update or configuration change of your DAS. Then DAS will start running in the background in the next minute.
