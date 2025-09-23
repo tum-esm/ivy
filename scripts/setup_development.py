@@ -80,15 +80,18 @@ if PROJECT_DIR == "":
     PROJECT_DIR = DEFAULT_PROJECT_DIR
 
 GIT_REPOSITORY = get_validated_input(
-    "Where is your git repository hosted? (instead of `https://github.com/tum-esm/ivy`)",
+    "Where is your git repository hosted? (if empty, uses `https://github.com/tum-esm/ivy`)",
     conditions=[
         (
-            lambda s: s.startswith("https://") or s.startswith("git@"),
-            "Git repository must start with 'https://' or 'git@'",
+            lambda s: (s == "") or s.startswith("https://") or s.startswith("git@"),
+            "Git repository must by empty, or start with 'https://' or 'git@'",
         ),
     ],
     env_var="IVY_GIT_REPOSITORY",
 )
+if GIT_REPOSITORY == "":
+    GIT_REPOSITORY = "https://github.com/tum-esm/ivy"
+
 
 PACKAGE_MANAGER = get_validated_input(
     "How do you want to install your dependencies? (pip | pdm | uv)",
