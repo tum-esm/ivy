@@ -70,13 +70,14 @@ PROJECT_NAME = get_validated_input(
     env_var="IVY_PROJECT_NAME",
 )
 
+DEFAULT_PROJECT_DIR = os.path.join(os.getcwd(), PROJECT_NAME, "dev")
 PROJECT_DIR = get_validated_input(
-    f"Where do you want to set up your dev repository? (if empty, uses `~/Documents/{PROJECT_NAME}/dev`)",
+    f"Where do you want to set up your dev repository? (if empty, uses `{DEFAULT_PROJECT_DIR}`)",
     conditions=[],
     env_var="IVY_PROJECT_DIR",
 )
 if PROJECT_DIR == "":
-    PROJECT_DIR = os.path.join(os.path.expanduser("~"), "Documents", PROJECT_NAME, "dev")
+    PROJECT_DIR = DEFAULT_PROJECT_DIR
 
 GIT_REPOSITORY = get_validated_input(
     "Where is your git repository hosted? (instead of `https://github.com/tum-esm/ivy`)",
