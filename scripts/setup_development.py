@@ -78,6 +78,8 @@ PROJECT_DIR = get_validated_input(
 )
 if PROJECT_DIR == "":
     PROJECT_DIR = DEFAULT_PROJECT_DIR
+if PROJECT_DIR.startswith("~"):
+    PROJECT_DIR = os.path.join(os.path.expanduser("~"), PROJECT_DIR[1:].strip("/"))
 
 GIT_REPOSITORY = get_validated_input(
     "Where is your git repository hosted? (if empty, uses `https://github.com/tum-esm/ivy`)",
