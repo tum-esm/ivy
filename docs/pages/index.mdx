@@ -43,9 +43,9 @@ _This work is funded by the Horizon 2020 ICOS Cities PAUL Project under [grant n
 
 **Important Links:**
 
-📚 Documentation: [tum-esm-ivy.netlify.app](https://tum-esm-ivy.netlify.app/)
-🪴 Getting Started Guide: [tum-esm-ivy.netlify.app/getting-started](https://tum-esm-ivy.netlify.app/getting-started)
-🪢 Contributors Guide: [tum-esm-ivy.netlify.app/contributing/contributing](https://tum-esm-ivy.netlify.app/contributing/contributing)
+📚 Documentation: [tum-esm-ivy.netlify.app](https://tum-esm-ivy.netlify.app/)<br/>
+🪴 Getting Started Guide: [tum-esm-ivy.netlify.app/getting-started](https://tum-esm-ivy.netlify.app/getting-started)<br/>
+🪢 Contributors Guide: [tum-esm-ivy.netlify.app/contributing/contributing](https://tum-esm-ivy.netlify.app/contributing/contributing)<br/>
 🤝 Code of Conduct: [tum-esm-ivy.netlify.app/contributing/code-of-conduct](https://tum-esm-ivy.netlify.app/contributing/code-of-conduct)
 
 **Related Projects:**
