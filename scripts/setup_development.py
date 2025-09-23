@@ -264,6 +264,14 @@ with section("Setting up configuration file") as localprint:
         json.dump(config, f, indent=4)
     localprint(f"Wrote configuration to {config_path}")
 
+# SET UP .env FILE
+
+with section("Setting up .env file") as localprint:
+    env_path = os.path.join(PROJECT_DIR, "config", ".env")
+    env_content = f"IVY_ROOT_DIR={os.path.dirname(PROJECT_DIR)}"
+    with open(env_path, "w") as f:
+        f.write(f"{env_content}\n")
+    localprint(f"Wrote `{env_content}` to {env_path}")
 
 # RUNNING THE QUICK PYTESTS
 

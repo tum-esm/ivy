@@ -1,10 +1,16 @@
+from typing import Generator
 import datetime
 import os
 import sys
-from typing import Generator
+import dotenv
 import pytest
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PARENT_DIR = os.path.dirname(PROJECT_DIR)
+
+dotenv.load_dotenv(os.path.join(PARENT_DIR, ".env"))
+dotenv.load_dotenv(os.path.join(PROJECT_DIR, "config", ".env"))
+
 sys.path.append(PROJECT_DIR)
 import src
 
