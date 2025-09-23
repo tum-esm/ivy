@@ -50,17 +50,16 @@ class Updater:
             foreign_config: The received foreign config object
         """
 
-        if src.constants.ROOT_DIR.startswith("/tmp/ci-tests-ivy-root-dir-"):
-            self.logger.info("Detected CI test environment, allowing updates")
-        elif src.constants.ROOT_DIR.endswith(f"/{src.constants.NAME}/dev"):
-            self.logger.info(
-                f"Detected valid root dir (`.../{src.constants.NAME}/dev`), allowing updates"
-            )
-        elif src.constants.ROOT_DIR == src.constants.DEFAULT_ROOT_DIR:
-            self.logger.info(
-                f"Detected valid root dir (`{src.constants.DEFAULT_ROOT_DIR}`), allowing updates"
-            )
-        else:
+        if not (
+            # Detected CI test environment, allowing updates
+            src.constants.ROOT_DIR.startswith("/tmp/ci-tests-ivy-root-dir-")
+            or
+            # Detected valid root dir (`.../{src.constants.NAME}/dev`), allowing updates
+            src.constants.ROOT_DIR.endswith(f"/{src.constants.NAME}/dev")
+            or
+            # Detected valid root dir (`{src.constants.DEFAULT_ROOT_DIR}`), allowing updates
+            src.constants.ROOT_DIR == src.constants.DEFAULT_ROOT_DIR
+        ):
             # to ensure no user files are deleted
             self.logger.warning(
                 f"ROOT_DIR is not set to `.../{src.constants.NAME}/dev` or "
