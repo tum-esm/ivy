@@ -41,6 +41,13 @@ The idea of Ivy is that you can start building your own DAS based on Ivy instead
 
 _This work is funded by the Horizon 2020 ICOS Cities PAUL Project under [grant no. 101037319](https://cordis.europa.eu/project/id/101037319), and the ERC Consolidator Grant CoSense4Climate under [grant no. 101089203](https://cordis.europa.eu/project/id/101089203)._
 
+**Important Links:**
+
+📚 Documentation: [tum-esm-ivy.netlify.app](https://tum-esm-ivy.netlify.app/)
+🪴 Getting Started Guide: [tum-esm-ivy.netlify.app/getting-started](https://tum-esm-ivy.netlify.app/getting-started)
+🪢 Contributors Guide: [tum-esm-ivy.netlify.app/contributing/contributing](https://tum-esm-ivy.netlify.app/contributing/contributing)
+🤝 Code of Conduct: [tum-esm-ivy.netlify.app/contributing/code-of-conduct](https://tum-esm-ivy.netlify.app/contributing/code-of-conduct)
+
 **Related Projects:**
 
 🪽 The Ivy software template is based on the experience gained when realizing the [Hermes Project](https://github.com/tum-esm/hermes)<br/>
