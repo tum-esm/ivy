@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 from generate_jsonschema import generate_jsonschema_tsfile
 from generate_apiref import generate_module_reference
@@ -62,3 +63,14 @@ with open(os.path.join(DOCS_PAGES_PATH, "index.mdx"), "w") as _f:
 with open(os.path.join(DOCS_PAGES_PATH, "api-reference", "cli.md"), "w") as f:
     f.write("# CLI Reference\n\n")
     f.write(generate_recursive_help(cli.cli))
+
+# CODE OF CONDUCT
+
+shutil.copyfile(
+    os.path.join(PROJECT_DIR, "CODE_OF_CONDUCT.md"),
+    os.path.join(DOCS_PAGES_PATH, "contributing", "code-of-conduct.mdx"),
+)
+shutil.copyfile(
+    os.path.join(PROJECT_DIR, "CONTRIBUTING.md"),
+    os.path.join(DOCS_PAGES_PATH, "contributing", "contributing.mdx"),
+)
