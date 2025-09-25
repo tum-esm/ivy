@@ -9,7 +9,7 @@ def replace_json_block_in_file(
     json_block_index: int,
 ) -> None:
     with open(json_src_file_path) as f:
-        json_template = f.read()
+        json_template = f.read().strip(" \n\t")
 
     with open(mdx_file_path) as f:
         mdx_page = f.read()
