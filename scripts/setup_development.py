@@ -173,8 +173,8 @@ BRANCH_NAME = get_validated_input(
     conditions=[
         (lambda s: len(s) <= 512, "Branch name cannot be empty"),
         (
-            lambda s: re.match(r"^[a-z0-9-_]*$", s) is not None,
-            "Only lowercase letters, numbers, hyphens and underscores are allowed",
+            lambda s: re.match(r"^[A-Za-z0-9-_\.\+]*$", s) is not None,
+            "Only letters, numbers, hyphens and underscores, dots and plus symbols are allowed",
         ),
     ],
     env_var="IVY_BRANCH_NAME",
