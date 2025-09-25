@@ -1,6 +1,6 @@
 [project]
 name = "ivy"
-version = "1.0.0"
+version = "1.1.0"
 description = "A Data Acquisition System for Distributed Sensor Networks Supporting Remote Configuration and Software Updates"
 requires-python = ">=3.10,<4.0"
 authors = [{ name = "Moritz Makowski", email = "moritz.makowski@tum.de" }]

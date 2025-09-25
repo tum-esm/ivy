@@ -14,7 +14,7 @@ DATA_DIR: Annotated[
 VERSION: Annotated[
     tum_esm_utils.validators.Version,
     "The current version of the project",
-] = tum_esm_utils.validators.Version("1.0.0")
+] = tum_esm_utils.validators.Version("1.1.0")
 
 NAME: Annotated[str, "The name of the project"] = "ivy"
 

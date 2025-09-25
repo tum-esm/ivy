@@ -62,7 +62,7 @@ if __name__ == "__main__":
             error("Git repository must be from either 'github' or 'gitlab'")
 
         if not (re.match(r"^\d+\.", config["version"]) or config["version"].startswith("/")):
-            error("Version must either start with a number (e.g. '1.0.0') or be a an absolute path")
+            error("Version must either start with a number (e.g. '1.1.0') or be a an absolute path")
 
         if not re.match(r"^[a-z0-9-]+$", config["system_identifier"]):
             error("System identifier can only contain lowercase letters, numbers, and hyphens")
