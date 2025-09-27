@@ -1,5 +1,5 @@
 ---
-title: "Ivy v1: A Data Acquisition System for Distributed Sensor Networks Supporting Remote Configuration and Software Updates"
+title: "Ivy: A Data Acquisition System for Distributed Sensor Networks Supporting Remote Configuration and Software Updates"
 tags:
   - Environmental Sensing
   - Sensor Networks
@@ -41,7 +41,7 @@ bibliography: paper.bib
 
 Distributed sensor networks monitor environmental conditions at remote locations. Each sensor node produces various time series data streams and system logs and sends this data to a central backend. A "sensor node" is an autonomous system collecting data from one or multiple sensors connected to it, operated 24/7 by a Data Acquisition System (DAS). As part of the ICOS Cities PAUL Project [@paul], our group has developed a network of 20 autonomous GHG (greenhouse gas) sensor nodes [@midcost].
 
-Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy provides the core architecture, and users of the boilerplate only have to plug in their network-specific hardware logic to make it operational. Ivy is designed to be owned and customized: one can switch to another documentation system, add another backend, or remove unused parts of the boilerplate.
+Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy provides the core architecture, and users of the boilerplate only have to plug in their network-specific hardware logic to make it operational. Ivy is designed to be customized: one can switch to another documentation system, add another backend, or remove unused parts of the boilerplate.
 
 \vspace{4mm}
 
