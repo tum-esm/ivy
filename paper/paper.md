@@ -41,7 +41,7 @@ bibliography: paper.bib
 
 Distributed sensor networks monitor environmental conditions at remote locations. Each sensor node produces various time series data streams and system logs and sends this data to a central backend. A "sensor node" is an autonomous system collecting data from one or multiple sensors connected to it, operated 24/7 by a Data Acquisition System (DAS). As part of the ICOS Cities PAUL Project [@paul], our group has developed a network of 20 autonomous GHG (greenhouse gas) sensor nodes [@midcost].
 
-Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy provides the core architecture, and users of the boilerplate only have to plug in their network-specific hardware logic to make it operational. Ivy is designed to be customized: one can switch to another documentation system, add another backend, or remove unused parts of the boilerplate.
+Since the software architecture of a DAS is independent of a specific sensor network, we present Ivy – a boilerplate codebase and architecture for a DAS that supports configuring and updating itself remotely. Research teams building a new sensor network can use Ivy as a base for their own network-specific DAS. Ivy provides the core architecture, and users of the boilerplate codebase only have to plug in their network-specific hardware logic to make it operational. Ivy is designed to be customized: one can switch to another documentation system, add another backend, or remove unused parts of Ivy.
 
 \vspace{4mm}
 
@@ -71,7 +71,7 @@ Ivy uses a `config.json` file to store its active configuration. It can receive 
 
 ![The software update process of Ivy.\label{fig:architecture2}](figures/ivy-architecture-fig-2.png){ width=100% }
 
-Ivy comes with connectors for two backends out of the box – Thingsboard and Tenta – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility prevents vendor lock-in and makes the boilerplate more reusable. We are happy to support more backends out of the box in the future, like Strapi [@strapi], Kuzzle [@kuzzle], or FROST. Furthermore, many utility functions have been moved to the `tum-esm-utils` Python package [@tumesmutils].
+Ivy comes with connectors for two backends out of the box – Thingsboard and Tenta – and uses the MQTT protocol to communicate with them. Nevertheless, Ivy is not bound to a specific backend or communication protocol. This flexibility prevents vendor lock-in and makes Ivy's implementation more reusable. We are happy to support more backends out of the box in the future, like Strapi [@strapi], Kuzzle [@kuzzle], or FROST. Furthermore, many utility functions have been moved to the `tum-esm-utils` Python package [@tumesmutils].
 
 ## Evolution of the Runtime Model
 
@@ -85,7 +85,7 @@ Ivy is statically typed and tested using Mypy [@mypy]. Its test suite contains a
 
 # Author Contributions
 
-MM: developed the sensor side of Hermes, wrote the Ivy boilerplate, wrote the manuscript, works on Pyra; JC (PI): initialized, co-developed, and supervises the GHG sensor networks driven by Hermes and Pyra, helped with her expertise in environmental sensing, reviewed the manuscript.
+MM: developed the sensor side of Hermes, designed Ivy, wrote the manuscript, works on Pyra; JC (PI): initialized, co-developed, and supervises the GHG sensor networks driven by Hermes and Pyra, helped with her expertise in environmental sensing, reviewed the manuscript.
 
 # Acknowledgement of Financial Support
 
