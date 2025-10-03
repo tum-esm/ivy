@@ -27,10 +27,10 @@
     className="inline p-0 m-px"
   />
 </a>
-<a href="https://doi.org/10.5281/zenodo.14562882">
+<a href="https://doi.org/10.21105/joss.08862">
 <img
     alt="DOI"
-    src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.14562882-0ea5e9?labelColor=0f172a&color=0ea5e9&cacheSeconds=60"
+    src="https://img.shields.io/badge/DOI-10.21105%2Fjoss.08862-0ea5e9?labelColor=0f172a&color=0ea5e9&cacheSeconds=60"
     className="inline p-0 m-px"
   />
 </a>
