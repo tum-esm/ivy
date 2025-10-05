@@ -13,15 +13,5 @@
   "--- 2": {
     "type": "separator"
   },
-  "api-reference": "⚙️  API Reference",
-  "Versions": {
-    "title": "Version 1.0",
-    "type": "menu",
-    "items": {
-      "latest": {
-        "title": "Latest",
-        "href": "https://tum-esm-ivy.netlify.app/"
-      }
-    }
-  }
+  "api-reference": "⚙️  API Reference"
 }
